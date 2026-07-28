@@ -1,0 +1,487 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../models/match.dart';
+import '../repositories/board_game_repository.dart';
+import '../repositories/match_repository.dart';
+import '../utils/theme_utils.dart';
+import '../widgets/empty_state.dart';
+import 'match_detail_screen.dart';
+
+class MatchSearchScreen extends StatefulWidget {
+  const MatchSearchScreen({super.key});
+
+  @override
+  State<MatchSearchScreen> createState() => _MatchSearchScreenState();
+}
+
+class _MatchSearchScreenState extends State<MatchSearchScreen> {
+  final _gameNameController = TextEditingController();
+  List<String> _gameNameSuggestions = [];
+
+  String? _selectedGame;
+  DateTime? _startDate;
+  DateTime? _endDate;
+  MatchResult? _selectedResult;
+
+  List<GameMatch> _searchResults = [];
+  bool _isSearching = false;
+  bool _hasSearched = false;
+  final Map<String, String?> _libraryPhotoCache = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGameNames();
+  }
+
+  Future<void> _loadGameNames() async {
+    final names = await MatchRepository.instance.getDistinctGameNames();
+    setState(() => _gameNameSuggestions = names);
+  }
+
+  @override
+  void dispose() {
+    _gameNameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isStart) async {
+    final initialDate = isStart ? _startDate : _endDate;
+    final date = await showDatePicker(
+      context: context,
+      initialDate: initialDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+
+    if (date != null) {
+      setState(() {
+        if (isStart) {
+          _startDate = date;
+          if (_endDate != null && _endDate!.isBefore(date)) {
+            _endDate = date;
+          }
+        } else {
+          _endDate = date;
+          if (_startDate != null && _startDate!.isAfter(date)) {
+            _startDate = date;
+          }
+        }
+      });
+    }
+  }
+
+  Future<void> _search() async {
+    setState(() {
+      _isSearching = true;
+      _hasSearched = true;
+    });
+
+    try {
+      final results = await MatchRepository.instance.search(
+        gameName: _selectedGame,
+        fromDate: _startDate,
+        toDate: _endDate != null
+            ? DateTime(
+                _endDate!.year,
+                _endDate!.month,
+                _endDate!.day,
+                23,
+                59,
+                59,
+              )
+            : null,
+        result: _selectedResult,
+      );
+
+      // Pre-resolve library photos
+      final gameNames = results
+          .where((m) => m.useLibraryPhoto)
+          .map((m) => m.gameName)
+          .toSet();
+      for (final name in gameNames) {
+        if (!_libraryPhotoCache.containsKey(name)) {
+          _libraryPhotoCache[name] = await BoardGameRepository.instance
+              .getPhotoPath(name);
+        }
+      }
+
+      setState(() {
+        _searchResults = results;
+        _isSearching = false;
+      });
+    } catch (e) {
+      setState(() => _isSearching = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error searching: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _gameNameController.clear();
+      _selectedGame = null;
+      _startDate = null;
+      _endDate = null;
+      _selectedResult = null;
+      _searchResults.clear();
+      _hasSearched = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('MMM d, yyyy');
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Search Matches'),
+        actions: [
+          if (_selectedGame != null ||
+              _startDate != null ||
+              _endDate != null ||
+              _selectedResult != null)
+            IconButton(
+              onPressed: _clearFilters,
+              icon: const Icon(Icons.clear_all),
+              tooltip: 'Clear filters',
+            ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Filter section
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Autocomplete<String>(
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text.isEmpty) {
+                      return _gameNameSuggestions;
+                    }
+                    return _gameNameSuggestions.where(
+                      (name) => name.toLowerCase().contains(
+                        textEditingValue.text.toLowerCase(),
+                      ),
+                    );
+                  },
+                  onSelected: (String selection) {
+                    setState(() => _selectedGame = selection);
+                  },
+                  fieldViewBuilder:
+                      (context, controller, focusNode, onFieldSubmitted) {
+                        return TextField(
+                          controller: controller,
+                          focusNode: focusNode,
+                          decoration: InputDecoration(
+                            labelText: 'Game Name',
+                            border: const OutlineInputBorder(),
+                            prefixIcon: const Icon(Icons.games),
+                            suffixIcon: _selectedGame != null
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
+                                      controller.clear();
+                                      setState(() => _selectedGame = null);
+                                    },
+                                  )
+                                : null,
+                          ),
+                          onChanged: (value) {
+                            if (value.isEmpty) {
+                              setState(() => _selectedGame = null);
+                            } else {
+                              setState(() => _selectedGame = value);
+                            }
+                          },
+                        );
+                      },
+                ),
+                const SizedBox(height: 16),
+
+                // Date range row
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Date Range',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => _selectDate(context, true),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'From Date',
+                                    border: OutlineInputBorder(),
+                                    prefixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(
+                                    _startDate != null
+                                        ? dateFormat.format(_startDate!)
+                                        : 'Any',
+                                    style: TextStyle(
+                                      color: _startDate != null
+                                          ? null
+                                          : colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => _selectDate(context, false),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'To Date',
+                                    border: OutlineInputBorder(),
+                                    prefixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(
+                                    _endDate != null
+                                        ? dateFormat.format(_endDate!)
+                                        : 'Any',
+                                    style: TextStyle(
+                                      color: _endDate != null
+                                          ? null
+                                          : colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Result filter
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Result',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 12),
+                        Center(
+                          child: SegmentedButton<MatchResult?>(
+                            segments: const [
+                              ButtonSegment<MatchResult?>(
+                                value: null,
+                                label: Text('All'),
+                              ),
+                              ButtonSegment<MatchResult?>(
+                                value: MatchResult.won,
+                                label: Text('Win'),
+                                icon: Icon(Icons.emoji_events, size: 16),
+                              ),
+                              ButtonSegment<MatchResult?>(
+                                value: MatchResult.tie,
+                                label: Text('Draw'),
+                                icon: Icon(Icons.handshake, size: 16),
+                              ),
+                              ButtonSegment<MatchResult?>(
+                                value: MatchResult.lost,
+                                label: Text('Loss'),
+                                icon: Icon(
+                                  Icons.sentiment_dissatisfied,
+                                  size: 16,
+                                ),
+                              ),
+                            ],
+                            selected: {_selectedResult},
+                            onSelectionChanged:
+                                (Set<MatchResult?> newSelection) {
+                                  setState(
+                                    () => _selectedResult = newSelection.first,
+                                  );
+                                },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Search button
+                FilledButton.icon(
+                  onPressed: _search,
+                  icon: const Icon(Icons.search),
+                  label: const Text('Search'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Results section
+          Expanded(
+            child: _isSearching
+                ? const Center(child: CircularProgressIndicator())
+                : !_hasSearched
+                ? const EmptyState(
+                    icon: Icons.search,
+                    title: 'Set filters and tap Search',
+                    iconSize: 64,
+                  )
+                : _searchResults.isEmpty
+                ? const EmptyState(
+                    icon: Icons.search_off,
+                    title: 'No matches found',
+                    iconSize: 64,
+                  )
+                : _buildResultsList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultsList() {
+    final dateFormat = DateFormat('MMM d, yyyy • h:mm a');
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(
+        12,
+        8,
+        12,
+        8 + MediaQuery.of(context).viewPadding.bottom,
+      ),
+      itemCount: _searchResults.length,
+      itemBuilder: (context, index) {
+        final match = _searchResults[index];
+
+        return Card(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: InkWell(
+            onTap: () async {
+              final result = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MatchDetailScreen(match: match),
+                ),
+              );
+              if (result == true) {
+                _search();
+              }
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  // Photo thumbnail
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: SizedBox(
+                      width: 64,
+                      height: 64,
+                      child: () {
+                        final resolvedPhoto = match.useLibraryPhoto
+                            ? _libraryPhotoCache[match.gameName]
+                            : match.photoPath;
+                        return resolvedPhoto != null
+                            ? Image.file(
+                                File(resolvedPhoto),
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.high,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return _buildPlaceholder(colorScheme);
+                                },
+                              )
+                            : _buildPlaceholder(colorScheme);
+                      }(),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          match.gameName,
+                          style: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          dateFormat.format(match.playedAt),
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        if (match.winner != null) ...[
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.emoji_events,
+                                size: 12,
+                                color: Colors.amber[700],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                match.winner!,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: Colors.amber[700],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  // Result badge
+                  buildMatchResultTag(match.result),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPlaceholder(ColorScheme colorScheme) {
+    return Container(
+      color: colorScheme.surfaceContainerHighest,
+      child: Icon(Icons.casino, color: colorScheme.onSurfaceVariant, size: 24),
+    );
+  }
+}
