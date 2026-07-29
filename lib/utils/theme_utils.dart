@@ -17,14 +17,21 @@ class AppColors {
 
   // Rating Progression Tokens
   static const Color ratingUnrated = Color(0xFF9CA3AF); // 0.0 - <1.0 (Grey)
-  static const Color ratingLow = Color(0xFFF97316);     // 1.0 - 4.9 (Muted Orange)
-  static const Color ratingFair = Color(0xFFF59E0B);    // 5.0 - 7.4 (Warm Gold)
-  static const Color ratingHigh = Color(0xFFFFC107);    // 7.5 - 10.0 (Bright Star Yellow)
+  static const Color ratingLow = Color(0xFFF97316); // 1.0 - 4.9 (Muted Orange)
+  static const Color ratingFair = Color(0xFFF59E0B); // 5.0 - 7.4 (Warm Gold)
+  static const Color ratingHigh = Color(
+    0xFFFFC107,
+  ); // 7.5 - 10.0 (Bright Star Yellow)
 
   // Card & Detail Metric Icons Tokens
-  static const Color metricPlayers = Color(0xFF2C9FAF);  // Brand Teal
-  static const Color metricDuration = Color(0xFFFB923C); // Light Orange
-  static const Color metricPlayed = Color(0xFF10B981);   // Emerald Green
+  static const Color metricPlayers = Color(0xFF2C9FAF); // Brand Teal
+  static const Color metricDuration = Color(0xFF9F7AEA); // Light Purple
+  static const Color metricPlayed = Color(0xFF10B981); // Emerald Green
+
+  // Match Detail Screen Metric Icons Tokens
+  static const Color matchDate = Color(0xFF3B82F6); // Blue
+  static const Color matchDuration = Color(0xFF9F7AEA); // Light Purple
+  static const Color matchTime = Color(0xFF2C9FAF); // Brand Teal
 
   // Match Outcome Result Badges
   static const Color resultWon = Color(0xFF2EAF61);
@@ -42,6 +49,7 @@ class AppColors {
 
   // Highlights & Accents
   static const Color winnerGold = Color(0xFFFFA000);
+  static const Color metricWinnerShadow = Color.fromARGB(255, 251, 180, 0);
 
   // Standard Player Color Palette Choices
   static const List<Color> playerPalette = [
@@ -78,13 +86,6 @@ Widget buildMatchResultTag(
     decoration: BoxDecoration(
       color: result.color,
       borderRadius: BorderRadius.circular(999),
-      boxShadow: [
-        BoxShadow(
-          color: result.color.withValues(alpha: 0.34),
-          blurRadius: size == MatchResultTagSize.compact ? 10 : 8,
-          offset: const Offset(0, 3),
-        ),
-      ],
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,

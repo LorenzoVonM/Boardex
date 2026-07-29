@@ -47,7 +47,7 @@ class GameCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                             if (game.markForSell)
+                            if (game.markForSell)
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
@@ -166,23 +166,21 @@ class GameCard extends StatelessWidget {
                                     fontWeight: FontWeight.w600,
                                   ),
                             ),
-                            if (game.timesPlayed > 0) ...[
-                              const SizedBox(width: 6),
-                              const Icon(
-                                Icons.casino,
-                                size: 13,
-                                color: AppColors.metricPlayed,
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                '${game.timesPlayed}x',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: colorScheme.onSurfaceVariant,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                            ],
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.casino,
+                              size: 13,
+                              color: AppColors.metricPlayed,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${game.timesPlayed}x',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
                           ],
                         ),
                       ],

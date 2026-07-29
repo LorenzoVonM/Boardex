@@ -202,6 +202,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                     child: _buildInfoCard(
                       context,
                       Icons.calendar_today,
+                      iconColor: AppColors.matchDate,
                       dateFormat.format(match.playedAt),
                       'Date',
                     ),
@@ -211,6 +212,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                     child: _buildInfoCard(
                       context,
                       Icons.access_time,
+                      iconColor: AppColors.matchTime,
                       timeFormat.format(match.playedAt),
                       'Time',
                     ),
@@ -220,6 +222,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                     child: _buildInfoCard(
                       context,
                       Icons.timer,
+                      iconColor: AppColors.matchDuration,
                       '${match.duration}m',
                       'Duration',
                     ),
@@ -444,7 +447,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     return Card(
       elevation: 0,
-      color: colorScheme.surfaceContainerHighest,
+      color: colorScheme.surfaceContainer,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
         child: Column(

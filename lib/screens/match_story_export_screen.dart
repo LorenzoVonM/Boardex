@@ -9,17 +9,19 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../models/board_game.dart';
 import '../models/match.dart';
+import '../repositories/board_game_repository.dart';
 import '../utils/theme_utils.dart';
 
-enum StoryBackgroundStyle { coral, sand, moss, ochre, twilight }
+enum StoryBackgroundStyle { coral, sand, moss, lightPurple, twilight }
 
 extension StoryBackgroundStyleUi on StoryBackgroundStyle {
   String get label => switch (this) {
     StoryBackgroundStyle.coral => 'Coral',
     StoryBackgroundStyle.sand => 'Sand',
     StoryBackgroundStyle.moss => 'Moss',
-    StoryBackgroundStyle.ochre => 'Ochre',
+    StoryBackgroundStyle.lightPurple => 'Light Purple',
     StoryBackgroundStyle.twilight => 'Twilight',
   };
 
@@ -27,7 +29,7 @@ extension StoryBackgroundStyleUi on StoryBackgroundStyle {
     StoryBackgroundStyle.coral => const Color(0xFFF48B82),
     StoryBackgroundStyle.sand => const Color(0xFFE7D5B7),
     StoryBackgroundStyle.moss => const Color(0xFF627A5B),
-    StoryBackgroundStyle.ochre => const Color(0xFFC7923D),
+    StoryBackgroundStyle.lightPurple => const Color(0xFFC084FC),
     StoryBackgroundStyle.twilight => const Color(0xFF6B78A8),
   };
 }
@@ -48,10 +50,35 @@ class MatchStoryExportScreen extends StatefulWidget {
 
 class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
   static const double _storyExportTargetWidth = 1080;
+  static const double _stickerCanvasWidth = 320.0;
+  static const double _stickerCanvasHeight = 320.0 / (9 / 16);
 
   final GlobalKey _stickerKey = GlobalKey();
   bool _isSharing = false;
   StoryBackgroundStyle _selectedBackground = StoryBackgroundStyle.coral;
+
+  BoardGame? _game;
+  bool _showRating = false;
+  bool _showWeight = false;
+  bool _showTimesPlayed = false;
+  bool _showPlayers = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGameContext();
+  }
+
+  Future<void> _loadGameContext() async {
+    final game = await BoardGameRepository.instance.getGameByName(
+      widget.match.gameName,
+    );
+    if (mounted) {
+      setState(() {
+        _game = game;
+      });
+    }
+  }
 
   Future<String> _captureStickerImage() async {
     await WidgetsBinding.instance.endOfFrame;
@@ -117,76 +144,192 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final hasPlayers = widget.match.players.isNotEmpty;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Story Export')),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Instagram Story Preview',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Exports as a sticker layer. Pick the Instagram background color below.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+              // Main Story Preview - Fixed Canvas Size & Ratio Across All Devices
+              Center(
+                child: _InstagramStoryPreview(
+                  width: _stickerCanvasWidth,
+                  height: _stickerCanvasHeight,
+                  backgroundStyle: _selectedBackground,
+                  child: RepaintBoundary(
+                    key: _stickerKey,
+                    child: _MatchStorySticker(
+                      match: widget.match,
+                      game: _game,
+                      photoPath: widget.photoPath,
+                      backgroundStyle: _selectedBackground,
+                      showRating: _showRating,
+                      showWeight: _showWeight,
+                      showTimesPlayed: _showTimesPlayed,
+                      showPlayers: _showPlayers,
+                      width: _stickerCanvasWidth,
+                      height: _stickerCanvasHeight,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: StoryBackgroundStyle.values
-                    .map(
-                      (background) => _StoryBackgroundSwatch(
-                        background: background,
-                        isSelected: background == _selectedBackground,
-                        onTap: () =>
-                            setState(() => _selectedBackground = background),
-                      ),
-                    )
-                    .toList(),
               ),
               const SizedBox(height: 12),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    const storyAspect = 9 / 16;
-                    final maxWidth = constraints.maxWidth;
-                    final maxHeight = constraints.maxHeight;
-                    final fittedWidth = (maxHeight * storyAspect).clamp(
-                      220.0,
-                      maxWidth,
-                    );
-                    final previewWidth = fittedWidth;
-                    final previewHeight = previewWidth / storyAspect;
 
-                    return Center(
-                      child: _InstagramStoryPreview(
-                        width: previewWidth,
-                        height: previewHeight,
-                        backgroundStyle: _selectedBackground,
-                        child: RepaintBoundary(
-                          key: _stickerKey,
-                          child: _MatchStorySticker(
-                            match: widget.match,
-                            photoPath: widget.photoPath,
-                            width: previewWidth,
-                            height: previewHeight,
+              // Compact Options Panel
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Background Color Swatches Row
+                    Row(
+                      children: [
+                        Text(
+                          'Theme',
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: StoryBackgroundStyle.values
+                                  .map(
+                                    (background) => Padding(
+                                      padding: const EdgeInsets.only(right: 6),
+                                      child: _StoryBackgroundSwatch(
+                                        background: background,
+                                        isSelected:
+                                            background == _selectedBackground,
+                                        onTap: () => setState(
+                                          () => _selectedBackground = background,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Optional Stats Chips Row
+                    if (_game != null || hasPlayers) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Text(
+                            'Stats',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  if (_game != null) ...[
+                                    Tooltip(
+                                      message:
+                                          'Rating (${_game!.rating.toStringAsFixed(1)})',
+                                      child: FilterChip(
+                                        visualDensity: VisualDensity.compact,
+                                        label: Icon(
+                                          Icons.star_rounded,
+                                          size: 16,
+                                          color: getRatingColor(_game!.rating),
+                                        ),
+                                        selected: _showRating,
+                                        onSelected: (val) =>
+                                            setState(() => _showRating = val),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Tooltip(
+                                      message:
+                                          'Weight (${_game!.weight.toStringAsFixed(1)})',
+                                      child: FilterChip(
+                                        visualDensity: VisualDensity.compact,
+                                        label: Icon(
+                                          Icons.fitness_center,
+                                          size: 16,
+                                          color: getWeightColor(_game!.weight),
+                                        ),
+                                        selected: _showWeight,
+                                        onSelected: (val) =>
+                                            setState(() => _showWeight = val),
+                                      ),
+                                    ),
+                                    if (_game!.timesPlayed > 0) ...[
+                                      const SizedBox(width: 6),
+                                      Tooltip(
+                                        message:
+                                            'Played (${_game!.timesPlayed}x)',
+                                        child: FilterChip(
+                                          visualDensity: VisualDensity.compact,
+                                          label: const Icon(
+                                            Icons.casino,
+                                            size: 16,
+                                            color: AppColors.metricPlayed,
+                                          ),
+                                          selected: _showTimesPlayed,
+                                          onSelected: (val) => setState(
+                                            () => _showTimesPlayed = val,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                  if (hasPlayers) ...[
+                                    const SizedBox(width: 6),
+                                    Tooltip(
+                                      message: 'Players',
+                                      child: FilterChip(
+                                        visualDensity: VisualDensity.compact,
+                                        label: const Icon(
+                                          Icons.group,
+                                          size: 16,
+                                          color: AppColors.metricPlayers,
+                                        ),
+                                        selected: _showPlayers,
+                                        onSelected: (val) =>
+                                            setState(() => _showPlayers = val),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                    ],
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+
+              // Export Button
               FilledButton.icon(
                 onPressed: _isSharing ? null : _shareStory,
                 icon: _isSharing
@@ -298,13 +441,25 @@ class _StoryBackgroundSwatch extends StatelessWidget {
 
 class _MatchStorySticker extends StatelessWidget {
   final GameMatch match;
+  final BoardGame? game;
   final String? photoPath;
+  final StoryBackgroundStyle backgroundStyle;
+  final bool showRating;
+  final bool showWeight;
+  final bool showTimesPlayed;
+  final bool showPlayers;
   final double width;
   final double height;
 
   const _MatchStorySticker({
     required this.match,
+    this.game,
     required this.photoPath,
+    required this.backgroundStyle,
+    this.showRating = false,
+    this.showWeight = false,
+    this.showTimesPlayed = false,
+    this.showPlayers = false,
     required this.width,
     required this.height,
   });
@@ -316,6 +471,7 @@ class _MatchStorySticker extends StatelessWidget {
     final dateText = DateFormat('dd-MM-yy').format(match.playedAt);
     final timeText = DateFormat('HH:mm').format(match.playedAt);
     final resultColor = _classicResultColor();
+    final cardBorderColor = backgroundStyle.backgroundColor;
 
     return SizedBox(
       width: width,
@@ -327,7 +483,7 @@ class _MatchStorySticker extends StatelessWidget {
           final titleTop = maxHeight * 0.006;
           final titleHeight = (maxHeight * 0.095).clamp(50.0, 82.0);
           final titleGap = (maxHeight * 0.006).clamp(3.0, 6.0);
-          final metaHeight = (maxHeight * 0.074).clamp(46.0, 60.0);
+          final metaHeight = (maxHeight * 0.096).clamp(58.0, 76.0);
           final metaOverlap = metaHeight * 0.64;
           final bottomSafe = (maxHeight * 0.022).clamp(10.0, 16.0);
           final photoTop = titleTop + titleHeight + titleGap;
@@ -381,9 +537,19 @@ class _MatchStorySticker extends StatelessWidget {
                 child: _classicPhotoCard(borderColor: resultColor),
               ),
               Positioned(
+                left: horizontalInset + 14,
+                top: photoTop + 14,
+                child: _overlayMetrics(),
+              ),
+              Positioned(
                 right: horizontalInset + 14,
                 top: photoTop + 14,
                 child: _classicResultTag(),
+              ),
+              Positioned(
+                right: horizontalInset + 14,
+                top: photoTop + 52,
+                child: _playersOverlay(),
               ),
               Positioned(
                 left: horizontalInset + 12,
@@ -396,21 +562,27 @@ class _MatchStorySticker extends StatelessWidget {
                     Expanded(
                       child: _classicInfoCard(
                         icon: Icons.calendar_today_rounded,
+                        iconColor: AppColors.matchDate,
                         value: dateText,
+                        borderColor: cardBorderColor,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: _classicInfoCard(
-                        icon: Icons.schedule_rounded,
+                        icon: Icons.access_time_rounded,
+                        iconColor: AppColors.matchTime,
                         value: timeText,
+                        borderColor: cardBorderColor,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: _classicInfoCard(
                         icon: Icons.timer_outlined,
+                        iconColor: AppColors.matchDuration,
                         value: '${match.duration} min',
+                        borderColor: cardBorderColor,
                       ),
                     ),
                   ],
@@ -419,6 +591,153 @@ class _MatchStorySticker extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _playersOverlay() {
+    if (!showPlayers || match.players.isEmpty) return const SizedBox.shrink();
+
+    final winnerName = match.winner?.trim().toLowerCase();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: match.players.map((player) {
+        final isWinner = winnerName != null &&
+            winnerName.isNotEmpty &&
+            player.trim().toLowerCase() == winnerName;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+          decoration: BoxDecoration(
+            color: const ui.Color.fromARGB(160, 18, 18, 18),
+            borderRadius: BorderRadius.circular(9),
+            border: Border.all(
+              color: isWinner
+                  ? AppColors.winnerGold.withValues(alpha: 0.85)
+                  : const ui.Color.fromARGB(70, 255, 255, 255),
+              width: isWinner ? 1.3 : 1.0,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 5,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                player,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10.0,
+                  fontWeight: isWinner ? FontWeight.w900 : FontWeight.w700,
+                ),
+              ),
+              if (isWinner) ...[
+                const SizedBox(width: 4),
+                const Icon(
+                  Icons.emoji_events,
+                  size: 12,
+                  color: AppColors.winnerGold,
+                ),
+              ],
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _overlayMetrics() {
+    final List<Widget> items = [];
+
+    if (showRating && game != null) {
+      items.add(
+        _metricPill(
+          icon: Icons.star_rounded,
+          iconColor: getRatingColor(game!.rating),
+          value: game!.rating.toStringAsFixed(1),
+        ),
+      );
+    }
+
+    if (showWeight && game != null) {
+      items.add(
+        _metricPill(
+          icon: Icons.fitness_center,
+          iconColor: getWeightColor(game!.weight),
+          value: game!.weight.toStringAsFixed(1),
+        ),
+      );
+    }
+
+    if (showTimesPlayed && game != null && game!.timesPlayed > 0) {
+      items.add(
+        _metricPill(
+          icon: Icons.casino,
+          iconColor: AppColors.metricPlayed,
+          value: '${game!.timesPlayed}x',
+        ),
+      );
+    }
+
+    if (items.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int i = 0; i < items.length; i++) ...[
+          if (i > 0) const SizedBox(height: 4),
+          items[i],
+        ],
+      ],
+    );
+  }
+
+  Widget _metricPill({
+    required IconData icon,
+    required Color iconColor,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: const ui.Color.fromARGB(160, 18, 18, 18),
+        borderRadius: BorderRadius.circular(9),
+        border: Border.all(
+          color: const ui.Color.fromARGB(70, 255, 255, 255),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: iconColor),
+          const SizedBox(width: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -457,54 +776,43 @@ class _MatchStorySticker extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15.8),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (photoPath != null)
-              Image.file(
+        child: photoPath != null
+            ? Image.file(
                 File(photoPath!),
                 fit: BoxFit.cover,
                 filterQuality: FilterQuality.high,
                 errorBuilder: (context, error, stackTrace) =>
                     _storyPhotoPlaceholder(),
               )
-            else
-              _storyPhotoPlaceholder(),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.center,
-                  colors: [Color(0xC2000000), Color(0x00000000)],
-                  stops: [0.0, 0.45],
-                ),
-              ),
-            ),
-          ],
-        ),
+            : _storyPhotoPlaceholder(),
       ),
     );
   }
 
   Widget _classicResultTag() {
     return Transform.scale(
-      scale: 0.84,
+      scale: 1.092,
       alignment: Alignment.topRight,
       child: buildMatchResultTag(match.result, uppercase: true),
     );
   }
 
-  Widget _classicInfoCard({required IconData icon, required String value}) {
+  Widget _classicInfoCard({
+    required IconData icon,
+    required Color iconColor,
+    required String value,
+    required Color borderColor,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: const ui.Color.fromARGB(215, 254, 253, 253),
-        border: Border.all(color: AppColors.headerCoral, width: 1.5),
+        border: Border.all(color: borderColor, width: 2.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
@@ -512,20 +820,24 @@ class _MatchStorySticker extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 14, color: AppColors.headerCoral),
+          Icon(icon, size: 20, color: iconColor),
           const SizedBox(height: 3),
           Expanded(
             child: Center(
-              child: Text(
-                value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: ui.Color.fromARGB(255, 43, 42, 42),
-                  fontSize: 8.0,
-                  fontWeight: FontWeight.w700,
-                  height: 1.0,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: ui.Color.fromARGB(255, 25, 25, 25),
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
+                    height: 1.0,
+                  ),
                 ),
               ),
             ),

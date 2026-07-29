@@ -14,6 +14,7 @@ void main() {
         weight: 1.9,
         markForSell: true,
         markForTrade: false,
+        sellPrice: 45.50,
         photoPath: '/path/to/cover.jpg',
         mechanics: ['Network and Route Building', 'Set Collection'],
         categories: ['Trains', 'Family'],
@@ -31,6 +32,7 @@ void main() {
       expect(map['weight'], 1.9);
       expect(map['markForSell'], 1);
       expect(map['markForTrade'], 0);
+      expect(map['sellPrice'], 45.50);
       expect(map['photoPath'], '/path/to/cover.jpg');
       expect(map['mechanics'], 'Network and Route Building,Set Collection');
       expect(map['categories'], 'Trains,Family');
@@ -46,6 +48,7 @@ void main() {
       expect(restored.weight, game.weight);
       expect(restored.markForSell, true);
       expect(restored.markForTrade, false);
+      expect(restored.sellPrice, 45.50);
       expect(restored.photoPath, game.photoPath);
       expect(restored.mechanics, ['Network and Route Building', 'Set Collection']);
       expect(restored.categories, ['Trains', 'Family']);

@@ -235,7 +235,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         Icon(
                           Icons.timer,
                           size: 14,
-                          color: colorScheme.onSurfaceVariant,
+                          color: AppColors.matchDuration,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -250,7 +250,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                           Icon(
                             Icons.people,
                             size: 14,
-                            color: colorScheme.onSurfaceVariant,
+                            color: AppColors.metricPlayers,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -266,15 +266,22 @@ class _MatchesScreenState extends State<MatchesScreen> {
                           Icon(
                             Icons.emoji_events,
                             size: 14,
-                            color: Colors.amber[700],
+                            color: AppColors.winnerGold,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               match.winner!,
                               style: textTheme.bodySmall?.copyWith(
-                                color: Colors.amber[700],
+                                color: AppColors.winnerGold,
                                 fontWeight: FontWeight.w600,
+                                // add a shadow to the text
+                                shadows: [
+                                  Shadow(
+                                    color: AppColors.metricWinnerShadow,
+                                    blurRadius: 4,
+                                  ),
+                                ],
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,

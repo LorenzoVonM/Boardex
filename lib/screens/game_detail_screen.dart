@@ -173,7 +173,7 @@ class GameDetailScreen extends StatelessWidget {
             // Sell / Trade badges
             if (game.markForSell || game.markForTrade)
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Row(
                   children: [
                     if (game.markForSell)
@@ -183,7 +183,9 @@ class GameDetailScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: AppColors.sellGreenBg,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.sellGreenBorder),
+                            border: Border.all(
+                              color: AppColors.sellGreenBorder,
+                            ),
                           ),
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -215,7 +217,9 @@ class GameDetailScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: AppColors.tradeBlueBg,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.tradeBlueBorder),
+                            border: Border.all(
+                              color: AppColors.tradeBlueBorder,
+                            ),
                           ),
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -241,6 +245,43 @@ class GameDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
+            // Sell Price Chip
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Sell Price',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: [
+                      Chip(
+                        label: Text('\$${game.sellPrice!.toStringAsFixed(2)}'),
+                        labelStyle: TextStyle(
+                          fontSize: 12,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                        backgroundColor: AppColors.sellGreenBg,
+
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
 
             // Mechanics chips
             if (game.mechanics.isNotEmpty)
@@ -426,7 +467,7 @@ class GameDetailScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return Card(
       elevation: 0,
-      color: colorScheme.surfaceContainerHighest,
+      color: colorScheme.surfaceContainer,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
         child: Column(

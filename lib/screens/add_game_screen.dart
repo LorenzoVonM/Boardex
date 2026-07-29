@@ -19,8 +19,8 @@ class _AddGameScreenState extends State<AddGameScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _durationController = TextEditingController();
-
-  int _minPlayers = 2;
+  final _sellPriceController = TextEditingController();
+  int _minPlayers = 1;
   int _maxPlayers = 4;
   double _rating = 5.0;
   double _weight = 2.5;
@@ -48,6 +48,9 @@ class _AddGameScreenState extends State<AddGameScreen> {
       _weight = ((_weight * 10).round() / 10);
       _markForSell = widget.gameToEdit!.markForSell;
       _markForTrade = widget.gameToEdit!.markForTrade;
+      if (widget.gameToEdit!.sellPrice != null) {
+        _sellPriceController.text = widget.gameToEdit!.sellPrice!.toString();
+      }
       _photoPath = widget.gameToEdit!.photoPath;
       _selectedMechanics = List.from(widget.gameToEdit!.mechanics);
       _selectedCategories = List.from(widget.gameToEdit!.categories);
@@ -64,11 +67,16 @@ class _AddGameScreenState extends State<AddGameScreen> {
   void dispose() {
     _nameController.dispose();
     _durationController.dispose();
+    _sellPriceController.dispose();
     super.dispose();
   }
 
   Future<void> _saveGame() async {
     if (_formKey.currentState!.validate()) {
+      final double? parsedPrice = _sellPriceController.text.trim().isNotEmpty
+          ? double.tryParse(_sellPriceController.text.trim())
+          : null;
+
       final game = BoardGame(
         id: widget.gameToEdit?.id,
         name: _nameController.text.trim(),
@@ -79,6 +87,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
         weight: _weight,
         markForSell: _markForSell,
         markForTrade: _markForTrade,
+        sellPrice: parsedPrice,
         photoPath: _photoPath,
         mechanics: _selectedMechanics,
         categories: _selectedCategories,
@@ -432,6 +441,31 @@ class _AddGameScreenState extends State<AddGameScreen> {
                 icon: Icons.store,
                 child: Column(
                   children: [
+                    TextFormField(
+                      controller: _sellPriceController,
+                      decoration: const InputDecoration(
+                        labelText: 'Sell Price (\$)',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.attach_money),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (value) {
+                        if (value != null && value.trim().isNotEmpty) {
+                          final price = double.tryParse(value.trim());
+                          if (price == null || price < 0) {
+                            return 'Please enter a valid price';
+                          }
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         const Icon(Icons.sell, size: 18, color: AppColors.sellGreen),

@@ -176,4 +176,21 @@ class BoardGameRepository {
     }
     return null;
   }
+
+  Future<BoardGame?> getGameByName(String name) async {
+    final db = await _db;
+    final result = await db.rawQuery('''
+      SELECT bg.*, COUNT(m.id) as timesPlayed
+      FROM board_games bg
+      LEFT JOIN matches m ON LOWER(bg.name) = LOWER(m.gameName)
+      WHERE LOWER(bg.name) = LOWER(?)
+      GROUP BY bg.id
+      LIMIT 1
+    ''', [name]);
+
+    if (result.isNotEmpty) {
+      return BoardGame.fromMap(result.first);
+    }
+    return null;
+  }
 }

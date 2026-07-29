@@ -8,6 +8,7 @@ class BoardGame {
   final double weight; // difficulty 1.0-5.0
   final bool markForSell;
   final bool markForTrade;
+  final double? sellPrice;
   final String? photoPath;
   final List<String> mechanics;
   final List<String> categories;
@@ -23,6 +24,7 @@ class BoardGame {
     this.weight = 2.5,
     this.markForSell = false,
     this.markForTrade = false,
+    this.sellPrice,
     this.photoPath,
     this.mechanics = const [],
     this.categories = const [],
@@ -40,6 +42,7 @@ class BoardGame {
       'weight': weight,
       'markForSell': markForSell ? 1 : 0,
       'markForTrade': markForTrade ? 1 : 0,
+      'sellPrice': sellPrice,
       'photoPath': photoPath,
       'mechanics': mechanics.join(','),
       'categories': categories.join(','),
@@ -57,6 +60,7 @@ class BoardGame {
       weight: (map['weight'] as num?)?.toDouble() ?? 2.5,
       markForSell: (map['markForSell'] as int?) == 1,
       markForTrade: (map['markForTrade'] as int?) == 1,
+      sellPrice: (map['sellPrice'] as num?)?.toDouble(),
       photoPath: map['photoPath'] as String?,
       mechanics: _parseList(map['mechanics'] as String?),
       categories: _parseList(map['categories'] as String?),
@@ -83,6 +87,7 @@ class BoardGame {
     double? weight,
     bool? markForSell,
     bool? markForTrade,
+    double? sellPrice,
     String? photoPath,
     List<String>? mechanics,
     List<String>? categories,
@@ -98,6 +103,7 @@ class BoardGame {
       weight: weight ?? this.weight,
       markForSell: markForSell ?? this.markForSell,
       markForTrade: markForTrade ?? this.markForTrade,
+      sellPrice: sellPrice ?? this.sellPrice,
       photoPath: photoPath ?? this.photoPath,
       mechanics: mechanics ?? this.mechanics,
       categories: categories ?? this.categories,
@@ -107,6 +113,6 @@ class BoardGame {
 
   @override
   String toString() {
-    return 'BoardGame{id: $id, name: $name, players: $minPlayers-$maxPlayers, rating: $rating, weight: $weight, sell: $markForSell, trade: $markForTrade, duration: ${duration}min, played: $timesPlayed, mechanics: $mechanics, categories: $categories, photoPath: $photoPath}';
+    return 'BoardGame{id: $id, name: $name, players: $minPlayers-$maxPlayers, rating: $rating, weight: $weight, sell: $markForSell, trade: $markForTrade, price: $sellPrice, duration: ${duration}min, played: $timesPlayed, mechanics: $mechanics, categories: $categories, photoPath: $photoPath}';
   }
 }

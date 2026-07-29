@@ -19,7 +19,7 @@ class DatabaseHelper {
 
     return openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _createDB,
       onUpgrade: _resetDB,
       onDowngrade: _resetDB,
@@ -38,6 +38,7 @@ class DatabaseHelper {
         weight REAL NOT NULL DEFAULT 2.5,
         markForSell INTEGER NOT NULL DEFAULT 0,
         markForTrade INTEGER NOT NULL DEFAULT 0,
+        sellPrice REAL,
         photoPath TEXT,
         mechanics TEXT NOT NULL DEFAULT '',
         categories TEXT NOT NULL DEFAULT ''
