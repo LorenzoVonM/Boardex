@@ -1,6 +1,6 @@
 {
-    "name": "Board Game Tracker App",
-    "short_name": "Board Game Tracker App",
+    "name": "Boardex",
+    "short_name": "Boardex",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

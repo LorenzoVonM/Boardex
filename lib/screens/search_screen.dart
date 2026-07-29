@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/game_constants.dart';
 import '../repositories/board_game_repository.dart';
-import '../widgets/app_drawer.dart';
 import 'search_results_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -91,8 +90,15 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Search Games')),
-      drawer: const AppDrawer(currentRoute: 'search'),
-      body: SingleChildScrollView(child: _buildFilterPanel()),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+          0,
+          0,
+          0,
+          140 + MediaQuery.of(context).viewPadding.bottom,
+        ),
+        child: _buildFilterPanel(),
+      ),
     );
   }
 
@@ -100,7 +106,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -109,11 +115,15 @@ class _SearchScreenState extends State<SearchScreen> {
             controller: _searchNameController,
             decoration: const InputDecoration(
               labelText: 'Game Name',
-              prefixIcon: Icon(Icons.games),
+              prefixIcon: Icon(Icons.casino),
               border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
 
           // Number of Players
           _buildSectionCard(
@@ -132,7 +142,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     keyboardType: TextInputType.number,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     controller: _maxPlayersController,
@@ -147,7 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
 
           // Duration
           _buildSectionCard(
@@ -166,7 +176,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     keyboardType: TextInputType.number,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     controller: _maxDurationController,
@@ -181,13 +191,12 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
 
           // Rating
           _buildSectionCard(
             title: 'Rating',
             icon: Icons.star_rounded,
-            iconColor: Colors.amber[700],
             child: Column(
               children: [
                 Row(
@@ -205,7 +214,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
                         controller: _maxRatingController,
@@ -242,7 +251,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
 
           // Weight
           _buildSectionCard(
@@ -265,7 +274,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
                         controller: _maxWeightController,
@@ -302,20 +311,20 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
 
           // Mechanics filter
           _buildSectionCard(
             title: 'Mechanics',
-            icon: Icons.settings,
+            icon: Icons.build,
             subtitle: 'Select to filter',
             child: Wrap(
-              spacing: 8,
-              runSpacing: 4,
+              spacing: 6,
+              runSpacing: 2,
               children: gameMechanics.map((mechanic) {
                 final isSelected = _selectedMechanics.contains(mechanic);
                 return FilterChip(
-                  label: Text(mechanic),
+                  label: Text(mechanic, style: const TextStyle(fontSize: 12)),
                   selected: isSelected,
                   onSelected: (selected) {
                     setState(() {
@@ -332,7 +341,7 @@ class _SearchScreenState extends State<SearchScreen> {
               }).toList(),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
 
           // Categories filter
           _buildSectionCard(
@@ -340,12 +349,12 @@ class _SearchScreenState extends State<SearchScreen> {
             icon: Icons.category,
             subtitle: 'Select to filter',
             child: Wrap(
-              spacing: 8,
-              runSpacing: 4,
+              spacing: 6,
+              runSpacing: 2,
               children: gameCategories.map((category) {
                 final isSelected = _selectedCategories.contains(category);
                 return FilterChip(
-                  label: Text(category),
+                  label: Text(category, style: const TextStyle(fontSize: 12)),
                   selected: isSelected,
                   onSelected: (selected) {
                     setState(() {
@@ -362,16 +371,18 @@ class _SearchScreenState extends State<SearchScreen> {
               }).toList(),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
 
           // Mark for Sell / Trade
           _buildSectionCard(
+            title: 'Marketplace Status',
+            icon: Icons.store,
             child: Column(
               children: [
                 Row(
                   children: [
-                    Icon(Icons.sell, size: 20, color: Colors.green[700]),
-                    const SizedBox(width: 12),
+                    Icon(Icons.sell, size: 18, color: Colors.green[700]),
+                    const SizedBox(width: 10),
                     const Expanded(child: Text('Marked for Sell')),
                     Switch(
                       value: _filterMarkForSell,
@@ -383,8 +394,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 const Divider(height: 1),
                 Row(
                   children: [
-                    Icon(Icons.swap_horiz, size: 20, color: Colors.blue[700]),
-                    const SizedBox(width: 12),
+                    Icon(Icons.swap_horiz, size: 18, color: Colors.blue[700]),
+                    const SizedBox(width: 10),
                     const Expanded(child: Text('Marked for Trade')),
                     Switch(
                       value: _filterMarkForTrade,
@@ -396,7 +407,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 10),
 
           // Buttons
           SafeArea(
@@ -408,18 +419,18 @@ class _SearchScreenState extends State<SearchScreen> {
                     icon: const Icon(Icons.clear_all),
                     label: const Text('Clear'),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: FilledButton.icon(
                     onPressed: _searchGames,
                     icon: const Icon(Icons.search),
-                    label: const Text('Search'),
+                    label: const Text('Search Games'),
                     style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
@@ -442,8 +453,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }) {
     final colorScheme = Theme.of(context).colorScheme;
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -453,8 +465,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   if (icon != null) ...[
                     Icon(
                       icon,
-                      size: 20,
-                      color: iconColor ?? colorScheme.onSurfaceVariant,
+                      size: 18,
+                      color: iconColor ?? colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
                   ],
@@ -465,7 +477,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         Text(
                           title,
                           style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w500),
+                              ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         if (subtitle != null)
                           Padding(
@@ -483,7 +495,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 6),
             ],
             child,
           ],

@@ -160,7 +160,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
         children: [
           // Filter section
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -186,7 +186,11 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                           decoration: InputDecoration(
                             labelText: 'Game Name',
                             border: const OutlineInputBorder(),
-                            prefixIcon: const Icon(Icons.games),
+                            prefixIcon: const Icon(Icons.casino),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
                             suffixIcon: _selectedGame != null
                                 ? IconButton(
                                     icon: const Icon(Icons.clear),
@@ -207,21 +211,35 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                         );
                       },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 6),
 
-                // Date range row
+                // Date range section card
                 Card(
+                  margin: EdgeInsets.zero,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Date Range',
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w500),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.date_range,
+                              size: 18,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Date Range',
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 6),
                         Row(
                           children: [
                             Expanded(
@@ -231,7 +249,11 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                                   decoration: const InputDecoration(
                                     labelText: 'From Date',
                                     border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.calendar_today),
+                                    prefixIcon: Icon(Icons.calendar_today, size: 18),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 8,
+                                    ),
                                   ),
                                   child: Text(
                                     _startDate != null
@@ -246,7 +268,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: InkWell(
                                 onTap: () => _selectDate(context, false),
@@ -254,7 +276,11 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                                   decoration: const InputDecoration(
                                     labelText: 'To Date',
                                     border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.calendar_today),
+                                    prefixIcon: Icon(Icons.calendar_today, size: 18),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 8,
+                                    ),
                                   ),
                                   child: Text(
                                     _endDate != null
@@ -275,21 +301,35 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 6),
 
-                // Result filter
+                // Result filter section card
                 Card(
+                  margin: EdgeInsets.zero,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Result',
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w500),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.emoji_events,
+                              size: 18,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Result',
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 6),
                         Center(
                           child: SegmentedButton<MatchResult?>(
                             segments: const [
@@ -329,15 +369,15 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
 
                 // Search button
                 FilledButton.icon(
                   onPressed: _search,
                   icon: const Icon(Icons.search),
-                  label: const Text('Search'),
+                  label: const Text('Search Matches'),
                   style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
               ],
@@ -377,7 +417,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
         12,
         8,
         12,
-        8 + MediaQuery.of(context).viewPadding.bottom,
+        130 + MediaQuery.of(context).viewPadding.bottom,
       ),
       itemCount: _searchResults.length,
       itemBuilder: (context, index) {

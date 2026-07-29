@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instructions, standards, and guidelines for AI coding agents working on the **Board Game Tracker** codebase (`bg_app2`).
+Instructions, standards, and guidelines for AI coding agents working on the **Boardex** codebase (`bg_app2`).
 
 ---
 
@@ -17,7 +17,7 @@ Instructions, standards, and guidelines for AI coding agents working on the **Bo
 
 ## 🏛️ Project Overview & Architecture
 
-`Board Game Tracker App` (`bg_app2`) is a Flutter application for managing board game libraries, logging match results, computing summary analytics, and exporting shareable infographics.
+`Boardex` (`bg_app2`) is a Flutter application for managing board game libraries, logging match results, computing summary analytics, and exporting shareable infographics.
 
 The codebase strictly follows a **3-Layer Clean Architecture**:
 
@@ -83,12 +83,6 @@ flutter analyze
 
 ## 📖 View & Action Reference Maintenance (`VIEW_ACTION_REFERENCE.md`)
 
-Agents **MUST** keep [`VIEW_ACTION_REFERENCE.md`](file:///Users/leonardoflores/Documents/flutter_apps/bg_app2/VIEW_ACTION_REFERENCE.md) updated whenever introducing or modifying:
-1. **UI Screens & Views**: Adding, renaming, or removing screens, modal sheets, or dialogs.
-2. **User Actions & Interactions**: Adding, updating, or removing interactive buttons, filters, form fields, or navigation triggers.
-
-### Naming & Documentation Rules:
-- **Action Naming Format**: `view_verb_target` (e.g., `library_open_add_game`, `add_match_set_result`).
-- **View References**: Always specify the exact Screen/Dialog class name in backticks (e.g., `LibraryScreen`, `AddMatchScreen`).
-- **Communication Pattern**: Users refer to actions using the format `"In <ViewScreen>, change <view_verb_target> so it..."`.
+[`VIEW_ACTION_REFERENCE.md`](file:///Users/leonardoflores/Documents/flutter_apps/bg_app2/VIEW_ACTION_REFERENCE.md) acts as the interactive action catalog for UI screens and views.
+- **On-Demand Maintenance**: Agents do **NOT** need to automatically update `VIEW_ACTION_REFERENCE.md` with every code change. This document will be updated on-demand when explicitly requested by the user.
 

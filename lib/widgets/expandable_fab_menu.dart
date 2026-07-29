@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 /// A single menu item for the expandable FAB menu.
@@ -19,12 +20,14 @@ class FabMenuItem {
 /// and a main toggle button. Used in Library and Matches screens.
 class ExpandableFabMenu extends StatefulWidget {
   final List<FabMenuItem> menuItems;
-  final FabMenuItem searchItem;
+  final FabMenuItem? searchItem;
+  final double bottomOffset;
 
   const ExpandableFabMenu({
     super.key,
     required this.menuItems,
-    required this.searchItem,
+    this.searchItem,
+    this.bottomOffset = 135.0,
   });
 
   @override
@@ -71,7 +74,12 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    final mediaQuery = MediaQuery.of(context);
+    final systemBottomPadding = max(
+      mediaQuery.padding.bottom,
+      mediaQuery.viewPadding.bottom,
+    );
+    final bottomPadding = systemBottomPadding + widget.bottomOffset;
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottomPadding),
@@ -79,19 +87,26 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // Search FAB (always visible)
-          FloatingActionButton.small(
-            heroTag: widget.searchItem.heroTag,
-            onPressed: () {
-              _close();
-              widget.searchItem.onTap();
-            },
-            tooltip: widget.searchItem.label,
-            backgroundColor: colorScheme.secondaryContainer,
-            foregroundColor: colorScheme.onSecondaryContainer,
-            child: Icon(widget.searchItem.icon),
-          ),
-          const SizedBox(height: 8),
+          // Optional Search FAB
+          if (widget.searchItem != null) ...[
+            FloatingActionButton.small(
+              heroTag: widget.searchItem!.heroTag,
+              elevation: 0,
+              highlightElevation: 0,
+              focusElevation: 0,
+              hoverElevation: 0,
+              disabledElevation: 0,
+              onPressed: () {
+                _close();
+                widget.searchItem!.onTap();
+              },
+              tooltip: widget.searchItem!.label,
+              backgroundColor: colorScheme.secondaryContainer,
+              foregroundColor: colorScheme.onSecondaryContainer,
+              child: Icon(widget.searchItem!.icon),
+            ),
+            const SizedBox(height: 8),
+          ],
 
           // Expandable menu items
           AnimatedBuilder(
@@ -108,13 +123,18 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
             },
           ),
 
-          // Main FAB
-          FloatingActionButton(
+          // Main FAB - Small material size (40x40) with zero elevation (no box shadow)
+          FloatingActionButton.small(
             heroTag: 'mainFab',
+            elevation: 0,
+            highlightElevation: 0,
+            focusElevation: 0,
+            hoverElevation: 0,
+            disabledElevation: 0,
             onPressed: _toggle,
             child: AnimatedRotation(
               turns: _isOpen ? 0.125 : 0,
-              duration: const Duration(milliseconds: 250),
+              duration: const Duration(milliseconds: 100),
               child: const Icon(Icons.add),
             ),
           ),
@@ -151,13 +171,6 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
                       decoration: BoxDecoration(
                         color: colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.12),
-                            blurRadius: 8,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,

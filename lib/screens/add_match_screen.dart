@@ -329,16 +329,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
     });
   }
 
-  static const _playerDialogColors = [
-    Color(0xFFE53935), // Red
-    Color(0xFFFF7043), // Deep Orange
-    Color(0xFFFFB300), // Amber
-    Color(0xFF43A047), // Green
-    Color(0xFF00897B), // Teal
-    Color(0xFF1E88E5), // Blue
-    Color(0xFF8E24AA), // Purple
-    Color(0xFFD81B60), // Pink
-  ];
+  static const _playerDialogColors = AppColors.playerPalette;
 
   void _removePlayer(String name) {
     setState(() {
@@ -454,34 +445,39 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(isEditing ? 'Edit Match' : 'Register Match')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          14,
+          12,
+          14,
+          120 + MediaQuery.of(context).viewPadding.bottom,
+        ),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildGameSection(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               _buildDateTimeSection(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               _buildResultSection(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               _buildPlayersSection(),
               if (_players.isNotEmpty) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 _buildWinnerSection(),
               ],
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               _buildPhotoSection(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               SafeArea(
                 child: FilledButton.icon(
                   onPressed: _saveMatch,
                   icon: Icon(isEditing ? Icons.save : Icons.check),
                   label: Text(isEditing ? 'Update Match' : 'Register Match'),
                   style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    textStyle: const TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -493,8 +489,10 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   }
 
   Widget _buildGameSection() {
+    final colorScheme = Theme.of(context).colorScheme;
     return _buildSectionCard(
       title: 'Game',
+      leading: Icon(Icons.casino, size: 18, color: colorScheme.primary),
       child: Column(
         children: [
           Autocomplete<String>(
@@ -524,7 +522,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                     decoration: InputDecoration(
                       labelText: 'Game Name',
                       border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.games),
+                      prefixIcon: const Icon(Icons.casino),
                       suffixIcon: _matchCount > 0
                           ? Container(
                               margin: const EdgeInsets.only(right: 8),
@@ -563,7 +561,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                   );
                 },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           TextFormField(
             controller: _durationController,
             decoration: const InputDecoration(
@@ -589,8 +587,10 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   }
 
   Widget _buildDateTimeSection() {
+    final colorScheme = Theme.of(context).colorScheme;
     return _buildSectionCard(
       title: 'Date & Time',
+      leading: Icon(Icons.date_range, size: 18, color: colorScheme.primary),
       child: Row(
         children: [
           Expanded(
@@ -656,8 +656,10 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   }
 
   Widget _buildResultSection() {
+    final colorScheme = Theme.of(context).colorScheme;
     return _buildSectionCard(
       title: 'Match Result',
+      leading: Icon(Icons.emoji_events, size: 18, color: colorScheme.primary),
       child: Center(
         child: SegmentedButton<MatchResult>(
           segments: const [
@@ -698,8 +700,10 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   }
 
   Widget _buildPlayersSection() {
+    final colorScheme = Theme.of(context).colorScheme;
     return _buildSectionCard(
       title: 'Players (optional)',
+      leading: Icon(Icons.people, size: 18, color: colorScheme.primary),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -792,7 +796,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   Widget _buildWinnerSection() {
     return _buildSectionCard(
       title: 'Winner',
-      leading: Icon(Icons.emoji_events, color: Colors.amber[700]),
+      leading: const Icon(Icons.emoji_events, size: 18, color: AppColors.winnerGold),
       child: DropdownButtonFormField<String?>(
         initialValue: _winner,
         decoration: const InputDecoration(
@@ -825,6 +829,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
       children: [
         _buildSectionCard(
           title: 'Photo (optional)',
+          leading: Icon(Icons.image, size: 18, color: colorScheme.primary),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -992,8 +997,9 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
     final textTheme = Theme.of(context).textTheme;
 
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1004,12 +1010,12 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                   Text(
                     title,
                     style: textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
             ],
             child,
           ],

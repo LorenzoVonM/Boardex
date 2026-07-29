@@ -123,6 +123,7 @@ class GameDetailScreen extends StatelessWidget {
                       Icons.people,
                       '${game.minPlayers}-${game.maxPlayers}',
                       'Players',
+                      iconColor: AppColors.metricPlayers,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -132,6 +133,7 @@ class GameDetailScreen extends StatelessWidget {
                       Icons.timer,
                       '${game.duration}m',
                       'Duration',
+                      iconColor: AppColors.metricDuration,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -141,7 +143,7 @@ class GameDetailScreen extends StatelessWidget {
                       Icons.star_rounded,
                       game.rating.toStringAsFixed(1),
                       'Rating',
-                      iconColor: Colors.amber[700],
+                      iconColor: getRatingColor(game.rating),
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -161,6 +163,7 @@ class GameDetailScreen extends StatelessWidget {
                       Icons.casino,
                       game.timesPlayed.toString(),
                       'Played',
+                      iconColor: AppColors.metricPlayed,
                     ),
                   ),
                 ],
@@ -178,23 +181,23 @@ class GameDetailScreen extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Colors.green[50],
+                            color: AppColors.sellGreenBg,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.green[300]!),
+                            border: Border.all(color: AppColors.sellGreenBorder),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.sell,
                                 size: 18,
-                                color: Colors.green[700],
+                                color: AppColors.sellGreen,
                               ),
-                              const SizedBox(width: 6),
+                              SizedBox(width: 6),
                               Text(
                                 'For Sale',
                                 style: TextStyle(
-                                  color: Colors.green[700],
+                                  color: AppColors.sellGreen,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13,
                                 ),
@@ -210,23 +213,23 @@ class GameDetailScreen extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Colors.blue[50],
+                            color: AppColors.tradeBlueBg,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.blue[300]!),
+                            border: Border.all(color: AppColors.tradeBlueBorder),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.swap_horiz,
                                 size: 18,
-                                color: Colors.blue[700],
+                                color: AppColors.tradeBlue,
                               ),
-                              const SizedBox(width: 6),
+                              SizedBox(width: 6),
                               Text(
                                 'For Trade',
                                 style: TextStyle(
-                                  color: Colors.blue[700],
+                                  color: AppColors.tradeBlue,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13,
                                 ),
@@ -316,7 +319,7 @@ class GameDetailScreen extends StatelessWidget {
               ),
 
             // Bottom padding for floating toolbar
-            const SizedBox(height: 80),
+            SizedBox(height: 120 + MediaQuery.of(context).viewPadding.bottom),
           ],
         ),
       ),

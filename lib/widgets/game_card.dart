@@ -47,11 +47,11 @@ class GameCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (game.markForSell)
+                             if (game.markForSell)
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.green[600],
+                                  color: AppColors.sellGreen,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: const Icon(
@@ -66,7 +66,7 @@ class GameCard extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[600],
+                                  color: AppColors.tradeBlue,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: const Icon(
@@ -103,10 +103,10 @@ class GameCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.people,
                               size: 13,
-                              color: colorScheme.onSurfaceVariant,
+                              color: AppColors.metricPlayers,
                             ),
                             const SizedBox(width: 2),
                             Text(
@@ -114,13 +114,14 @@ class GameCard extends StatelessWidget {
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w600,
                                   ),
                             ),
                             const SizedBox(width: 6),
-                            Icon(
+                            const Icon(
                               Icons.timer,
                               size: 13,
-                              color: colorScheme.onSurfaceVariant,
+                              color: AppColors.metricDuration,
                             ),
                             const SizedBox(width: 2),
                             Text(
@@ -128,6 +129,7 @@ class GameCard extends StatelessWidget {
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w600,
                                   ),
                             ),
                             const SizedBox(width: 6),
@@ -141,8 +143,8 @@ class GameCard extends StatelessWidget {
                               game.weight.toStringAsFixed(1),
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
-                                    color: getWeightColor(game.weight),
-                                    fontWeight: FontWeight.w500,
+                                    color: colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w600,
                                   ),
                             ),
                           ],
@@ -153,23 +155,23 @@ class GameCard extends StatelessWidget {
                             Icon(
                               Icons.star_rounded,
                               size: 13,
-                              color: Colors.amber[700],
+                              color: getRatingColor(game.rating),
                             ),
                             const SizedBox(width: 2),
                             Text(
                               game.rating.toStringAsFixed(1),
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
-                                    color: Colors.amber[700],
-                                    fontWeight: FontWeight.w500,
+                                    color: colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w600,
                                   ),
                             ),
                             if (game.timesPlayed > 0) ...[
                               const SizedBox(width: 6),
-                              Icon(
+                              const Icon(
                                 Icons.casino,
                                 size: 13,
-                                color: colorScheme.onSurfaceVariant,
+                                color: AppColors.metricPlayed,
                               ),
                               const SizedBox(width: 2),
                               Text(
@@ -177,6 +179,7 @@ class GameCard extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
                                       color: colorScheme.onSurfaceVariant,
+                                      fontWeight: FontWeight.w600,
                                     ),
                               ),
                             ],

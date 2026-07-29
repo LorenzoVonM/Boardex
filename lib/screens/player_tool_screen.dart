@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/app_drawer.dart';
 import 'single_player_selection_screen.dart';
 import 'team_selection_screen.dart';
 
@@ -62,10 +61,14 @@ class PlayerToolScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Player Selection Tool')),
-      drawer: const AppDrawer(currentRoute: 'player_tool'),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            32,
+            16,
+            32,
+            140 + MediaQuery.of(context).viewPadding.bottom,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,

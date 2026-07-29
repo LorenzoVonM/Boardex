@@ -294,7 +294,12 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
 
         // Game summary cards in a grid
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(8, 4, 8, 24),
+          padding: EdgeInsets.fromLTRB(
+            8,
+            4,
+            8,
+            100 + MediaQuery.of(context).viewPadding.bottom,
+          ),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,

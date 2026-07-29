@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import '../models/match.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
-import '../widgets/app_drawer.dart';
 import 'summary_results_screen.dart';
 
 class SummarySearchScreen extends StatefulWidget {
@@ -88,9 +87,13 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Summary')),
-      drawer: const AppDrawer(currentRoute: 'summary'),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          12,
+          10,
+          12,
+          140 + MediaQuery.of(context).viewPadding.bottom,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -101,177 +104,252 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               'Filter and group your matches by game',
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 10),
 
-            // Date Range Section
-            Text(
-              'Date Range',
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: _DatePickerField(
-                    label: 'From',
-                    date: _fromDate,
-                    dateFormat: _dateFormat,
-                    onTap: () => _pickDate(context, true),
-                  ),
+            // Date Range Section Card
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Icon(
-                    Icons.arrow_forward,
-                    size: 20,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                Expanded(
-                  child: _DatePickerField(
-                    label: 'To',
-                    date: _toDate,
-                    dateFormat: _dateFormat,
-                    onTap: () => _pickDate(context, false),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Result Filter Section
-            Text(
-              'Match Result',
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: [
-                _ResultChip(
-                  label: 'All',
-                  icon: Icons.select_all,
-                  color: colorScheme.primary,
-                  selected: _resultFilter == null,
-                  onTap: () => setState(() => _resultFilter = null),
-                ),
-                _ResultChip(
-                  label: 'Win',
-                  icon: Icons.emoji_events,
-                  color: MatchResult.won.color,
-                  selected: _resultFilter == MatchResult.won,
-                  onTap: () => setState(() => _resultFilter = MatchResult.won),
-                ),
-                _ResultChip(
-                  label: 'Draw',
-                  icon: Icons.handshake,
-                  color: MatchResult.tie.color,
-                  selected: _resultFilter == MatchResult.tie,
-                  onTap: () => setState(() => _resultFilter = MatchResult.tie),
-                ),
-                _ResultChip(
-                  label: 'Loss',
-                  icon: Icons.sentiment_dissatisfied,
-                  color: MatchResult.lost.color,
-                  selected: _resultFilter == MatchResult.lost,
-                  onTap: () => setState(() => _resultFilter = MatchResult.lost),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Players Section
-            Text(
-              'Players',
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Leave empty to include all players',
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _isLoadingPlayers
-                ? const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                : _allPlayers.isEmpty
-                ? Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: colorScheme.onSurfaceVariant,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'No players found in matches',
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : _buildPlayerAutocomplete(),
-
-            // Selected players chips
-            if (_selectedPlayers.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: _selectedPlayers.map((player) {
-                  return InputChip(
-                    label: Text(player),
-                    avatar: CircleAvatar(
-                      backgroundColor: colorScheme.primaryContainer,
-                      child: Text(
-                        player[0].toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colorScheme.onPrimaryContainer,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.date_range,
+                          size: 18,
+                          color: colorScheme.primary,
                         ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Date Range',
+                          style: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _DatePickerField(
+                            label: 'From',
+                            date: _fromDate,
+                            dateFormat: _dateFormat,
+                            onTap: () => _pickDate(context, true),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            Icons.arrow_forward,
+                            size: 16,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        Expanded(
+                          child: _DatePickerField(
+                            label: 'To',
+                            date: _toDate,
+                            dateFormat: _dateFormat,
+                            onTap: () => _pickDate(context, false),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // Result Filter Section Card
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.emoji_events,
+                          size: 18,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Result',
+                          style: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: [
+                        _ResultChip(
+                          label: 'All',
+                          icon: Icons.select_all,
+                          color: colorScheme.primary,
+                          selected: _resultFilter == null,
+                          onTap: () => setState(() => _resultFilter = null),
+                        ),
+                        _ResultChip(
+                          label: 'Win',
+                          icon: Icons.emoji_events,
+                          color: MatchResult.won.color,
+                          selected: _resultFilter == MatchResult.won,
+                          onTap: () => setState(() => _resultFilter = MatchResult.won),
+                        ),
+                        _ResultChip(
+                          label: 'Draw',
+                          icon: Icons.handshake,
+                          color: MatchResult.tie.color,
+                          selected: _resultFilter == MatchResult.tie,
+                          onTap: () => setState(() => _resultFilter = MatchResult.tie),
+                        ),
+                        _ResultChip(
+                          label: 'Loss',
+                          icon: Icons.sentiment_dissatisfied,
+                          color: MatchResult.lost.color,
+                          selected: _resultFilter == MatchResult.lost,
+                          onTap: () => setState(() => _resultFilter = MatchResult.lost),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // Players Section Card
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.people,
+                          size: 18,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Players',
+                          style: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Leave empty to include all players',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 11,
                       ),
                     ),
-                    onDeleted: () {
-                      setState(() => _selectedPlayers.remove(player));
-                    },
-                    deleteIconColor: colorScheme.onSurfaceVariant,
-                  );
-                }).toList(),
-              ),
-            ],
+                    const SizedBox(height: 6),
+                    _isLoadingPlayers
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : _allPlayers.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: colorScheme.onSurfaceVariant,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'No players found in matches',
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : _buildPlayerAutocomplete(),
 
-            const SizedBox(height: 32),
+                    // Selected players chips
+                    if (_selectedPlayers.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: _selectedPlayers.map((player) {
+                          return InputChip(
+                            label: Text(player, style: const TextStyle(fontSize: 12)),
+                            avatar: CircleAvatar(
+                              backgroundColor: colorScheme.primaryContainer,
+                              child: Text(
+                                player[0].toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                            ),
+                            onDeleted: () {
+                              setState(() => _selectedPlayers.remove(player));
+                            },
+                            deleteIconColor: colorScheme.onSurfaceVariant,
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
 
             // Search button
             FilledButton.icon(
               onPressed: _search,
               icon: const Icon(Icons.bar_chart),
               label: const Text('View Summary'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
             ),
           ],
         ),

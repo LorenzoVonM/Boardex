@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
-        android:label="Board Game Tracker App"
+        android:label="Boardex"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <provider

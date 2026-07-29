@@ -8,6 +8,7 @@ Use this format when talking to the agent:
 - Request pattern: "In `LibraryScreen`, change `library_open_add_game` so it..."
 
 Action naming rule:
+
 - Format: `view_verb_target`
 - The prefix stays tied to the view where the user triggers the action.
 

@@ -14,10 +14,17 @@ class SearchResultsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Results (${games.length})')),
       body: games.isEmpty
-          ? const EmptyState(
-              icon: Icons.search_off,
-              title: 'No games found',
-              subtitle: 'Try different search criteria',
+          ? Center(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: 130 + MediaQuery.of(context).viewPadding.bottom,
+                ),
+                child: const EmptyState(
+                  icon: Icons.search_off,
+                  title: 'No games found',
+                  subtitle: 'Try different search criteria',
+                ),
+              ),
             )
           : _buildGameGrid(context),
     );
@@ -29,7 +36,7 @@ class SearchResultsScreen extends StatelessWidget {
         8,
         8,
         8,
-        8 + MediaQuery.of(context).viewPadding.bottom,
+        130 + MediaQuery.of(context).viewPadding.bottom,
       ),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,

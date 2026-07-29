@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/library_screen.dart';
+import 'screens/main_navigation_shell.dart';
 import 'utils/theme_utils.dart';
 
 void main() {
@@ -50,10 +50,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Board Game Tracker App',
+      title: 'Boardex',
       theme: _buildTheme(Brightness.light),
       themeMode: ThemeMode.light,
-      home: const LibraryScreen(),
+      home: const MainNavigationShell(),
     );
   }
 }

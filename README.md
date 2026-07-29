@@ -1,4 +1,4 @@
-# Board Game Tracker App
+# Boardex
 
 A Flutter application for managing board game libraries, logging match results, computing summary analytics, and exporting shareable infographics.
 

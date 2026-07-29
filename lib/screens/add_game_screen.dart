@@ -136,7 +136,12 @@ class _AddGameScreenState extends State<AddGameScreen> {
         title: Text(isEditing ? 'Edit Board Game' : 'Add Board Game'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.fromLTRB(
+          14,
+          12,
+          14,
+          120 + MediaQuery.of(context).viewPadding.bottom,
+        ),
         child: Form(
           key: _formKey,
           child: Column(
@@ -182,7 +187,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                       );
                     },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
               // Duration
               TextFormField(
@@ -204,11 +209,12 @@ class _AddGameScreenState extends State<AddGameScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
               // Number of Players
               _buildSectionCard(
                 title: 'Number of Players',
+                icon: Icons.people,
                 child: Row(
                   children: [
                     Expanded(
@@ -234,7 +240,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                             : null,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: _buildPlayerCounter(
                         label: 'Max',
@@ -251,20 +257,26 @@ class _AddGameScreenState extends State<AddGameScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
 
               // Rating Slider
               _buildSectionCard(
                 title: 'Rating',
+                icon: Icons.star_rounded,
                 trailing: Row(
                   children: [
-                    Icon(Icons.star_rounded, color: Colors.amber[700]),
+                    Icon(
+                      Icons.star_rounded,
+                      size: 18,
+                      color: getRatingColor(_rating),
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       _rating.toStringAsFixed(1),
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: TextStyle(
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: getRatingColor(_rating),
                       ),
                     ),
                   ],
@@ -277,31 +289,33 @@ class _AddGameScreenState extends State<AddGameScreen> {
                       max: 10.0,
                       divisions: 90,
                       label: _rating.toStringAsFixed(1),
+                      activeColor: getRatingColor(_rating),
                       onChanged: (value) => setState(() => _rating = value),
                     ),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('1.0', style: TextStyle(color: Colors.grey)),
-                        Text('10.0', style: TextStyle(color: Colors.grey)),
+                        Text('1.0', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                        Text('10.0', style: TextStyle(color: Colors.grey, fontSize: 11)),
                       ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
 
               // Weight Slider
               _buildSectionCard(
                 title: 'Weight (Difficulty)',
+                icon: Icons.fitness_center,
                 trailing: Row(
                   children: [
-                    Icon(Icons.fitness_center, color: getWeightColor(_weight)),
+                    Icon(Icons.fitness_center, size: 18, color: getWeightColor(_weight)),
                     const SizedBox(width: 4),
                     Text(
                       _weight.toStringAsFixed(1),
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: getWeightColor(_weight),
                       ),
@@ -322,7 +336,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('1.0', style: TextStyle(color: Colors.blue[400])),
+                        Text('1.0', style: TextStyle(color: Colors.blue[400], fontSize: 11)),
                         Text(
                           'Light',
                           style: TextStyle(
@@ -344,25 +358,26 @@ class _AddGameScreenState extends State<AddGameScreen> {
                             color: Colors.grey[500],
                           ),
                         ),
-                        Text('5.0', style: TextStyle(color: Colors.red[400])),
+                        Text('5.0', style: TextStyle(color: Colors.red[400], fontSize: 11)),
                       ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
 
               // Mechanics
               _buildSectionCard(
                 title: 'Mechanics',
+                icon: Icons.build,
                 subtitle: 'Select all that apply',
                 child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
+                  spacing: 6,
+                  runSpacing: 2,
                   children: gameMechanics.map((mechanic) {
                     final isSelected = _selectedMechanics.contains(mechanic);
                     return FilterChip(
-                      label: Text(mechanic),
+                      label: Text(mechanic, style: const TextStyle(fontSize: 12)),
                       selected: isSelected,
                       onSelected: (selected) {
                         setState(() {
@@ -379,19 +394,20 @@ class _AddGameScreenState extends State<AddGameScreen> {
                   }).toList(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
 
               // Categories
               _buildSectionCard(
                 title: 'Category',
+                icon: Icons.category,
                 subtitle: 'Select all that apply',
                 child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
+                  spacing: 6,
+                  runSpacing: 2,
                   children: gameCategories.map((category) {
                     final isSelected = _selectedCategories.contains(category);
                     return FilterChip(
-                      label: Text(category),
+                      label: Text(category, style: const TextStyle(fontSize: 12)),
                       selected: isSelected,
                       onSelected: (selected) {
                         setState(() {
@@ -408,24 +424,20 @@ class _AddGameScreenState extends State<AddGameScreen> {
                   }).toList(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
 
               // Mark for Sell / Trade
               _buildSectionCard(
+                title: 'Marketplace Status',
+                icon: Icons.store,
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.sell, size: 20, color: Colors.green[700]),
-                        const SizedBox(width: 12),
+                        const Icon(Icons.sell, size: 18, color: AppColors.sellGreen),
+                        const SizedBox(width: 10),
                         const Expanded(
-                          child: Text(
-                            'Mark for Sell',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                          child: Text('Mark for Sell'),
                         ),
                         Switch(
                           value: _markForSell,
@@ -437,20 +449,14 @@ class _AddGameScreenState extends State<AddGameScreen> {
                     const Divider(height: 1),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.swap_horiz,
-                          size: 20,
-                          color: Colors.blue[700],
+                          size: 18,
+                          color: AppColors.tradeBlue,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         const Expanded(
-                          child: Text(
-                            'Mark for Trade',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                          child: Text('Mark for Trade'),
                         ),
                         Switch(
                           value: _markForTrade,
@@ -462,7 +468,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
 
               // Photo Section
               PhotoCaptureSection(
@@ -470,7 +476,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                 filePrefix: 'game',
                 onPhotoChanged: (path) => setState(() => _photoPath = path),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 12),
 
               // Save Button
               SafeArea(
@@ -494,13 +500,16 @@ class _AddGameScreenState extends State<AddGameScreen> {
   /// Reusable section card with optional title, subtitle, and trailing widget.
   Widget _buildSectionCard({
     String? title,
+    IconData? icon,
     String? subtitle,
     Widget? trailing,
     required Widget child,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -509,36 +518,44 @@ class _AddGameScreenState extends State<AddGameScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                        if (icon != null) ...[
+                          Icon(icon, size: 18, color: colorScheme.primary),
+                          const SizedBox(width: 8),
+                        ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (subtitle != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 1),
+                                  child: Text(
+                                    subtitle,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                        if (subtitle != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Text(
-                              subtitle,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
                       ],
                     ),
                   ),
                   if (trailing != null) trailing,
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 6),
             ],
             child,
           ],

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/board_game.dart';
 import '../repositories/board_game_repository.dart';
-import '../widgets/app_drawer.dart';
 import '../widgets/expandable_fab_menu.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/game_card.dart';
 import 'add_game_screen.dart';
 import 'add_match_screen.dart';
-import 'matches_screen.dart';
 import 'search_screen.dart';
 import 'game_detail_screen.dart';
 
@@ -32,17 +30,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
     setState(() => _isLoading = true);
     try {
       final games = await BoardGameRepository.instance.getAll();
+      if (!mounted) return;
       setState(() {
         _games = games;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading games: $e')));
-      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error loading games: $e')));
     }
   }
 
@@ -60,25 +58,27 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Library')),
-      drawer: const AppDrawer(currentRoute: 'library'),
+      appBar: AppBar(
+        title: const Text('Library'),
+        actions: [
+          IconButton(
+            tooltip: 'Search Games',
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SearchScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _games.isEmpty
           ? _buildEmptyState()
           : _buildGameGrid(),
       floatingActionButton: ExpandableFabMenu(
-        searchItem: FabMenuItem(
-          label: 'Search Games',
-          icon: Icons.search,
-          heroTag: 'search',
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SearchScreen()),
-            );
-          },
-        ),
         menuItems: [
           FabMenuItem(
             label: 'Add Game to Library',
@@ -101,14 +101,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => const AddMatchScreen()),
               );
-              if (result == true && context.mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MatchesScreen(),
-                  ),
-                );
-              }
+              if (result == true) _loadGames();
             },
           ),
         ],
@@ -117,10 +110,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Widget _buildEmptyState() {
-    return const EmptyState(
-      icon: Icons.casino_outlined,
-      title: 'No board games in library',
-      subtitle: 'Tap + to add games',
+    return Center(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          bottom: 140 + MediaQuery.of(context).viewPadding.bottom,
+        ),
+        child: const EmptyState(
+          icon: Icons.casino_outlined,
+          title: 'No board games in library',
+          subtitle: 'Tap + to add games',
+        ),
+      ),
     );
   }
 
@@ -132,7 +132,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           8,
           8,
           8,
-          8 + MediaQuery.of(context).viewPadding.bottom,
+          140 + MediaQuery.of(context).viewPadding.bottom,
         ),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,

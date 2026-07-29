@@ -348,7 +348,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
             ),
 
             // Bottom padding for floating toolbar
-            const SizedBox(height: 80),
+            SizedBox(height: 120 + MediaQuery.of(context).viewPadding.bottom),
           ],
         ),
       ),
