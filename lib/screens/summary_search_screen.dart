@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/match.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import 'summary_results_screen.dart';
 
 class SummarySearchScreen extends StatefulWidget {
@@ -84,13 +85,19 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 10;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Summary')),
+      extendBodyBehindAppBar: true,
+      appBar: const GlassAppBar(
+        title: 'Summary',
+        titleColor: Color(0xFF7C3AED),
+        titleIcon: Icons.insights_rounded,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           12,
-          10,
+          topPadding,
           12,
           140 + MediaQuery.of(context).viewPadding.bottom,
         ),

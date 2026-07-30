@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 
 import '../models/summary_export.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 
 class SummaryExportScreen extends StatefulWidget {
   final SummaryExportData exportData;
@@ -111,9 +112,15 @@ class _SummaryExportScreenState extends State<SummaryExportScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Summary Export')),
+      extendBodyBehindAppBar: true,
+      appBar: const GlassAppBar(
+        title: 'Export Summary',
+        titleColor: Color(0xFF7C3AED),
+        titleIcon: Icons.insights_rounded,
+      ),
       bottomNavigationBar: SafeArea(
         top: false,
         minimum: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -130,10 +137,11 @@ class _SummaryExportScreenState extends State<SummaryExportScreen> {
         ),
       ),
       body: SafeArea(
+        top: false,
         bottom: false,
         child: Scrollbar(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            padding: EdgeInsets.fromLTRB(16, topPadding, 16, 24),
             child: Column(
               children: [
                 _ExportOptionsPanel(

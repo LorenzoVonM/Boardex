@@ -13,6 +13,7 @@ import '../models/board_game.dart';
 import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 
 enum StoryBackgroundStyle { coral, sand, moss, lightPurple, twilight }
 
@@ -145,12 +146,18 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
   @override
   Widget build(BuildContext context) {
     final hasPlayers = widget.match.players.isNotEmpty;
-
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
     return Scaffold(
-      appBar: AppBar(title: const Text('Story Export')),
+      extendBodyBehindAppBar: true,
+      appBar: const GlassAppBar(
+        title: 'Export Story',
+        titleColor: Color(0xFF7C3AED),
+        titleIcon: Icons.auto_awesome_rounded,
+      ),
       body: SafeArea(
+        top: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.fromLTRB(16, topPadding, 16, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

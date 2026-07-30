@@ -5,6 +5,7 @@ import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import 'add_match_screen.dart';
 import 'match_story_export_screen.dart';
 
@@ -87,9 +88,14 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    final topBarHeight = MediaQuery.of(context).padding.top + kToolbarHeight;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Match Details'),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: 'Match Details',
+        titleColor: AppColors.brandTeal,
+        titleIcon: Icons.sports_esports_rounded,
         actions: [
           IconButton(
             tooltip: 'Export Story',
@@ -104,15 +110,16 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                 ),
               );
             },
-            icon: const Icon(Icons.auto_awesome),
+            icon: const Icon(Icons.auto_awesome, color: AppColors.brandTeal),
           ),
         ],
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(top: topBarHeight),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Photo with result icon and game name
+            // Photo with result icon and game name - 1:1 square starting below App Bar, slides behind on scroll
             Stack(
               children: [
                 if (_resolvedPhotoPath != null)

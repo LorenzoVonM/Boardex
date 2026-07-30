@@ -97,7 +97,7 @@ void main() {
       });
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('Player Selection Tool'), findsWidgets);
+      expect(find.text('Competitive'), findsOneWidget);
     });
   });
 }

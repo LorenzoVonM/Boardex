@@ -5,11 +5,12 @@ import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
-import '../widgets/expandable_fab_menu.dart';
 import '../widgets/empty_state.dart';
-import 'match_detail_screen.dart';
+import '../widgets/expandable_fab_menu.dart';
+import '../widgets/glass_app_bar.dart';
 import 'add_game_screen.dart';
 import 'add_match_screen.dart';
+import 'match_detail_screen.dart';
 import 'match_search_screen.dart';
 
 class MatchesScreen extends StatefulWidget {
@@ -72,12 +73,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Matches'),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: 'Matches',
+        titleColor: AppColors.brandTeal,
+        titleIcon: Icons.sports_esports_rounded,
         actions: [
           IconButton(
             tooltip: 'Search Matches',
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: AppColors.brandTeal),
             onPressed: () async {
               final result = await Navigator.push<bool>(
                 context,
@@ -130,10 +134,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16;
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          bottom: 140 + MediaQuery.of(context).viewPadding.bottom,
+        padding: EdgeInsets.fromLTRB(
+          16,
+          topPadding,
+          16,
+          140 + MediaQuery.of(context).viewPadding.bottom,
         ),
         child: const EmptyState(
           icon: Icons.history,
@@ -145,12 +153,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   Widget _buildMatchList() {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 8;
     return RefreshIndicator(
       onRefresh: _loadMatches,
+      edgeOffset: topPadding,
       child: ListView.builder(
         padding: EdgeInsets.fromLTRB(
           10,
-          6,
+          topPadding,
           10,
           140 + MediaQuery.of(context).viewPadding.bottom,
         ),

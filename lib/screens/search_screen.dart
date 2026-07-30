@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../constants/game_constants.dart';
 import '../repositories/board_game_repository.dart';
+import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import 'search_results_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -88,12 +90,18 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 10;
     return Scaffold(
-      appBar: AppBar(title: const Text('Search Games')),
+      extendBodyBehindAppBar: true,
+      appBar: const GlassAppBar(
+        title: 'Search Games',
+        titleColor: AppColors.headerCoral,
+        titleIcon: Icons.grid_view_rounded,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           0,
-          0,
+          topPadding,
           0,
           140 + MediaQuery.of(context).viewPadding.bottom,
         ),

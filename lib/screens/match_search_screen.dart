@@ -6,6 +6,7 @@ import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/glass_app_bar.dart';
 import 'match_detail_screen.dart';
 
 class MatchSearchScreen extends StatefulWidget {
@@ -142,8 +143,10 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search Matches'),
+      appBar: GlassAppBar(
+        title: 'Search Matches',
+        titleColor: AppColors.brandTeal,
+        titleIcon: Icons.sports_esports_rounded,
         actions: [
           if (_selectedGame != null ||
               _startDate != null ||
@@ -151,7 +154,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
               _selectedResult != null)
             IconButton(
               onPressed: _clearFilters,
-              icon: const Icon(Icons.clear_all),
+              icon: const Icon(Icons.clear_all, color: AppColors.brandTeal),
               tooltip: 'Clear filters',
             ),
         ],

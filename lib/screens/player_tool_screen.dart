@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/glass_app_bar.dart';
 import 'single_player_selection_screen.dart';
 import 'team_selection_screen.dart';
 
@@ -59,13 +60,19 @@ class PlayerToolScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16;
     return Scaffold(
-      appBar: AppBar(title: const Text('Player Selection Tool')),
+      extendBodyBehindAppBar: true,
+      appBar: const GlassAppBar(
+        title: 'Tools',
+        titleColor: Color(0xFFEAB308),
+        titleIcon: Icons.casino_rounded,
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
             32,
-            16,
+            topPadding,
             32,
             140 + MediaQuery.of(context).viewPadding.bottom,
           ),

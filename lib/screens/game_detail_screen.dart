@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/board_game.dart';
 import '../repositories/board_game_repository.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import 'add_game_screen.dart';
 
 class GameDetailScreen extends StatelessWidget {
@@ -49,13 +50,21 @@ class GameDetailScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final weightColor = getWeightColor(game.weight);
 
+    final topBarHeight = MediaQuery.of(context).padding.top + kToolbarHeight;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Game Details')),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: 'Game Details',
+        titleColor: AppColors.headerCoral,
+        titleIcon: Icons.grid_view_rounded,
+      ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(top: topBarHeight),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Photo / Placeholder - edge to edge, no top padding
+            // Photo / Placeholder - 1:1 square starting below AppBar, slides behind on scroll
             Stack(
               children: [
                 Hero(

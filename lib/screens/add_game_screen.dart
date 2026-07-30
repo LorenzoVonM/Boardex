@@ -5,6 +5,7 @@ import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/image_utils.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import '../widgets/photo_capture_section.dart';
 
 class AddGameScreen extends StatefulWidget {
@@ -148,15 +149,19 @@ class _AddGameScreenState extends State<AddGameScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEditing ? 'Edit Board Game' : 'Add Board Game'),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: isEditing ? 'Edit Game' : 'Add Game',
+        titleColor: AppColors.headerCoral,
+        titleIcon: Icons.grid_view_rounded,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           14,
-          12,
+          topPadding,
           14,
           120 + MediaQuery.of(context).viewPadding.bottom,
         ),

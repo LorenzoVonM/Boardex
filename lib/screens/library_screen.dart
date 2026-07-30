@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/board_game.dart';
 import '../repositories/board_game_repository.dart';
+import '../utils/theme_utils.dart';
 import '../widgets/expandable_fab_menu.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/game_card.dart';
+import '../widgets/glass_app_bar.dart';
 import 'add_game_screen.dart';
 import 'add_match_screen.dart';
 import 'search_screen.dart';
@@ -58,12 +60,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Library'),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: 'Library',
+        titleColor: AppColors.headerCoral,
+        titleIcon: Icons.grid_view_rounded,
         actions: [
           IconButton(
             tooltip: 'Search Games',
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: AppColors.headerCoral),
             onPressed: () {
               Navigator.push(
                 context,
@@ -110,10 +115,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Widget _buildEmptyState() {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16;
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          bottom: 140 + MediaQuery.of(context).viewPadding.bottom,
+        padding: EdgeInsets.fromLTRB(
+          16,
+          topPadding,
+          16,
+          140 + MediaQuery.of(context).viewPadding.bottom,
         ),
         child: const EmptyState(
           icon: Icons.casino_outlined,
@@ -125,12 +134,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Widget _buildGameGrid() {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 8;
     return RefreshIndicator(
       onRefresh: _loadGames,
+      edgeOffset: topPadding,
       child: GridView.builder(
         padding: EdgeInsets.fromLTRB(
           8,
-          8,
+          topPadding,
           8,
           140 + MediaQuery.of(context).viewPadding.bottom,
         ),

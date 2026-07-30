@@ -6,6 +6,7 @@ import '../models/summary_export.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import 'summary_export_screen.dart';
 import 'match_detail_screen.dart';
 
@@ -135,10 +136,11 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
 
     final appBarDateFmt = DateFormat('MMM d');
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '${appBarDateFmt.format(widget.fromDate)} – ${appBarDateFmt.format(widget.toDate)}',
-        ),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: '${appBarDateFmt.format(widget.fromDate)} – ${appBarDateFmt.format(widget.toDate)}',
+        titleColor: const Color(0xFF7C3AED),
+        titleIcon: Icons.insights_rounded,
         actions: _isLoading || _summaries.isEmpty
             ? null
             : [
@@ -153,7 +155,10 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.ios_share_rounded),
+                  icon: const Icon(
+                    Icons.ios_share_rounded,
+                    color: Color(0xFF7C3AED),
+                  ),
                 ),
               ],
       ),
@@ -207,7 +212,12 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
         // Stats header
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              MediaQuery.of(context).padding.top + kToolbarHeight + 12,
+              16,
+              8,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
