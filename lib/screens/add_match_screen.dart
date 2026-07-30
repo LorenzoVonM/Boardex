@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
+import '../utils/image_utils.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/photo_capture_section.dart';
 
@@ -400,6 +401,11 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
       _playedTime.minute,
     );
 
+    final effectivePhotoPath = _photoSource == 'library' ? null : _photoPath;
+    final thumbPath = effectivePhotoPath != null
+        ? await ImageUtils.generateThumbnail(effectivePhotoPath)
+        : null;
+
     final match = GameMatch(
       id: widget.matchToEdit?.id,
       gameName: _gameNameController.text.trim(),
@@ -408,7 +414,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
       winner: _winner,
       playerScores: _playerScores,
       playerColors: _playerColors,
-      photoPath: _photoSource == 'library' ? null : _photoPath,
+      photoPath: effectivePhotoPath,
+      thumbnailPath: thumbPath,
       useLibraryPhoto: _photoSource == 'library',
       playedAt: playedAt,
       players: _players,

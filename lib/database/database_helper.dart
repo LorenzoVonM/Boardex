@@ -19,7 +19,7 @@ class DatabaseHelper {
 
     return openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: _createDB,
       onUpgrade: _resetDB,
       onDowngrade: _resetDB,
@@ -41,6 +41,7 @@ class DatabaseHelper {
         markForTrade INTEGER NOT NULL DEFAULT 0,
         sellPrice REAL,
         photoPath TEXT,
+        thumbnailPath TEXT,
         mechanics TEXT NOT NULL DEFAULT '',
         categories TEXT NOT NULL DEFAULT ''
       )
@@ -56,6 +57,7 @@ class DatabaseHelper {
         playerScores TEXT,
         playerColors TEXT,
         photoPath TEXT,
+        thumbnailPath TEXT,
         useLibraryPhoto INTEGER NOT NULL DEFAULT 0,
         playedAt TEXT NOT NULL,
         players TEXT

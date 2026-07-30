@@ -30,11 +30,14 @@ class GameCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    game.photoPath != null
-                        ? Image.file(
-                            File(game.photoPath!),
+                    game.displayPhotoPath != null
+                        ? Image(
+                            image: ResizeImage(
+                              FileImage(File(game.displayPhotoPath!)),
+                              width: 300,
+                            ),
                             fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
+                            filterQuality: FilterQuality.medium,
                             errorBuilder: (context, error, stackTrace) {
                               return _buildPhotoPlaceholder(context);
                             },

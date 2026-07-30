@@ -3,6 +3,7 @@ import '../models/board_game.dart';
 import '../constants/game_constants.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
+import '../utils/image_utils.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/photo_capture_section.dart';
 
@@ -79,6 +80,10 @@ class _AddGameScreenState extends State<AddGameScreen> {
           ? double.tryParse(_sellPriceController.text.trim())
           : null;
 
+      final thumbPath = _photoPath != null
+          ? await ImageUtils.generateThumbnail(_photoPath)
+          : null;
+
       final game = BoardGame(
         id: widget.gameToEdit?.id,
         name: _nameController.text.trim(),
@@ -92,6 +97,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
         markForTrade: _markForTrade,
         sellPrice: parsedPrice,
         photoPath: _photoPath,
+        thumbnailPath: thumbPath,
         mechanics: _selectedMechanics,
         categories: _selectedCategories,
       );

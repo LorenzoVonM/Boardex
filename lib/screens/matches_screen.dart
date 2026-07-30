@@ -23,7 +23,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   List<GameMatch> _matches = [];
   bool _isLoading = true;
   // Cache of resolved library photo paths: gameName -> photoPath
-  final Map<String, String?> _libraryPhotoCache = {};
+  final Map<String, String?> _libraryThumbnailCache = {};
 
   @override
   void initState() {
@@ -36,15 +36,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
     try {
       final matches = await MatchRepository.instance.getAll();
 
-      // Pre-resolve library photos for matches that use them
+      // Pre-resolve library photo thumbnails for matches that use them
       final gameNames = matches
           .where((m) => m.useLibraryPhoto)
           .map((m) => m.gameName)
           .toSet();
       for (final name in gameNames) {
-        if (!_libraryPhotoCache.containsKey(name)) {
-          _libraryPhotoCache[name] = await BoardGameRepository.instance
-              .getPhotoPath(name);
+        if (!_libraryThumbnailCache.containsKey(name)) {
+          _libraryThumbnailCache[name] = await BoardGameRepository.instance
+              .getThumbnailPath(name);
         }
       }
 
@@ -64,9 +64,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   String? _resolvePhotoPath(GameMatch match) {
     if (match.useLibraryPhoto) {
-      return _libraryPhotoCache[match.gameName];
+      return _libraryThumbnailCache[match.gameName];
     }
-    return match.photoPath;
+    return match.displayPhotoPath;
   }
 
   @override
@@ -195,10 +195,13 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   width: 76,
                   height: 76,
                   child: resolvedPhoto != null
-                      ? Image.file(
-                          File(resolvedPhoto),
+                      ? Image(
+                          image: ResizeImage(
+                            FileImage(File(resolvedPhoto)),
+                            width: 250,
+                          ),
                           fit: BoxFit.cover,
-                          filterQuality: FilterQuality.high,
+                          filterQuality: FilterQuality.medium,
                           errorBuilder: (context, error, stackTrace) {
                             return _buildPlaceholder();
                           },

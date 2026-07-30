@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../database/database_helper.dart';
 import '../models/match.dart';
+import '../utils/image_utils.dart';
 
 class MatchRepository {
   MatchRepository._();
@@ -39,7 +40,14 @@ class MatchRepository {
   Future<int> insert(GameMatch match) async {
     final db = await _db;
     final canonicalName = await getCanonicalGameName(match.gameName);
-    final normalizedMatch = match.copyWith(gameName: canonicalName);
+    var normalizedMatch = match.copyWith(gameName: canonicalName);
+    if (normalizedMatch.photoPath != null &&
+        normalizedMatch.thumbnailPath == null) {
+      final thumb = await ImageUtils.generateThumbnail(
+        normalizedMatch.photoPath!,
+      );
+      normalizedMatch = normalizedMatch.copyWith(thumbnailPath: thumb);
+    }
     return db.insert('matches', normalizedMatch.toMap());
   }
 
@@ -84,14 +92,9 @@ class MatchRepository {
       arguments.add(endOfDay.toIso8601String());
     }
 
-    String? whereClause;
-    if (conditions.isNotEmpty) {
-      whereClause = conditions.join(' AND ');
-    }
-
     final results = await db.query(
       'matches',
-      where: whereClause,
+      where: conditions.isNotEmpty ? conditions.join(' AND ') : null,
       whereArgs: arguments.isNotEmpty ? arguments : null,
       orderBy: 'playedAt DESC',
     );
@@ -102,7 +105,14 @@ class MatchRepository {
   Future<int> update(GameMatch match) async {
     final db = await _db;
     final canonicalName = await getCanonicalGameName(match.gameName);
-    final normalizedMatch = match.copyWith(gameName: canonicalName);
+    var normalizedMatch = match.copyWith(gameName: canonicalName);
+    if (normalizedMatch.photoPath != null &&
+        normalizedMatch.thumbnailPath == null) {
+      final thumb = await ImageUtils.generateThumbnail(
+        normalizedMatch.photoPath!,
+      );
+      normalizedMatch = normalizedMatch.copyWith(thumbnailPath: thumb);
+    }
     return db.update(
       'matches',
       normalizedMatch.toMap(),

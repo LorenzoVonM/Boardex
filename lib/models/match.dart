@@ -22,9 +22,12 @@ class GameMatch {
   final Map<String, int> playerScores; // player name -> score
   final Map<String, int> playerColors; // player name -> color ARGB value
   final String? photoPath;
+  final String? thumbnailPath;
   final bool useLibraryPhoto; // true = use photo from library game
   final DateTime playedAt;
   final List<String> players;
+
+  String? get displayPhotoPath => thumbnailPath ?? photoPath;
 
   GameMatch({
     this.id,
@@ -35,6 +38,7 @@ class GameMatch {
     this.playerScores = const {},
     this.playerColors = const {},
     this.photoPath,
+    this.thumbnailPath,
     this.useLibraryPhoto = false,
     required this.playedAt,
     this.players = const [],
@@ -50,6 +54,7 @@ class GameMatch {
       'playerScores': playerScores.isNotEmpty ? jsonEncode(playerScores) : null,
       'playerColors': playerColors.isNotEmpty ? jsonEncode(playerColors) : null,
       'photoPath': photoPath,
+      'thumbnailPath': thumbnailPath,
       'useLibraryPhoto': useLibraryPhoto ? 1 : 0,
       'playedAt': playedAt.toIso8601String(),
       'players': players.isNotEmpty ? jsonEncode(players) : null,
@@ -88,6 +93,7 @@ class GameMatch {
       playerScores: scores,
       playerColors: colors,
       photoPath: map['photoPath'] as String?,
+      thumbnailPath: map['thumbnailPath'] as String?,
       useLibraryPhoto: (map['useLibraryPhoto'] as int?) == 1,
       playedAt: DateTime.parse(map['playedAt'] as String),
       players: players,
@@ -103,6 +109,7 @@ class GameMatch {
     Map<String, int>? playerScores,
     Map<String, int>? playerColors,
     String? photoPath,
+    String? thumbnailPath,
     bool? useLibraryPhoto,
     DateTime? playedAt,
     List<String>? players,
@@ -116,6 +123,7 @@ class GameMatch {
       playerScores: playerScores ?? this.playerScores,
       playerColors: playerColors ?? this.playerColors,
       photoPath: photoPath ?? this.photoPath,
+      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
       useLibraryPhoto: useLibraryPhoto ?? this.useLibraryPhoto,
       playedAt: playedAt ?? this.playedAt,
       players: players ?? this.players,
@@ -124,6 +132,6 @@ class GameMatch {
 
   @override
   String toString() {
-    return 'GameMatch{id: $id, gameName: $gameName, duration: ${duration}min, result: $result, winner: $winner, useLibraryPhoto: $useLibraryPhoto, playedAt: $playedAt, players: ${players.length}}';
+    return 'GameMatch{id: $id, gameName: $gameName, duration: ${duration}min, result: $result, winner: $winner, useLibraryPhoto: $useLibraryPhoto, playedAt: $playedAt, players: ${players.length}, photoPath: $photoPath, thumbnailPath: $thumbnailPath}';
   }
 }

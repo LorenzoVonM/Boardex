@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../database/database_helper.dart';
 import '../models/board_game.dart';
+import '../utils/image_utils.dart';
 
 class BoardGameRepository {
   BoardGameRepository._();
@@ -12,9 +13,14 @@ class BoardGameRepository {
 
   Future<int> insert(BoardGame game) async {
     final db = await _db;
+    var gameToSave = game;
+    if (game.photoPath != null && game.thumbnailPath == null) {
+      final thumb = await ImageUtils.generateThumbnail(game.photoPath);
+      gameToSave = game.copyWith(thumbnailPath: thumb);
+    }
     return db.insert(
       'board_games',
-      game.toMap(),
+      gameToSave.toMap(),
       conflictAlgorithm: ConflictAlgorithm.abort,
     );
   }
@@ -149,9 +155,14 @@ class BoardGameRepository {
 
   Future<int> update(BoardGame game) async {
     final db = await _db;
+    var gameToSave = game;
+    if (game.photoPath != null && game.thumbnailPath == null) {
+      final thumb = await ImageUtils.generateThumbnail(game.photoPath);
+      gameToSave = game.copyWith(thumbnailPath: thumb);
+    }
     return db.update(
       'board_games',
-      game.toMap(),
+      gameToSave.toMap(),
       where: 'id = ?',
       whereArgs: [game.id],
     );
@@ -173,6 +184,26 @@ class BoardGameRepository {
     );
     if (result.isNotEmpty && result.first['photoPath'] != null) {
       return result.first['photoPath'] as String;
+    }
+    return null;
+  }
+
+  Future<String?> getThumbnailPath(String gameName) async {
+    final db = await _db;
+    final result = await db.query(
+      'board_games',
+      columns: ['thumbnailPath', 'photoPath'],
+      where: 'LOWER(name) = LOWER(?)',
+      whereArgs: [gameName],
+      limit: 1,
+    );
+    if (result.isNotEmpty) {
+      final thumb = result.first['thumbnailPath'] as String?;
+      if (thumb != null && thumb.isNotEmpty) return thumb;
+      final photo = result.first['photoPath'] as String?;
+      if (photo != null && photo.isNotEmpty) {
+        return ImageUtils.generateThumbnail(photo);
+      }
     }
     return null;
   }
