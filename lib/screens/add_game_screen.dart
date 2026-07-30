@@ -24,6 +24,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
   int _maxPlayers = 4;
   double _rating = 5.0;
   double _weight = 2.5;
+  bool _isOwned = false;
   bool _markForSell = false;
   bool _markForTrade = false;
   String? _photoPath;
@@ -46,6 +47,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
       _rating = ((_rating * 10).round() / 10);
       _weight = (widget.gameToEdit!.weight).clamp(1.0, 5.0);
       _weight = ((_weight * 10).round() / 10);
+      _isOwned = widget.gameToEdit!.isOwned;
       _markForSell = widget.gameToEdit!.markForSell;
       _markForTrade = widget.gameToEdit!.markForTrade;
       if (widget.gameToEdit!.sellPrice != null) {
@@ -85,6 +87,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
         rating: _rating,
         duration: int.parse(_durationController.text),
         weight: _weight,
+        isOwned: _isOwned,
         markForSell: _markForSell,
         markForTrade: _markForTrade,
         sellPrice: parsedPrice,
@@ -431,6 +434,33 @@ class _AddGameScreenState extends State<AddGameScreen> {
                       checkmarkColor: colorScheme.onSecondaryContainer,
                     );
                   }).toList(),
+                ),
+              ),
+              const SizedBox(height: 6),
+
+              // Collection Status (Ownership)
+              _buildSectionCard(
+                title: 'Collection Status',
+                icon: Icons.inventory_2_outlined,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      size: 20,
+                      color: AppColors.ownedTeal,
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'I Own This Game',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Switch(
+                      value: _isOwned,
+                      onChanged: (value) => setState(() => _isOwned = value),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 6),

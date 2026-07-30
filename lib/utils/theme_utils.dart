@@ -47,6 +47,15 @@ class AppColors {
   static const Color tradeBlueBg = Color(0xFFE3F2FD);
   static const Color tradeBlueBorder = Color(0xFF90CAF9);
 
+  // Ownership Badges (Owned vs Not Owned)
+  static const Color ownedTeal = Color(0xFF2C9FAF);
+  static const Color ownedTealBg = Color(0xFFE0F7FA);
+  static const Color ownedTealBorder = Color(0xFF80DEEA);
+
+  static const Color notOwnedSlate = Color(0xFF78909C);
+  static const Color notOwnedSlateBg = Color(0xFFECEFF1);
+  static const Color notOwnedSlateBorder = Color(0xFFCFD8DC);
+
   // Highlights & Accents
   static const Color winnerGold = Color(0xFFFFA000);
   static const Color metricWinnerShadow = Color.fromARGB(255, 251, 180, 0);

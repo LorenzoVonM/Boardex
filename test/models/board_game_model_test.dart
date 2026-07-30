@@ -12,6 +12,7 @@ void main() {
         rating: 8.0,
         duration: 60,
         weight: 1.9,
+        isOwned: true,
         markForSell: true,
         markForTrade: false,
         sellPrice: 45.50,
@@ -30,6 +31,7 @@ void main() {
       expect(map['rating'], 8.0);
       expect(map['duration'], 60);
       expect(map['weight'], 1.9);
+      expect(map['isOwned'], 1);
       expect(map['markForSell'], 1);
       expect(map['markForTrade'], 0);
       expect(map['sellPrice'], 45.50);
@@ -46,6 +48,7 @@ void main() {
       expect(restored.rating, game.rating);
       expect(restored.duration, game.duration);
       expect(restored.weight, game.weight);
+      expect(restored.isOwned, true);
       expect(restored.markForSell, true);
       expect(restored.markForTrade, false);
       expect(restored.sellPrice, 45.50);
@@ -54,7 +57,7 @@ void main() {
       expect(restored.categories, ['Trains', 'Family']);
     });
 
-    test('fromMap parses empty or null comma-separated lists correctly', () {
+    test('fromMap parses empty or null comma-separated lists and defaults isOwned to false', () {
       final map = <String, dynamic>{
         'id': 11,
         'name': 'Simple Game',
@@ -63,6 +66,7 @@ void main() {
         'rating': 7.0,
         'duration': 15,
         'weight': 1.0,
+        'isOwned': 0,
         'markForSell': 0,
         'markForTrade': 0,
         'photoPath': null,
@@ -72,6 +76,7 @@ void main() {
 
       final game = BoardGame.fromMap(map);
 
+      expect(game.isOwned, false);
       expect(game.mechanics, isEmpty);
       expect(game.categories, isEmpty);
     });
@@ -85,13 +90,17 @@ void main() {
         duration: 120,
       );
 
+      expect(initial.isOwned, false);
+
       final updated = initial.copyWith(
         rating: 9.5,
+        isOwned: true,
         markForSell: true,
       );
 
       expect(updated.name, 'Gloomhaven');
       expect(updated.rating, 9.5);
+      expect(updated.isOwned, true);
       expect(updated.markForSell, true);
       expect(updated.minPlayers, 1);
     });

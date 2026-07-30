@@ -170,81 +170,128 @@ class GameDetailScreen extends StatelessWidget {
               ),
             ),
 
-            // Sell / Trade badges
-            if (game.markForSell || game.markForTrade)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: Row(
-                  children: [
-                    if (game.markForSell)
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: AppColors.sellGreenBg,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.sellGreenBorder,
+            // Ownership & Marketplace Badges
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Row(
+                children: [
+                  // Ownership Badge
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: game.isOwned
+                            ? AppColors.ownedTealBg
+                            : AppColors.notOwnedSlateBg,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: game.isOwned
+                              ? AppColors.ownedTealBorder
+                              : AppColors.notOwnedSlateBorder,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            game.isOwned
+                                ? Icons.check_circle_rounded
+                                : Icons.cancel_outlined,
+                            size: 18,
+                            color: game.isOwned
+                                ? AppColors.ownedTeal
+                                : AppColors.notOwnedSlate,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            game.isOwned ? 'Owned' : 'Not Owned',
+                            style: TextStyle(
+                              color: game.isOwned
+                                  ? AppColors.ownedTeal
+                                  : AppColors.notOwnedSlate,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
                             ),
                           ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.sell,
-                                size: 18,
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // For Sale Badge
+                  if (game.markForSell) ...[
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: AppColors.sellGreenBg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.sellGreenBorder,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.sell,
+                              size: 18,
+                              color: AppColors.sellGreen,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'For Sale',
+                              style: TextStyle(
                                 color: AppColors.sellGreen,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
                               ),
-                              SizedBox(width: 6),
-                              Text(
-                                'For Sale',
-                                style: TextStyle(
-                                  color: AppColors.sellGreen,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    if (game.markForSell && game.markForTrade)
-                      const SizedBox(width: 8),
-                    if (game.markForTrade)
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: AppColors.tradeBlueBg,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.tradeBlueBorder,
                             ),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.swap_horiz,
-                                size: 18,
-                                color: AppColors.tradeBlue,
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                'For Trade',
-                                style: TextStyle(
-                                  color: AppColors.tradeBlue,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
+                          ],
                         ),
                       ),
+                    ),
                   ],
-                ),
+
+                  // For Trade Badge
+                  if (game.markForTrade) ...[
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: AppColors.tradeBlueBg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.tradeBlueBorder,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.swap_horiz,
+                              size: 18,
+                              color: AppColors.tradeBlue,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'For Trade',
+                              style: TextStyle(
+                                color: AppColors.tradeBlue,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
+            ),
 
             // Sell Price Chip
             Padding(
