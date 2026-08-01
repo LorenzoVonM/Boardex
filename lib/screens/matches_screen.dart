@@ -70,6 +70,21 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return match.displayPhotoPath;
   }
 
+  bool _isFabHidden = false;
+
+  bool _onScrollNotification(ScrollNotification notification) {
+    if (notification.metrics.maxScrollExtent > 0) {
+      final isAtBottom =
+          notification.metrics.pixels >= notification.metrics.maxScrollExtent - 40;
+      if (isAtBottom != _isFabHidden) {
+        setState(() {
+          _isFabHidden = isAtBottom;
+        });
+      }
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,16 +109,20 @@ class _MatchesScreenState extends State<MatchesScreen> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _matches.isEmpty
-              ? _buildEmptyState()
-              : _buildMatchList(),
-        ],
+      body: NotificationListener<ScrollNotification>(
+        onNotification: _onScrollNotification,
+        child: Stack(
+          children: [
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _matches.isEmpty
+                ? _buildEmptyState()
+                : _buildMatchList(),
+          ],
+        ),
       ),
       floatingActionButton: ExpandableFabMenu(
+        isVisible: !_isFabHidden,
         menuItems: [
           FabMenuItem(
             label: 'Add Game to Library',

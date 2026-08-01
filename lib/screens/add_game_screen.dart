@@ -163,7 +163,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
           14,
           topPadding,
           14,
-          120 + MediaQuery.of(context).viewPadding.bottom,
+          24 + MediaQuery.of(context).viewPadding.bottom,
         ),
         child: Form(
           key: _formKey,
@@ -553,15 +553,25 @@ class _AddGameScreenState extends State<AddGameScreen> {
               ),
               const SizedBox(height: 12),
 
+              const SizedBox(height: 16),
+
               // Save Button
-              SafeArea(
+              SizedBox(
+                height: 48,
                 child: FilledButton.icon(
                   onPressed: _saveGame,
                   icon: Icon(isEditing ? Icons.save : Icons.add),
                   label: Text(isEditing ? 'Update Game' : 'Add Game'),
                   style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    textStyle: const TextStyle(fontSize: 18),
+                    backgroundColor: AppColors.headerCoral,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

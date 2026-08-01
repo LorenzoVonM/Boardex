@@ -25,6 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final _maxWeightController = TextEditingController();
   bool _filterMarkForSell = false;
   bool _filterMarkForTrade = false;
+  bool _filterIsOwned = false;
   List<String> _selectedMechanics = [];
   List<String> _selectedCategories = [];
 
@@ -57,6 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
       maxWeight: double.tryParse(_maxWeightController.text),
       markForSell: _filterMarkForSell ? true : null,
       markForTrade: _filterMarkForTrade ? true : null,
+      isOwned: _filterIsOwned ? true : null,
       mechanics: _selectedMechanics.isNotEmpty ? _selectedMechanics : null,
       categories: _selectedCategories.isNotEmpty ? _selectedCategories : null,
     );
@@ -83,6 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _filterMarkForSell = false;
       _filterMarkForTrade = false;
+      _filterIsOwned = false;
       _selectedMechanics = [];
       _selectedCategories = [];
     });
@@ -103,7 +106,7 @@ class _SearchScreenState extends State<SearchScreen> {
           0,
           topPadding,
           0,
-          140 + MediaQuery.of(context).viewPadding.bottom,
+          24 + MediaQuery.of(context).viewPadding.bottom,
         ),
         child: _buildFilterPanel(),
       ),
@@ -381,6 +384,28 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           const SizedBox(height: 6),
 
+          // Ownership Status
+          _buildSectionCard(
+            title: 'Ownership Status',
+            icon: Icons.inventory_2_rounded,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.check_circle_rounded,
+                  size: 18,
+                  color: AppColors.ownedTeal,
+                ),
+                const SizedBox(width: 10),
+                const Expanded(child: Text('I own this game')),
+                Switch(
+                  value: _filterIsOwned,
+                  onChanged: (value) => setState(() => _filterIsOwned = value),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 6),
+
           // Mark for Sell / Trade
           _buildSectionCard(
             title: 'Marketplace Status',
@@ -415,37 +440,34 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
 
           // Buttons
-          SafeArea(
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _clearFilters,
-                    icon: const Icon(Icons.clear_all),
-                    label: const Text('Clear'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _clearFilters,
+                  icon: const Icon(Icons.clear_all),
+                  label: const Text('Clear'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: _searchGames,
-                    icon: const Icon(Icons.search),
-                    label: const Text('Search Games'),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _searchGames,
+                  icon: const Icon(Icons.search),
+                  label: const Text('Search Games'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
         ],
       ),
     );

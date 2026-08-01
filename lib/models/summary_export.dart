@@ -19,7 +19,7 @@ class SummaryExportOptions {
 
   factory SummaryExportOptions.defaults() {
     return const SummaryExportOptions(
-      template: SummaryExportTemplate.landscapeDashboard,
+      template: SummaryExportTemplate.summaryResultsPortrait,
       sections: {
         SummaryExportSection.header,
         SummaryExportSection.stats,

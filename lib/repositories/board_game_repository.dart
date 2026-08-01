@@ -60,6 +60,7 @@ class BoardGameRepository {
     double? maxWeight,
     bool? markForSell,
     bool? markForTrade,
+    bool? isOwned,
     List<String>? mechanics,
     List<String>? categories,
   }) async {
@@ -108,6 +109,11 @@ class BoardGameRepository {
     }
     if (markForTrade == true) {
       conditions.add('bg.markForTrade = 1');
+    }
+    if (isOwned == true) {
+      conditions.add('bg.isOwned = 1');
+    } else if (isOwned == false) {
+      conditions.add('bg.isOwned = 0');
     }
     if (mechanics != null && mechanics.isNotEmpty) {
       for (final mechanic in mechanics) {

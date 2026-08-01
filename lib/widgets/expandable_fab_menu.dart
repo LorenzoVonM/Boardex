@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../utils/theme_utils.dart';
 
 /// A single menu item for the expandable FAB menu.
 class FabMenuItem {
@@ -22,12 +23,16 @@ class ExpandableFabMenu extends StatefulWidget {
   final List<FabMenuItem> menuItems;
   final FabMenuItem? searchItem;
   final double bottomOffset;
+  final bool isVisible;
+  final Color? themeColor;
 
   const ExpandableFabMenu({
     super.key,
     required this.menuItems,
     this.searchItem,
     this.bottomOffset = 135.0,
+    this.isVisible = true,
+    this.themeColor,
   });
 
   @override
@@ -48,6 +53,14 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
       vsync: this,
     );
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+  }
+
+  @override
+  void didUpdateWidget(covariant ExpandableFabMenu oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.isVisible && _isOpen) {
+      _close();
+    }
   }
 
   @override
@@ -73,7 +86,6 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final mediaQuery = MediaQuery.of(context);
     final systemBottomPadding = max(
       mediaQuery.padding.bottom,
@@ -81,70 +93,83 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
     );
     final bottomPadding = systemBottomPadding + widget.bottomOffset;
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottomPadding),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // Optional Search FAB
-          if (widget.searchItem != null) ...[
+    final fabBackgroundColor = widget.themeColor ?? AppColors.headerCoral;
+
+    return AnimatedScale(
+      scale: widget.isVisible ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeInOutCubic,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomPadding),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // Optional Search FAB
+            if (widget.searchItem != null) ...[
+              FloatingActionButton.small(
+                heroTag: widget.searchItem!.heroTag,
+                elevation: 0,
+                highlightElevation: 0,
+                focusElevation: 0,
+                hoverElevation: 0,
+                disabledElevation: 0,
+                onPressed: () {
+                  _close();
+                  widget.searchItem!.onTap();
+                },
+                tooltip: widget.searchItem!.label,
+                backgroundColor: fabBackgroundColor,
+                foregroundColor: Colors.white,
+                child: Icon(widget.searchItem!.icon),
+              ),
+              const SizedBox(height: 8),
+            ],
+
+            // Expandable menu items
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    for (int i = 0; i < widget.menuItems.length; i++)
+                      _buildMenuItem(context, widget.menuItems[i], i, fabBackgroundColor),
+                  ],
+                );
+              },
+            ),
+
+            // Main FAB - Small material size (40x40) with zero elevation (no box shadow)
             FloatingActionButton.small(
-              heroTag: widget.searchItem!.heroTag,
+              heroTag: 'mainFab',
               elevation: 0,
               highlightElevation: 0,
               focusElevation: 0,
               hoverElevation: 0,
               disabledElevation: 0,
-              onPressed: () {
-                _close();
-                widget.searchItem!.onTap();
-              },
-              tooltip: widget.searchItem!.label,
-              backgroundColor: colorScheme.secondaryContainer,
-              foregroundColor: colorScheme.onSecondaryContainer,
-              child: Icon(widget.searchItem!.icon),
+              backgroundColor: fabBackgroundColor,
+              foregroundColor: Colors.white,
+              onPressed: _toggle,
+              child: AnimatedRotation(
+                turns: _isOpen ? 0.125 : 0,
+                duration: const Duration(milliseconds: 100),
+                child: const Icon(Icons.add),
+              ),
             ),
-            const SizedBox(height: 8),
           ],
-
-          // Expandable menu items
-          AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  for (int i = 0; i < widget.menuItems.length; i++)
-                    _buildMenuItem(context, widget.menuItems[i], i),
-                ],
-              );
-            },
-          ),
-
-          // Main FAB - Small material size (40x40) with zero elevation (no box shadow)
-          FloatingActionButton.small(
-            heroTag: 'mainFab',
-            elevation: 0,
-            highlightElevation: 0,
-            focusElevation: 0,
-            hoverElevation: 0,
-            disabledElevation: 0,
-            onPressed: _toggle,
-            child: AnimatedRotation(
-              turns: _isOpen ? 0.125 : 0,
-              duration: const Duration(milliseconds: 100),
-              child: const Icon(Icons.add),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, FabMenuItem item, int index) {
-    final colorScheme = Theme.of(context).colorScheme;
+  Widget _buildMenuItem(
+    BuildContext context,
+    FabMenuItem item,
+    int index,
+    Color itemBackgroundColor,
+  ) {
     // Stagger offset so items closer to main FAB animate faster
     final offsetFactor = 20.0 + (widget.menuItems.length - 1 - index) * 10.0;
 
@@ -169,7 +194,7 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
+                        color: itemBackgroundColor,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -178,15 +203,15 @@ class _ExpandableFabMenuState extends State<ExpandableFabMenu>
                           Icon(
                             item.icon,
                             size: 22,
-                            color: colorScheme.onPrimaryContainer,
+                            color: Colors.white,
                           ),
                           const SizedBox(width: 12),
                           Text(
                             item.label,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
-                              color: colorScheme.onPrimaryContainer,
+                              color: Colors.white,
                             ),
                           ),
                         ],

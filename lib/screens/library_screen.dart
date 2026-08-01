@@ -21,6 +21,7 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen> {
   List<BoardGame> _games = [];
   bool _isLoading = true;
+  bool _isFabHidden = false;
 
   @override
   void initState() {
@@ -44,6 +45,19 @@ class _LibraryScreenState extends State<LibraryScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('Error loading games: $e')));
     }
+  }
+
+  bool _onScrollNotification(ScrollNotification notification) {
+    if (notification.metrics.maxScrollExtent > 0) {
+      final isAtBottom =
+          notification.metrics.pixels >= notification.metrics.maxScrollExtent - 40;
+      if (isAtBottom != _isFabHidden) {
+        setState(() {
+          _isFabHidden = isAtBottom;
+        });
+      }
+    }
+    return false;
   }
 
   Future<void> _navigateToGameDetail(BoardGame game) async {
@@ -78,12 +92,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _games.isEmpty
-          ? _buildEmptyState()
-          : _buildGameGrid(),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: _onScrollNotification,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _games.isEmpty
+            ? _buildEmptyState()
+            : _buildGameGrid(),
+      ),
       floatingActionButton: ExpandableFabMenu(
+        isVisible: !_isFabHidden,
         menuItems: [
           FabMenuItem(
             label: 'Add Game to Library',
