@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/board_game.dart';
+import '../utils/theme_utils.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/game_card.dart';
+import '../widgets/glass_app_bar.dart';
 import 'game_detail_screen.dart';
 
 class SearchResultsScreen extends StatelessWidget {
@@ -11,13 +13,22 @@ class SearchResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 8;
     return Scaffold(
-      appBar: AppBar(title: Text('Results (${games.length})')),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: 'Results (${games.length})',
+        titleColor: AppColors.headerCoral,
+        titleIcon: Icons.grid_view_rounded,
+      ),
       body: games.isEmpty
           ? Center(
               child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  bottom: 130 + MediaQuery.of(context).viewPadding.bottom,
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  topPadding,
+                  16,
+                  130 + MediaQuery.of(context).viewPadding.bottom,
                 ),
                 child: const EmptyState(
                   icon: Icons.search_off,
@@ -26,15 +37,15 @@ class SearchResultsScreen extends StatelessWidget {
                 ),
               ),
             )
-          : _buildGameGrid(context),
+          : _buildGameGrid(context, topPadding),
     );
   }
 
-  Widget _buildGameGrid(BuildContext context) {
+  Widget _buildGameGrid(BuildContext context, double topPadding) {
     return GridView.builder(
       padding: EdgeInsets.fromLTRB(
         8,
-        8,
+        topPadding,
         8,
         130 + MediaQuery.of(context).viewPadding.bottom,
       ),

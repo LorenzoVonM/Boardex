@@ -6,6 +6,7 @@ import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/glass_app_bar.dart';
 import 'match_detail_screen.dart';
 
 class MatchSearchScreen extends StatefulWidget {
@@ -142,8 +143,10 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search Matches'),
+      appBar: GlassAppBar(
+        title: 'Search Matches',
+        titleColor: AppColors.brandTeal,
+        titleIcon: Icons.sports_esports_rounded,
         actions: [
           if (_selectedGame != null ||
               _startDate != null ||
@@ -151,7 +154,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
               _selectedResult != null)
             IconButton(
               onPressed: _clearFilters,
-              icon: const Icon(Icons.clear_all),
+              icon: const Icon(Icons.clear_all, color: Colors.white),
               tooltip: 'Clear filters',
             ),
         ],
@@ -330,40 +333,39 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        Center(
-                          child: SegmentedButton<MatchResult?>(
-                            segments: const [
-                              ButtonSegment<MatchResult?>(
-                                value: null,
-                                label: Text('All'),
-                              ),
-                              ButtonSegment<MatchResult?>(
-                                value: MatchResult.won,
-                                label: Text('Win'),
-                                icon: Icon(Icons.emoji_events, size: 16),
-                              ),
-                              ButtonSegment<MatchResult?>(
-                                value: MatchResult.tie,
-                                label: Text('Draw'),
-                                icon: Icon(Icons.handshake, size: 16),
-                              ),
-                              ButtonSegment<MatchResult?>(
-                                value: MatchResult.lost,
-                                label: Text('Loss'),
-                                icon: Icon(
-                                  Icons.sentiment_dissatisfied,
-                                  size: 16,
-                                ),
-                              ),
-                            ],
-                            selected: {_selectedResult},
-                            onSelectionChanged:
-                                (Set<MatchResult?> newSelection) {
-                                  setState(
-                                    () => _selectedResult = newSelection.first,
-                                  );
-                                },
-                          ),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 4,
+                          children: [
+                            _ResultChip(
+                              label: 'All',
+                              icon: Icons.select_all,
+                              color: colorScheme.primary,
+                              selected: _selectedResult == null,
+                              onTap: () => setState(() => _selectedResult = null),
+                            ),
+                            _ResultChip(
+                              label: 'Win',
+                              icon: Icons.emoji_events,
+                              color: MatchResult.won.color,
+                              selected: _selectedResult == MatchResult.won,
+                              onTap: () => setState(() => _selectedResult = MatchResult.won),
+                            ),
+                            _ResultChip(
+                              label: 'Draw',
+                              icon: Icons.handshake,
+                              color: MatchResult.tie.color,
+                              selected: _selectedResult == MatchResult.tie,
+                              onTap: () => setState(() => _selectedResult = MatchResult.tie),
+                            ),
+                            _ResultChip(
+                              label: 'Loss',
+                              icon: Icons.sentiment_dissatisfied,
+                              color: MatchResult.lost.color,
+                              selected: _selectedResult == MatchResult.lost,
+                              onTap: () => setState(() => _selectedResult = MatchResult.lost),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -522,6 +524,44 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
     return Container(
       color: colorScheme.surfaceContainerHighest,
       child: Icon(Icons.casino, color: colorScheme.onSurfaceVariant, size: 24),
+    );
+  }
+}
+
+class _ResultChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _ResultChip({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: selected ? Colors.white : color),
+          const SizedBox(width: 4),
+          Text(label),
+        ],
+      ),
+      selected: selected,
+      onSelected: (_) => onTap(),
+      selectedColor: color,
+      checkmarkColor: Colors.white,
+      labelStyle: TextStyle(
+        color: selected ? Colors.white : null,
+        fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+      ),
     );
   }
 }

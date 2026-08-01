@@ -5,6 +5,7 @@ import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/image_utils.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import '../widgets/photo_capture_section.dart';
 
 class AddGameScreen extends StatefulWidget {
@@ -148,17 +149,21 @@ class _AddGameScreenState extends State<AddGameScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEditing ? 'Edit Board Game' : 'Add Board Game'),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: isEditing ? 'Edit Game' : 'Add Game',
+        titleColor: AppColors.headerCoral,
+        titleIcon: Icons.grid_view_rounded,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           14,
-          12,
+          topPadding,
           14,
-          120 + MediaQuery.of(context).viewPadding.bottom,
+          24 + MediaQuery.of(context).viewPadding.bottom,
         ),
         child: Form(
           key: _formKey,
@@ -548,15 +553,25 @@ class _AddGameScreenState extends State<AddGameScreen> {
               ),
               const SizedBox(height: 12),
 
+              const SizedBox(height: 16),
+
               // Save Button
-              SafeArea(
+              SizedBox(
+                height: 48,
                 child: FilledButton.icon(
                   onPressed: _saveGame,
                   icon: Icon(isEditing ? Icons.save : Icons.add),
                   label: Text(isEditing ? 'Update Game' : 'Add Game'),
                   style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    textStyle: const TextStyle(fontSize: 18),
+                    backgroundColor: AppColors.headerCoral,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

@@ -5,6 +5,7 @@ import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import 'add_match_screen.dart';
 import 'match_story_export_screen.dart';
 
@@ -87,9 +88,14 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    final topBarHeight = MediaQuery.of(context).padding.top + kToolbarHeight;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Match Details'),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: 'Match Details',
+        titleColor: AppColors.brandTeal,
+        titleIcon: Icons.sports_esports_rounded,
         actions: [
           IconButton(
             tooltip: 'Export Story',
@@ -104,15 +110,16 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                 ),
               );
             },
-            icon: const Icon(Icons.auto_awesome),
+            icon: const Icon(Icons.auto_awesome, color: Colors.white),
           ),
         ],
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(top: topBarHeight),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Photo with result icon and game name
+            // Photo with result icon and game name - 1:1 square starting below App Bar, slides behind on scroll
             Stack(
               children: [
                 if (_resolvedPhotoPath != null)
@@ -351,7 +358,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
             ),
 
             // Bottom padding for floating toolbar
-            SizedBox(height: 120 + MediaQuery.of(context).viewPadding.bottom),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -359,73 +366,52 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
       // Floating bottom toolbar — matching game detail screen pattern
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.fromLTRB(80, 0, 80, 12),
           child: Material(
             elevation: 6,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(24),
             color: colorScheme.primaryContainer,
             shadowColor: Colors.black.withValues(alpha: 0.2),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: () async {
-                        final result = await Navigator.push<bool>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AddMatchScreen(matchToEdit: match),
-                          ),
-                        );
-                        if (result == true && context.mounted) {
-                          Navigator.pop(context, true);
-                        }
-                      },
-                      icon: Icon(
-                        Icons.edit_outlined,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                      label: Text(
-                        'Edit',
-                        style: TextStyle(
-                          color: colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w600,
+                  IconButton(
+                    tooltip: 'Edit Match',
+                    onPressed: () async {
+                      final result = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AddMatchScreen(matchToEdit: match),
                         ),
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
+                      );
+                      if (result == true && context.mounted) {
+                        Navigator.pop(context, true);
+                      }
+                    },
+                    icon: Icon(
+                      Icons.edit_rounded,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
+                  const SizedBox(width: 12),
                   Container(
-                    height: 24,
+                    height: 20,
                     width: 1,
                     color: colorScheme.onPrimaryContainer.withValues(
-                      alpha: 0.2,
+                      alpha: 0.25,
                     ),
                   ),
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: () => _deleteMatch(context),
-                      icon: Icon(Icons.delete_outline, color: Colors.red[400]),
-                      label: Text(
-                        'Delete',
-                        style: TextStyle(
-                          color: Colors.red[400],
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    tooltip: 'Delete Match',
+                    onPressed: () => _deleteMatch(context),
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      color: Colors.red[400],
                     ),
                   ),
                 ],

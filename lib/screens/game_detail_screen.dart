@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/board_game.dart';
 import '../repositories/board_game_repository.dart';
+import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import 'add_game_screen.dart';
 
 class GameDetailScreen extends StatelessWidget {
@@ -49,13 +52,21 @@ class GameDetailScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final weightColor = getWeightColor(game.weight);
 
+    final topBarHeight = MediaQuery.of(context).padding.top + kToolbarHeight;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Game Details')),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: 'Game Details',
+        titleColor: AppColors.headerCoral,
+        titleIcon: Icons.grid_view_rounded,
+      ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(top: topBarHeight),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Photo / Placeholder - edge to edge, no top padding
+            // Photo / Placeholder - 1:1 square starting below AppBar, slides behind on scroll
             Stack(
               children: [
                 Hero(
@@ -315,9 +326,10 @@ class GameDetailScreen extends StatelessWidget {
                       children: [
                         Chip(
                           label: Text('\$${game.sellPrice!.toStringAsFixed(2)}'),
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             fontSize: 12,
-                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.sellGreen,
                           ),
                           backgroundColor: AppColors.sellGreenBg,
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -329,6 +341,64 @@ class GameDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
+            // Last Played Card
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Last Played',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  FutureBuilder<DateTime?>(
+                    future: MatchRepository.instance.getLastPlayedDate(game.name),
+                    builder: (context, snapshot) {
+                      final date = snapshot.data;
+                      final String labelText;
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        labelText = '...';
+                      } else if (date != null) {
+                        labelText = DateFormat('MMM d, yyyy').format(date);
+                      } else {
+                        labelText = 'Never';
+                      }
+
+                      final bool hasDate = date != null;
+
+                      return Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          Chip(
+                            label: Text(labelText),
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: hasDate
+                                  ? AppColors.tradeBlue
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                            backgroundColor: hasDate
+                                ? AppColors.tradeBlueBg
+                                : colorScheme.surfaceContainerHighest,
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
 
             // Mechanics chips
             if (game.mechanics.isNotEmpty)
@@ -407,7 +477,7 @@ class GameDetailScreen extends StatelessWidget {
               ),
 
             // Bottom padding for floating toolbar
-            SizedBox(height: 120 + MediaQuery.of(context).viewPadding.bottom),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -415,73 +485,51 @@ class GameDetailScreen extends StatelessWidget {
       // Floating bottom toolbar
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.fromLTRB(80, 0, 80, 12),
           child: Material(
             elevation: 6,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(24),
             color: colorScheme.primaryContainer,
             shadowColor: Colors.black.withValues(alpha: 0.2),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: () async {
-                        final result = await Navigator.push<bool>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AddGameScreen(gameToEdit: game),
-                          ),
-                        );
-                        if (result == true && context.mounted) {
-                          Navigator.pop(context, true);
-                        }
-                      },
-                      icon: Icon(
-                        Icons.edit_outlined,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                      label: Text(
-                        'Edit',
-                        style: TextStyle(
-                          color: colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w600,
+                  IconButton(
+                    tooltip: 'Edit Game',
+                    onPressed: () async {
+                      final result = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddGameScreen(gameToEdit: game),
                         ),
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
+                      );
+                      if (result == true && context.mounted) {
+                        Navigator.pop(context, true);
+                      }
+                    },
+                    icon: Icon(
+                      Icons.edit_rounded,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
+                  const SizedBox(width: 12),
                   Container(
-                    height: 24,
+                    height: 20,
                     width: 1,
                     color: colorScheme.onPrimaryContainer.withValues(
-                      alpha: 0.2,
+                      alpha: 0.25,
                     ),
                   ),
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: () => _deleteGame(context),
-                      icon: Icon(Icons.delete_outline, color: Colors.red[400]),
-                      label: Text(
-                        'Delete',
-                        style: TextStyle(
-                          color: Colors.red[400],
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    tooltip: 'Delete Game',
+                    onPressed: () => _deleteGame(context),
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      color: Colors.red[400],
                     ),
                   ),
                 ],

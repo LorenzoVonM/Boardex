@@ -7,6 +7,7 @@ import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
 import '../utils/image_utils.dart';
 import '../utils/theme_utils.dart';
+import '../widgets/glass_app_bar.dart';
 import '../widgets/photo_capture_section.dart';
 
 class AddMatchScreen extends StatefulWidget {
@@ -449,12 +450,18 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
     return Scaffold(
-      appBar: AppBar(title: Text(isEditing ? 'Edit Match' : 'Register Match')),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: isEditing ? 'Edit Match' : 'Register Match',
+        titleColor: AppColors.brandTeal,
+        titleIcon: Icons.sports_esports_rounded,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           14,
-          12,
+          topPadding,
           14,
           120 + MediaQuery.of(context).viewPadding.bottom,
         ),

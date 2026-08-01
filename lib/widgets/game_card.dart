@@ -184,6 +184,14 @@ class GameCard extends StatelessWidget {
                                     fontWeight: FontWeight.w600,
                                   ),
                             ),
+                            if (game.isOwned) ...[
+                              const SizedBox(width: 6),
+                              const Icon(
+                                Icons.check_circle_rounded,
+                                size: 13,
+                                color: AppColors.ownedTeal,
+                              ),
+                            ],
                           ],
                         ),
                       ],
