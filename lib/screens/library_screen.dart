@@ -68,7 +68,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         actions: [
           IconButton(
             tooltip: 'Search Games',
-            icon: const Icon(Icons.search, color: AppColors.headerCoral),
+            icon: const Icon(Icons.search, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,

@@ -81,7 +81,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
         actions: [
           IconButton(
             tooltip: 'Search Matches',
-            icon: const Icon(Icons.search, color: AppColors.brandTeal),
+            icon: const Icon(Icons.search, color: Colors.white),
             onPressed: () async {
               final result = await Navigator.push<bool>(
                 context,

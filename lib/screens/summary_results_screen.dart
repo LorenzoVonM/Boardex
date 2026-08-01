@@ -157,7 +157,7 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
                   },
                   icon: const Icon(
                     Icons.ios_share_rounded,
-                    color: Color(0xFF7C3AED),
+                    color: Colors.white,
                   ),
                 ),
               ],

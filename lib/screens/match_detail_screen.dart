@@ -110,7 +110,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                 ),
               );
             },
-            icon: const Icon(Icons.auto_awesome, color: AppColors.brandTeal),
+            icon: const Icon(Icons.auto_awesome, color: Colors.white),
           ),
         ],
       ),

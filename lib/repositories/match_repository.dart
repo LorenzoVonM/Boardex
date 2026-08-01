@@ -159,6 +159,22 @@ class MatchRepository {
     return result.first['count'] as int;
   }
 
+  Future<DateTime?> getLastPlayedDate(String gameName) async {
+    final db = await _db;
+    final result = await db.query(
+      'matches',
+      columns: ['playedAt'],
+      where: 'LOWER(gameName) = LOWER(?)',
+      whereArgs: [gameName],
+      orderBy: 'playedAt DESC',
+      limit: 1,
+    );
+    if (result.isNotEmpty && result.first['playedAt'] != null) {
+      return DateTime.tryParse(result.first['playedAt'] as String);
+    }
+    return null;
+  }
+
   Future<List<String>> getDistinctPlayers() async {
     final db = await _db;
     final matches = await db.query('matches', columns: ['players']);

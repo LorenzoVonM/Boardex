@@ -154,7 +154,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
               _selectedResult != null)
             IconButton(
               onPressed: _clearFilters,
-              icon: const Icon(Icons.clear_all, color: AppColors.brandTeal),
+              icon: const Icon(Icons.clear_all, color: Colors.white),
               tooltip: 'Clear filters',
             ),
         ],

@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/board_game.dart';
 import '../repositories/board_game_repository.dart';
+import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/glass_app_bar.dart';
 import 'add_game_screen.dart';
@@ -324,9 +326,10 @@ class GameDetailScreen extends StatelessWidget {
                       children: [
                         Chip(
                           label: Text('\$${game.sellPrice!.toStringAsFixed(2)}'),
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             fontSize: 12,
-                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.sellGreen,
                           ),
                           backgroundColor: AppColors.sellGreenBg,
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -338,6 +341,64 @@ class GameDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
+            // Last Played Card
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Last Played',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  FutureBuilder<DateTime?>(
+                    future: MatchRepository.instance.getLastPlayedDate(game.name),
+                    builder: (context, snapshot) {
+                      final date = snapshot.data;
+                      final String labelText;
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        labelText = '...';
+                      } else if (date != null) {
+                        labelText = DateFormat('MMM d, yyyy').format(date);
+                      } else {
+                        labelText = 'Never';
+                      }
+
+                      final bool hasDate = date != null;
+
+                      return Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          Chip(
+                            label: Text(labelText),
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: hasDate
+                                  ? AppColors.tradeBlue
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                            backgroundColor: hasDate
+                                ? AppColors.tradeBlueBg
+                                : colorScheme.surfaceContainerHighest,
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
 
             // Mechanics chips
             if (game.mechanics.isNotEmpty)

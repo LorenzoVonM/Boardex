@@ -30,9 +30,9 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     final colorScheme = theme.colorScheme;
 
     final tintedSurface = Color.alphaBlend(
-      titleColor.withValues(alpha: 0.14),
+      titleColor.withValues(alpha: 0.60),
       colorScheme.surface,
-    ).withValues(alpha: 0.78);
+    ).withValues(alpha: 0.90);
 
     return ClipRRect(
       child: BackdropFilter(
@@ -42,7 +42,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: tintedSurface,
             border: Border(
               bottom: BorderSide(
-                color: titleColor.withValues(alpha: 0.24),
+                color: titleColor.withValues(alpha: 0.35),
                 width: 1.0,
               ),
             ),
@@ -53,6 +53,8 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
             scrolledUnderElevation: 0,
             automaticallyImplyLeading: automaticallyImplyLeading,
             leading: leading,
+            iconTheme: const IconThemeData(color: Colors.white),
+            actionsIconTheme: const IconThemeData(color: Colors.white),
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -60,17 +62,17 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: titleColor.withValues(alpha: 0.14),
+                      color: Colors.white.withValues(alpha: 0.22),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(titleIcon, color: titleColor, size: 20),
+                    child: Icon(titleIcon, color: Colors.white, size: 20),
                   ),
                   const SizedBox(width: 10),
                 ],
                 Text(
                   title,
-                  style: TextStyle(
-                    color: titleColor,
+                  style: const TextStyle(
+                    color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
                     letterSpacing: -0.4,
