@@ -207,6 +207,16 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
     TextTheme textTheme,
     DateFormat dateFormat,
   ) {
+    final exportData = SummaryExportData(
+      fromDate: widget.fromDate,
+      toDate: widget.toDate,
+      resultFilter: widget.resultFilter,
+      players: widget.players ?? const [],
+      totalMatches: _totalMatches,
+      matchCountByDay: _matchCountByDay,
+      summaries: _summaries,
+    );
+
     return CustomScrollView(
       slivers: [
         // Stats header
@@ -292,11 +302,35 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
           ),
         ),
 
-        // Activity heatmap
+        // Side-by-Side: 6 Information Cards (Left) + Activity Heatmap Card (Right)
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-            child: _buildActivityHeatmap(colorScheme, textTheme),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: SizedBox(
+              height: 130,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SummaryResultsExportStatGrid(data: exportData),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: colorScheme.outlineVariant.withValues(alpha: 0.55),
+                        ),
+                      ),
+                      child: _buildActivityHeatmap(colorScheme, textTheme),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
 

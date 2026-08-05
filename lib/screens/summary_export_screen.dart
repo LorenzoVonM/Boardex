@@ -191,17 +191,17 @@ class _SummaryResultsPortraitExport extends StatelessWidget {
   final SummaryExportData data;
 
   static const double _posterWidth = 480;
-  static const double _horizontalPadding = 18;
+  static const double _horizontalPadding = 8;
   static const double _topPadding = 18;
   static const double _bottomPadding = 24;
   static const double _titleBlockHeight = 64;
-  static const double _statsSectionHeight = 130;
+  static const double _statsSectionHeight = 124;
   static const double _titleToStatsGap = 14;
   static const double _statsToDividerGap = 8;
   static const double _dividerToGridGap = 8;
   static const double _dividerHeight = 1.4;
   static const int _gridColumns = 5;
-  static const double _gridGap = 4;
+  static const double _gridGap = 5;
 
   const _SummaryResultsPortraitExport({required this.data});
 
@@ -323,23 +323,15 @@ class _SummaryResultsPortraitExport extends StatelessWidget {
                       SizedBox(
                         height: _statsSectionHeight,
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
-                              child: _SummaryResultsExportStatGrid(data: data),
+                              child: SummaryResultsExportStatGrid(data: data),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: _SummaryResultsExportHeatmapCard(
-                                      data: data,
-                                    ),
-                                  ),
-                                ],
+                              child: _SummaryResultsExportHeatmapCard(
+                                data: data,
                               ),
                             ),
                           ],
@@ -369,10 +361,10 @@ class _SummaryResultsPortraitExport extends StatelessWidget {
   }
 }
 
-class _SummaryResultsExportStatGrid extends StatelessWidget {
+class SummaryResultsExportStatGrid extends StatelessWidget {
   final SummaryExportData data;
 
-  const _SummaryResultsExportStatGrid({required this.data});
+  const SummaryResultsExportStatGrid({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -505,10 +497,7 @@ class _SummaryResultsExportGameGrid extends StatelessWidget {
         return SizedBox(
           width: itemSize,
           height: itemSize,
-          child: _DashboardSummaryGameCard(
-            summary: s,
-            compact: true,
-          ),
+          child: _DashboardSummaryGameCard(summary: s, compact: true),
         );
       }).toList(),
     );
@@ -534,7 +523,10 @@ class _SummaryResultsMetricCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 10, vertical: 6),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 8 : 10,
+        vertical: compact ? 4 : 6,
+      ),
       decoration: BoxDecoration(
         color: accentColor.withValues(alpha: compact ? 0.14 : 0.1),
         borderRadius: BorderRadius.circular(compact ? 14 : 16),
@@ -552,7 +544,7 @@ class _SummaryResultsMetricCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: (compact ? textTheme.bodySmall : textTheme.titleSmall)
+                style: (compact ? textTheme.labelSmall : textTheme.titleSmall)
                     ?.copyWith(fontWeight: FontWeight.w800, color: accentColor),
               ),
             ),
@@ -569,7 +561,9 @@ class _SummaryResultsMetricCard extends StatelessWidget {
                 style: (compact ? textTheme.bodyLarge : textTheme.headlineSmall)
                     ?.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: colorScheme.onSurface,
+                      color: compact
+                          ? const Color(0xFF424242)
+                          : colorScheme.onSurface,
                     ),
               ),
             ),
@@ -606,9 +600,10 @@ class _DashboardSummaryGameCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       elevation: 1,
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(compact ? 8 : 10),
-        side: BorderSide(color: summary.dominantResult.color, width: 2.5),
+        side: BorderSide(color: summary.dominantResult.color, width: 1.5),
       ),
       child: Stack(
         fit: StackFit.expand,

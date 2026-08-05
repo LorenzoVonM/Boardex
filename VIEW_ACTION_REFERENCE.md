@@ -194,7 +194,7 @@ Actions:
 - `summary_search_execute`: Open `SummaryResultsScreen` with the chosen filters.
 
 ### `SummaryResultsScreen` (date range title)
-Description: Aggregated summary view grouped by game, with total counts, activity heatmap, and per-game cards.
+Description: Aggregated summary view grouped by game. Features a top section with 6 metric stat cards (Matches, Games, Win Rate, Wins, Draws, Losses) on the left and an activity heatmap (dynamic 4–8 week columns) on the right, followed by per-game summary cards.
 
 Actions:
 - `summary_results_open_export`: Open `SummaryExportScreen`.
@@ -208,27 +208,37 @@ Actions:
 - `summary_game_matches_close`: Dismiss the bottom sheet.
 - `summary_game_matches_open_match_detail`: Tap a listed match to close the sheet and open `MatchDetailScreen`.
 
-### `SummaryExportScreen` (`Summary Export`)
-Description: Export builder for summary posters saved to the device gallery. This flow now supports a flexible `Dashboard` template and a fixed `Summary` template based closely on `SummaryResultsScreen`.
+### `SummaryExportScreen` (`Export Summary`)
+Description: Preview screen for exporting a portrait summary graphic to the device photo gallery. Features a top title section, a side-by-side row with 6 metric stat cards (Matches, Games, Win Rate, Wins, Draws, Losses) on the left and an activity heatmap on the right, followed by a 5-column grid of game summary cards.
 
 Actions:
-- `summary_export_select_dashboard_template`: Switch to the dashboard export template.
-- `summary_export_select_summary_template`: Switch to the fixed summary-results export template.
-- `summary_export_toggle_header_section`: Include or exclude the header section.
-- `summary_export_toggle_stats_section`: Include or exclude the stats section.
-- `summary_export_toggle_filters_section`: Include or exclude the filters section.
-- `summary_export_toggle_activity_section`: Include or exclude the activity section.
-- `summary_export_toggle_top_games_section`: Include or exclude the top games section.
-- `summary_export_save_image`: Capture the poster and save it to the gallery.
+- `summary_export_save_image`: Capture the summary graphic and save it to the device photo gallery.
 - `summary_export_go_back`: Return to `SummaryResultsScreen`.
 
 ### `PlayerToolScreen` (`Player Selection Tool`)
-Description: Entry screen for quick in-person player selection tools.
+Description: Entry screen for quick in-person player selection tools and board game marketplace.
 
 Actions:
 - `player_tool_open_drawer`: Open the main drawer.
+- `player_tool_open_turn_order`: Open `TurnOrderToolScreen`.
+- `player_tool_open_marketplace`: Open `ForSellGamesScreen` (`Marketplace`).
 - `player_tool_open_competitive`: Open `SinglePlayerSelectionScreen`.
 - `player_tool_open_team_dialog`: Open the team count dialog.
+
+### `ForSellGamesScreen` (`Marketplace`)
+Description: Grid view of board games marked for sale or trade in the library, with price and trade status tags.
+
+Actions:
+- `marketplace_open_export`: Open `MarketplaceExportScreen` to build and export a 3-column sale/trade catalog graphic.
+- `marketplace_toggle_game_selection`: Check or uncheck a game for export inclusion.
+- `marketplace_go_back`: Return to `PlayerToolScreen`.
+
+### `MarketplaceExportScreen` (`Export Marketplace Catalog`)
+Description: Preview screen for exporting a 3-column solid coral catalog image of selected marketplace games.
+
+Actions:
+- `marketplace_export_save_image`: Save the catalog image to the device photo gallery.
+- `marketplace_export_go_back`: Return to `ForSellGamesScreen`.
 
 ### `PlayerToolScreen` Team Count Dialog (`How many teams?`)
 Description: Modal picker that decides whether the team tool runs in 2-team or 3-team mode.
