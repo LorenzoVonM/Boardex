@@ -244,32 +244,60 @@ class _MarketplaceGameCard extends StatelessWidget {
                     ),
                   ),
 
-                  // Price tag badge (Bottom-Right) - only if price specified
-                  if (game.sellPrice != null)
+                  // Badges (Bottom-Right): Trade icon tag + Price tag badge
+                  if (game.markForTrade || game.sellPrice != null)
                     Positioned(
                       bottom: 6,
                       right: 6,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.sellGreenBg,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: AppColors.sellGreen.withValues(alpha: 0.6),
-                            width: 0.8,
-                          ),
-                        ),
-                        child: Text(
-                          '\$${game.sellPrice!.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.sellGreen,
-                          ),
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (game.markForTrade)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.tradeBlueBg,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: AppColors.tradeBlue.withValues(alpha: 0.6),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.swap_horiz_rounded,
+                                size: 14,
+                                color: AppColors.tradeBlue,
+                              ),
+                            ),
+                          if (game.markForTrade && game.sellPrice != null)
+                            const SizedBox(width: 4),
+                          if (game.sellPrice != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.sellGreenBg,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: AppColors.sellGreen.withValues(alpha: 0.6),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Text(
+                                '\$${game.sellPrice!.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.sellGreen,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                 ],
