@@ -60,6 +60,18 @@ class AppColors {
   static const Color winnerGold = Color(0xFFFFA000);
   static const Color metricWinnerShadow = Color.fromARGB(255, 251, 180, 0);
 
+  // Story Export Background Gradient Tokens
+  static const Color storyCoralLight = Color(0xFFFFD5C8);
+  static const Color storyCoralDark = Color(0xFFF4A0A8);
+  static const Color storySandLight = Color(0xFFFDF0DC);
+  static const Color storySandDark = Color(0xFFE8C99A);
+  static const Color storyMossLight = Color(0xFFB8F0CC);
+  static const Color storyMossDark = Color(0xFF7DD4A0);
+  static const Color storyPurpleLight = Color(0xFFEDD9FF);
+  static const Color storyPurpleDark = Color(0xFFC4A0E8);
+  static const Color storyBlueLight = Color(0xFFC2DCF8);
+  static const Color storyBlueDark = Color(0xFF8FB8E8);
+
   // Standard Player Color Palette Choices
   static const List<Color> playerPalette = [
     Color(0xFFE53935), // Red

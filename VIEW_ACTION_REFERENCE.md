@@ -166,15 +166,15 @@ Actions:
 - `match_detail_cancel_delete`: Cancel deletion in the delete dialog.
 
 ### `MatchStoryExportScreen` (`Story Export`)
-Description: Instagram Story export preview for a single match. Exports a sticker-only image for Instagram Story sharing.
+Description: Instagram Story export preview for a single match. Composites the selected gradient background with the match card into a full-screen 1080×1920 background image for Instagram Story sharing.
 
 Actions:
-- `match_story_select_coral_background`: Use the `Coral` background color for the story preview and Instagram background color.
-- `match_story_select_sand_background`: Use the `Sand` background color for the story preview and Instagram background color.
-- `match_story_select_moss_background`: Use the `Moss` background color for the story preview and Instagram background color.
-- `match_story_select_ochre_background`: Use the `Ochre` background color for the story preview and Instagram background color.
-- `match_story_select_twilight_background`: Use the `Twilight` background color for the story preview and Instagram background color.
-- `match_story_export_to_instagram`: Capture the preview and open Instagram Story sharing.
+- `match_story_select_coral_background`: Use the `Coral` gradient for the story preview and exported background.
+- `match_story_select_sand_background`: Use the `Sand` gradient for the story preview and exported background.
+- `match_story_select_moss_background`: Use the `Moss` gradient for the story preview and exported background.
+- `match_story_select_light_purple_background`: Use the `Light Purple` gradient for the story preview and exported background.
+- `match_story_select_twilight_background`: Use the `Twilight` gradient for the story preview and exported background.
+- `match_story_export_to_instagram`: Composite the preview into a 1080×1920 PNG and open Instagram Story as a full-screen background image.
 - `match_story_go_back`: Return to `MatchDetailScreen`.
 
 ### `SummarySearchScreen` (`Summary`)
@@ -215,15 +215,13 @@ Actions:
 - `summary_export_save_image`: Capture the summary graphic and save it to the device photo gallery.
 - `summary_export_go_back`: Return to `SummaryResultsScreen`.
 
-### `PlayerToolScreen` (`Player Selection Tool`)
-Description: Entry screen for quick in-person player selection tools and board game marketplace.
+### `PlayerToolScreen` (`Tools`)
+Description: Top-level tools hub. Entry point for the Turn Order tools and the Marketplace.
 
 Actions:
 - `player_tool_open_drawer`: Open the main drawer.
 - `player_tool_open_turn_order`: Open `TurnOrderToolScreen`.
 - `player_tool_open_marketplace`: Open `ForSellGamesScreen` (`Marketplace`).
-- `player_tool_open_competitive`: Open `SinglePlayerSelectionScreen`.
-- `player_tool_open_team_dialog`: Open the team count dialog.
 
 ### `ForSellGamesScreen` (`Marketplace`)
 Description: Grid view of board games marked for sale or trade in the library, with price and trade status tags.
@@ -240,13 +238,21 @@ Actions:
 - `marketplace_export_save_image`: Save the catalog image to the device photo gallery.
 - `marketplace_export_go_back`: Return to `ForSellGamesScreen`.
 
-### `PlayerToolScreen` Team Count Dialog (`How many teams?`)
+### `TurnOrderToolScreen` (`Turn Order`)
+Description: Player selection tool hub. Entry point for the Competitive turn-order picker and the Teams assignment tool.
+
+Actions:
+- `turn_order_open_competitive`: Open `SinglePlayerSelectionScreen` via the Competitive button.
+- `turn_order_open_team_dialog`: Open the team count dialog via the Teams button.
+- `turn_order_go_back`: Return to `PlayerToolScreen`.
+
+### `TurnOrderToolScreen` Team Count Dialog (`How many teams?`)
 Description: Modal picker that decides whether the team tool runs in 2-team or 3-team mode.
 
 Actions:
-- `player_tool_select_2_teams`: Open `TeamSelectionScreen` with `teamCount: 2`.
-- `player_tool_select_3_teams`: Open `TeamSelectionScreen` with `teamCount: 3`.
-- `player_tool_close_team_dialog`: Dismiss the dialog without choosing a team count.
+- `turn_order_select_2_teams`: Open `TeamSelectionScreen` with `teamCount: 2`.
+- `turn_order_select_3_teams`: Open `TeamSelectionScreen` with `teamCount: 3`.
+- `turn_order_close_team_dialog`: Dismiss the dialog without choosing a team count.
 
 ### `SinglePlayerSelectionScreen` (`Competitive`)
 Description: Multi-touch picker that assigns a random sequential order after everyone holds a finger on screen for 4 seconds.

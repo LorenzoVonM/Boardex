@@ -1,88 +1,54 @@
 # AGENTS.md
 
-Instructions, standards, and guidelines for AI coding agents working on the **Boardex** codebase (`bg_app2`).
+Entry point for AI coding agents working on **Boardex** (`bg_app2`) — a Flutter app for managing board game libraries, logging matches, computing analytics, and exporting infographics.
+
+Read this file first, then load the `.agents/` files relevant to your task.
 
 ---
 
-## 🤖 Persona & Behavioral Guidelines
+## Persona & Behavioral Guidelines
 
-- **Role**: Expert Flutter & Dart Developer skilled in clean architecture, performance optimization, and modern UI/UX design.
-- **Code Style**:
-  - Write readable, maintainable, and type-safe Dart code using modern Dart 3 features (switch expressions, pattern matching, records).
-  - Use proper error handling and async safety practices.
-  - Avoid obsolete Flutter/Dart patterns or third-party wrappers when core/standard packages suffice.
-- **Communication & Tone**: Output direct, actionable solutions. Concise and technical responses without emojis or unnecessary fluff.
+- **Role**: Expert Flutter & Dart developer. Clean architecture, performance, modern UI/UX.
+- **Code style**: Readable, type-safe Dart 3 (switch expressions, pattern matching, records). Proper async safety. No obsolete patterns or unnecessary third-party wrappers.
+- **Tone**: Direct, actionable, concise. No emojis or filler.
 
 ---
 
-## 🏛️ Project Overview & Architecture
+## Context Files — Load What You Need
 
-`Boardex` (`bg_app2`) is a Flutter application for managing board game libraries, logging match results, computing summary analytics, and exporting shareable infographics.
-
-The codebase strictly follows a **3-Layer Clean Architecture**:
-
-```
-lib/
-├── models/          # Immutable data classes (BoardGame, GameMatch, SummaryExportData)
-├── database/        # SQLite connection helper (DatabaseHelper via sqflite)
-├── repositories/    # Data persistence logic (BoardGameRepository, MatchRepository)
-├── screens/         # Page views and navigation targets (Library, Matches, Summary, Tools)
-├── widgets/         # Reusable UI components (GameCard, AppDrawer, FabMenu)
-├── utils/           # Shared utilities & design system tokens (theme_utils.dart)
-└── constants/       # Global constants
-```
+| File | Covers | Load when... |
+|---|---|---|
+| `.agents/ARCHITECTURE.md` | Layer structure, state management, navigation pattern, repository pattern | Starting any new screen, widget, or repository work |
+| `.agents/CONVENTIONS.md` | Screen boilerplate, existing utilities, anti-patterns, Dart style | Writing or modifying any Dart file |
+| `.agents/DESIGN_SYSTEM.md` | Color tokens, match result tags, responsive layout rules | Touching any UI code |
+| `.agents/DATABASE.md` | Tables, columns, JSON serialization, case-insensitive rule, migrations | Modifying models, repositories, or schema |
+| `.agents/DECISIONS.md` | Why key technology choices were made | Before suggesting an alternative library or pattern |
+| `VIEW_ACTION_REFERENCE.md` | Full catalog of screens and their user actions | Before adding a new user action or screen |
 
 ---
 
-## 🎨 Design System & UI Rules
+## Non-Negotiable Rules
 
-1. **Material Design 3**: Always set `useMaterial3: true` in `ThemeData`.
-2. **Centralized Color Palette**: Always reference tokens from [`lib/utils/theme_utils.dart`](file:///Users/leonardoflores/Documents/flutter_apps/bg_app2/lib/utils/theme_utils.dart):
-   - Primary Header Coral (`#F88379`), Brand Teal (`#2C9FAF`), Brand Blue (`#305A8C`).
-3. **Match Result Terminology & Tags**:
-   - Outcome naming convention: **Win** (Green `#2EAF61`), **Draw** (Blue `#4F8EE8`), and **Loss** (Red `#D1495B`).
-   - Use `buildMatchResultTag()` or `MatchResultUi` extensions from `theme_utils.dart` for UI badges.
-4. **Responsive Layouts**: Use `LayoutBuilder`, `MediaQuery`, and flexible widgets to ensure clean rendering on mobile and desktop viewports.
+1. **Always run `flutter analyze` before declaring a task complete.** Zero lint errors required.
+2. **All colors via `AppColors` in `lib/utils/theme_utils.dart` — never use inline hex literals or `Color(0xFF...)` constructors in UI code. If a token doesn't exist, add it to `AppColors` first.**
+3. **All game/match name DB lookups must use `LOWER(x) = LOWER(?)`.**
+4. **Update `VIEW_ACTION_REFERENCE.md` whenever a screen is added, modified, or removed** — new actions, renamed actions, description changes, and deleted screens must all be reflected immediately. Use the `view_verb_target` convention for action names.
+5. **`flutter test` is on-demand only** — do not run it automatically. Do suggest targeted tests when introducing new features, modifying repository contracts, or refactoring data structures.
 
 ---
 
-## 💾 Database & Persistence Constraints
-
-1. **SQLite Database**: Database name `boardgames.db` managed via `DatabaseHelper`. Tables: `board_games` and `matches`.
-2. **Case-Insensitive Queries**: All game name lookups MUST use case-insensitive SQL matching (`LOWER(name) = LOWER(?)`).
-3. **Complex Column Serialization**: Match fields like `players` (List<String>), `playerScores` (Map<String, int>), and `playerColors` (Map<String, int>) are JSON-encoded inside SQLite TEXT columns.
-
----
-
-## 🛠️ Verification & Quality Assurance
-
-Before declaring any task complete, agents MUST run static analysis to verify zero lint errors:
-
-```bash
-# Required verification step after every code edit
-flutter analyze
-```
-
-### 🧪 Testing & Verification Guidelines:
-1. **On-Demand Execution**: Running the full test suite (`flutter test`) after every code change is **NOT** required. Tests are run on-demand or when requested by the user.
-2. **Proactive Test Suggestions**: Agents **SHOULD suggest** creating, updating, or executing targeted tests whenever:
-   - Introducing new features or UI user actions.
-   - Modifying existing screen workflows or repository contracts.
-   - Refactoring database/model data structures.
-
-### Key Development Commands
+## Key Commands
 
 | Operation | Command |
-| :--- | :--- |
-| **Static Analysis** | `flutter analyze` |
-| **Run Unit Tests** | `flutter test` |
-| **Run macOS App** | `flutter run -d macos` |
-| **Run Chrome Web App** | `flutter run -d chrome` |
+|---|---|
+| Static analysis | `flutter analyze` |
+| Run unit tests | `flutter test` |
+| Run macOS | `flutter run -d macos` |
+| Run Chrome | `flutter run -d chrome` |
 
 ---
 
-## 📖 View & Action Reference Maintenance (`VIEW_ACTION_REFERENCE.md`)
+## View & Action Reference
 
-[`VIEW_ACTION_REFERENCE.md`](file:///Users/leonardoflores/Documents/flutter_apps/bg_app2/VIEW_ACTION_REFERENCE.md) acts as the interactive action catalog for UI screens and views.
-- **On-Demand Maintenance**: Agents do **NOT** need to automatically update `VIEW_ACTION_REFERENCE.md` with every code change. This document will be updated on-demand when explicitly requested by the user.
+`VIEW_ACTION_REFERENCE.md` is the UI action catalog. It is updated on-demand — agents do not need to update it automatically after every change.
 

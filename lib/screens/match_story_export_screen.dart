@@ -26,13 +26,30 @@ extension StoryBackgroundStyleUi on StoryBackgroundStyle {
     StoryBackgroundStyle.twilight => 'Twilight',
   };
 
-  Color get backgroundColor => switch (this) {
-    StoryBackgroundStyle.coral => const Color(0xFFF48B82),
-    StoryBackgroundStyle.sand => const Color(0xFFE7D5B7),
-    StoryBackgroundStyle.moss => const Color(0xFF627A5B),
-    StoryBackgroundStyle.lightPurple => const Color(0xFFC084FC),
-    StoryBackgroundStyle.twilight => const Color(0xFF6B78A8),
+  Color get gradientStart => switch (this) {
+    StoryBackgroundStyle.coral => AppColors.storyCoralLight,
+    StoryBackgroundStyle.sand => AppColors.storySandLight,
+    StoryBackgroundStyle.moss => AppColors.storyMossLight,
+    StoryBackgroundStyle.lightPurple => AppColors.storyPurpleLight,
+    StoryBackgroundStyle.twilight => AppColors.storyBlueLight,
   };
+
+  Color get gradientEnd => switch (this) {
+    StoryBackgroundStyle.coral => AppColors.storyCoralDark,
+    StoryBackgroundStyle.sand => AppColors.storySandDark,
+    StoryBackgroundStyle.moss => AppColors.storyMossDark,
+    StoryBackgroundStyle.lightPurple => AppColors.storyPurpleDark,
+    StoryBackgroundStyle.twilight => AppColors.storyBlueDark,
+  };
+
+  LinearGradient get gradient => LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [gradientStart, gradientEnd],
+  );
+
+  // Used for card borders and accent elements inside the sticker
+  Color get backgroundColor => gradientEnd;
 }
 
 class MatchStoryExportScreen extends StatefulWidget {
@@ -81,6 +98,8 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
     }
   }
 
+  // Composites the gradient background + sticker content into a single 1080x1920 PNG.
+  // This must be exported as backgroundAssetUri so Instagram fills the full story canvas.
   Future<String> _captureStickerImage() async {
     await WidgetsBinding.instance.endOfFrame;
 
@@ -91,12 +110,56 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
       throw Exception('Could not capture story sticker.');
     }
 
+    const double exportWidth = 1080;
+    const double exportHeight = 1920;
+
     final pixelRatio = math.max(
       1.0,
       _storyExportTargetWidth / boundary.size.width,
     );
-    final image = await boundary.toImage(pixelRatio: pixelRatio);
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    final stickerImage = await boundary.toImage(pixelRatio: pixelRatio);
+
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(
+      recorder,
+      Rect.fromLTWH(0, 0, exportWidth, exportHeight),
+    );
+
+    // Draw gradient background filling the full story canvas
+    final gradientPaint = Paint()
+      ..shader = _selectedBackground.gradient.createShader(
+        Rect.fromLTWH(0, 0, exportWidth, exportHeight),
+      );
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, exportWidth, exportHeight),
+      gradientPaint,
+    );
+
+    // Draw sticker at 90% of canvas size, centered over the background
+    const double stickerScale = 0.9;
+    final targetW = exportWidth * stickerScale;
+    final targetH = exportHeight * stickerScale;
+    final offsetX = (exportWidth - targetW) / 2;
+    final offsetY = (exportHeight - targetH) / 2;
+    canvas.drawImageRect(
+      stickerImage,
+      Rect.fromLTWH(
+        0,
+        0,
+        stickerImage.width.toDouble(),
+        stickerImage.height.toDouble(),
+      ),
+      Rect.fromLTWH(offsetX, offsetY, targetW, targetH),
+      Paint()..filterQuality = FilterQuality.high,
+    );
+
+    final picture = recorder.endRecording();
+    final fullImage = await picture.toImage(
+      exportWidth.toInt(),
+      exportHeight.toInt(),
+    );
+
+    final byteData = await fullImage.toByteData(format: ui.ImageByteFormat.png);
     if (byteData == null) {
       throw Exception('Could not encode story image.');
     }
@@ -104,12 +167,11 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
     final bytes = byteData.buffer.asUint8List();
     final tempDir = await getTemporaryDirectory();
     final fileName =
-        'match_story_sticker_${widget.match.id ?? DateTime.now().millisecondsSinceEpoch}.png';
+        'match_story_${widget.match.id ?? DateTime.now().millisecondsSinceEpoch}.png';
     final filePath = p.join(tempDir.path, fileName);
-    final file = File(filePath);
-    await file.writeAsBytes(bytes, flush: true);
+    await File(filePath).writeAsBytes(bytes, flush: true);
 
-    return file.path;
+    return filePath;
   }
 
   Future<void> _shareStory() async {
@@ -118,10 +180,9 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
     setState(() => _isSharing = true);
     try {
       final imagePath = await _captureStickerImage();
+      // backgroundAssetUri fills the full Instagram Story canvas — no user resizing needed
       await FlutterSocialShare.shareToInstagram(
-        stickerAssetUri: Uri.file(imagePath),
-        topColor: _selectedBackground.backgroundColor,
-        bottomColor: _selectedBackground.backgroundColor,
+        backgroundAssetUri: Uri.file(imagePath),
       );
 
       if (!mounted) return;
@@ -188,7 +249,10 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
 
               // Compact Options Panel
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(16),
@@ -206,9 +270,8 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
                       children: [
                         Text(
                           'Theme',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
@@ -224,7 +287,8 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
                                         isSelected:
                                             background == _selectedBackground,
                                         onTap: () => setState(
-                                          () => _selectedBackground = background,
+                                          () =>
+                                              _selectedBackground = background,
                                         ),
                                       ),
                                     ),
@@ -243,11 +307,8 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
                         children: [
                           Text(
                             'Stats',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -381,7 +442,7 @@ class _InstagramStoryPreview extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        color: backgroundStyle.backgroundColor,
+        gradient: backgroundStyle.gradient,
       ),
       child: Center(child: child),
     );
@@ -435,7 +496,7 @@ class _StoryBackgroundSwatch extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: background.backgroundColor,
+                  gradient: background.gradient,
                 ),
               ),
             ),
@@ -611,7 +672,8 @@ class _MatchStorySticker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: match.players.map((player) {
-        final isWinner = winnerName != null &&
+        final isWinner =
+            winnerName != null &&
             winnerName.isNotEmpty &&
             player.trim().toLowerCase() == winnerName;
 
