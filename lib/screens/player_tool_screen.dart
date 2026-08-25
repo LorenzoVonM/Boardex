@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/glass_app_bar.dart';
 import 'for_sell_games_screen.dart';
+import 'timer_tool_screen.dart';
 import 'turn_order_tool_screen.dart';
 
 class PlayerToolScreen extends StatelessWidget {
@@ -59,6 +60,19 @@ class PlayerToolScreen extends StatelessWidget {
                 );
               },
             ),
+            _ToolMenuSquare(
+              title: 'Timer',
+              icon: Icons.timer_rounded,
+              color: AppColors.brandTeal,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TimerToolScreen(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -88,10 +102,7 @@ class _ToolMenuSquare extends StatelessWidget {
       shadowColor: Colors.black.withValues(alpha: 0.15),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: color.withValues(alpha: 0.25),
-          width: 1,
-        ),
+        side: BorderSide(color: color.withValues(alpha: 0.25), width: 1),
       ),
       child: InkWell(
         onTap: onTap,
@@ -107,20 +118,16 @@ class _ToolMenuSquare extends StatelessWidget {
                   color: color.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  size: 40,
-                  color: color,
-                ),
+                child: Icon(icon, size: 40, color: color),
               ),
               const SizedBox(height: 14),
               Text(
                 title,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
               ),
             ],
           ),

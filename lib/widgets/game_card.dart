@@ -98,6 +98,7 @@ class GameCard extends StatelessWidget {
                       game.name,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
+                        height: 1.2,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -152,7 +153,7 @@ class GameCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 3.1),
                         Row(
                           children: [
                             Icon(

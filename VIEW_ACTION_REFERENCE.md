@@ -222,6 +222,7 @@ Actions:
 - `player_tool_open_drawer`: Open the main drawer.
 - `player_tool_open_turn_order`: Open `TurnOrderToolScreen`.
 - `player_tool_open_marketplace`: Open `ForSellGamesScreen` (`Marketplace`).
+- `player_tool_open_timer`: Open `TimerToolScreen`.
 
 ### `ForSellGamesScreen` (`Marketplace`)
 Description: Grid view of board games marked for sale or trade in the library, with price and trade status tags.
@@ -237,6 +238,30 @@ Description: Preview screen for exporting a 3-column solid coral catalog image o
 Actions:
 - `marketplace_export_save_image`: Save the catalog image to the device photo gallery.
 - `marketplace_export_go_back`: Return to `ForSellGamesScreen`.
+
+### `TimerToolScreen` (`Timer`)
+Description: Countdown timer with a circular arc that drains as time elapses. Arc turns orange below 25% and red below 10 seconds. Plays a system alert sound and haptic on finish.
+
+Actions:
+- `timer_set_minutes`: Scroll the minutes wheel to set the countdown minutes (0–99).
+- `timer_set_seconds`: Scroll the seconds wheel to set the countdown seconds (0–59).
+- `timer_start`: Start the countdown from the selected time.
+- `timer_pause`: Pause a running countdown.
+- `timer_resume`: Resume a paused countdown.
+- `timer_reset`: Stop the countdown and return to idle with the same selected time.
+- `timer_go_back`: Return to `PlayerToolScreen`.
+
+### `TimerToolScreen` (`Timer`)
+Description: Countdown timer with a circular arc that drains as time elapses. Arc turns orange below 25% and red below 10 seconds. Plays a system alert sound and haptic on finish.
+
+Actions:
+- `timer_set_minutes`: Scroll the minutes wheel to set the countdown minutes (0–99).
+- `timer_set_seconds`: Scroll the seconds wheel to set the countdown seconds (0–59).
+- `timer_start`: Start the countdown from the selected time.
+- `timer_pause`: Pause a running countdown.
+- `timer_resume`: Resume a paused countdown.
+- `timer_reset`: Stop the countdown and return to idle with the same selected time.
+- `timer_go_back`: Return to `PlayerToolScreen`.
 
 ### `TurnOrderToolScreen` (`Turn Order`)
 Description: Player selection tool hub. Entry point for the Competitive turn-order picker and the Teams assignment tool.
