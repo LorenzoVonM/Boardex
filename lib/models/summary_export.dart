@@ -139,6 +139,9 @@ class SummaryExportData {
   final List<String> players;
   final int totalMatches;
   final Map<String, int> matchCountByDay;
+
+  /// Match counts for ALL days, unfiltered — used to colour out-of-range heatmap cells.
+  final Map<String, int> allDaysMatchCountByDay;
   final List<SummaryGameSummary> summaries;
 
   const SummaryExportData({
@@ -148,6 +151,7 @@ class SummaryExportData {
     required this.players,
     required this.totalMatches,
     required this.matchCountByDay,
+    this.allDaysMatchCountByDay = const {},
     required this.summaries,
   });
 

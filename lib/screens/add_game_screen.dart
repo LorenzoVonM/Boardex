@@ -30,6 +30,8 @@ class _AddGameScreenState extends State<AddGameScreen> {
   bool _markForSell = false;
   bool _markForTrade = false;
   String? _photoPath;
+  String? _originalPhotoPath;
+  String? _originalThumbnailPath;
   List<String> _gameNameSuggestions = [];
   List<String> _selectedMechanics = [];
   List<String> _selectedCategories = [];
@@ -56,6 +58,8 @@ class _AddGameScreenState extends State<AddGameScreen> {
         _sellPriceController.text = widget.gameToEdit!.sellPrice!.toString();
       }
       _photoPath = widget.gameToEdit!.photoPath;
+      _originalPhotoPath = widget.gameToEdit!.photoPath;
+      _originalThumbnailPath = widget.gameToEdit!.thumbnailPath;
       _selectedMechanics = List.from(widget.gameToEdit!.mechanics);
       _selectedCategories = List.from(widget.gameToEdit!.categories);
     }
@@ -80,6 +84,13 @@ class _AddGameScreenState extends State<AddGameScreen> {
       final double? parsedPrice = _sellPriceController.text.trim().isNotEmpty
           ? double.tryParse(_sellPriceController.text.trim())
           : null;
+
+      if (isEditing && _photoPath != _originalPhotoPath) {
+        await ImageUtils.deletePhotoFiles(
+          _originalPhotoPath,
+          _originalThumbnailPath,
+        );
+      }
 
       final thumbPath = _photoPath != null
           ? await ImageUtils.generateThumbnail(_photoPath)
@@ -318,8 +329,14 @@ class _AddGameScreenState extends State<AddGameScreen> {
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('1.0', style: TextStyle(color: Colors.grey, fontSize: 11)),
-                        Text('10.0', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                        Text(
+                          '1.0',
+                          style: TextStyle(color: Colors.grey, fontSize: 11),
+                        ),
+                        Text(
+                          '10.0',
+                          style: TextStyle(color: Colors.grey, fontSize: 11),
+                        ),
                       ],
                     ),
                   ],
@@ -333,7 +350,11 @@ class _AddGameScreenState extends State<AddGameScreen> {
                 icon: Icons.fitness_center,
                 trailing: Row(
                   children: [
-                    Icon(Icons.fitness_center, size: 18, color: getWeightColor(_weight)),
+                    Icon(
+                      Icons.fitness_center,
+                      size: 18,
+                      color: getWeightColor(_weight),
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       _weight.toStringAsFixed(1),
@@ -359,7 +380,13 @@ class _AddGameScreenState extends State<AddGameScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('1.0', style: TextStyle(color: Colors.blue[400], fontSize: 11)),
+                        Text(
+                          '1.0',
+                          style: TextStyle(
+                            color: Colors.blue[400],
+                            fontSize: 11,
+                          ),
+                        ),
                         Text(
                           'Light',
                           style: TextStyle(
@@ -381,7 +408,13 @@ class _AddGameScreenState extends State<AddGameScreen> {
                             color: Colors.grey[500],
                           ),
                         ),
-                        Text('5.0', style: TextStyle(color: Colors.red[400], fontSize: 11)),
+                        Text(
+                          '5.0',
+                          style: TextStyle(
+                            color: Colors.red[400],
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -400,7 +433,10 @@ class _AddGameScreenState extends State<AddGameScreen> {
                   children: gameMechanics.map((mechanic) {
                     final isSelected = _selectedMechanics.contains(mechanic);
                     return FilterChip(
-                      label: Text(mechanic, style: const TextStyle(fontSize: 12)),
+                      label: Text(
+                        mechanic,
+                        style: const TextStyle(fontSize: 12),
+                      ),
                       selected: isSelected,
                       onSelected: (selected) {
                         setState(() {
@@ -430,7 +466,10 @@ class _AddGameScreenState extends State<AddGameScreen> {
                   children: gameCategories.map((category) {
                     final isSelected = _selectedCategories.contains(category);
                     return FilterChip(
-                      label: Text(category, style: const TextStyle(fontSize: 12)),
+                      label: Text(
+                        category,
+                        style: const TextStyle(fontSize: 12),
+                      ),
                       selected: isSelected,
                       onSelected: (selected) {
                         setState(() {
@@ -509,11 +548,13 @@ class _AddGameScreenState extends State<AddGameScreen> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Icon(Icons.sell, size: 18, color: AppColors.sellGreen),
-                        const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text('Mark for Sell'),
+                        const Icon(
+                          Icons.sell,
+                          size: 18,
+                          color: AppColors.sellGreen,
                         ),
+                        const SizedBox(width: 10),
+                        const Expanded(child: Text('Mark for Sell')),
                         Switch(
                           value: _markForSell,
                           onChanged: (value) =>
@@ -530,9 +571,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                           color: AppColors.tradeBlue,
                         ),
                         const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text('Mark for Trade'),
-                        ),
+                        const Expanded(child: Text('Mark for Trade')),
                         Switch(
                           value: _markForTrade,
                           onChanged: (value) =>

@@ -222,13 +222,15 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   Map<String, int> _playerScores = {};
   Map<String, int> _playerColors = {};
   String? _photoPath;
+  String? _originalPhotoPath;
+  String? _originalThumbnailPath;
   int _matchCount = 0;
   List<String> _gameNameSuggestions = [];
   late DateTime _playedDate;
   late TimeOfDay _playedTime;
 
-  String _photoSource = 'custom';
-  String? _libraryPhotoPath;
+  List<_PhotoOption> _carouselItems = [];
+  int? _selectedCarouselIndex;
   bool _gameInLibrary = false;
 
   bool get isEditing => widget.matchToEdit != null;
@@ -252,6 +254,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
       _playerScores = Map.from(match.playerScores);
       _playerColors = Map.from(match.playerColors);
       _photoPath = match.photoPath;
+      _originalPhotoPath = match.photoPath;
+      _originalThumbnailPath = match.thumbnailPath;
       _playedDate = DateTime(
         match.playedAt.year,
         match.playedAt.month,
@@ -261,11 +265,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
         hour: match.playedAt.hour,
         minute: match.playedAt.minute,
       );
-      _photoSource = match.useLibraryPhoto ? 'library' : 'custom';
-      _refreshGameContext(
-        match.gameName,
-        autoSelectLibraryPhoto: match.useLibraryPhoto,
-      );
+      _refreshGameContext(match.gameName, preserveCurrentSelection: true);
     }
   }
 
@@ -295,17 +295,20 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
     final libraryPhotoPath = inLibrary
         ? await BoardGameRepository.instance.getPhotoPath(gameName)
         : null;
+    final recentMatchPhotos = await MatchRepository.instance
+        .getRecentMatchPhotosForGame(gameName);
 
     return _GameLookupSnapshot(
       matchCount: matchCount,
       inLibrary: inLibrary,
       libraryPhotoPath: libraryPhotoPath,
+      recentMatchPhotos: recentMatchPhotos,
     );
   }
 
   Future<void> _refreshGameContext(
     String gameName, {
-    bool autoSelectLibraryPhoto = true,
+    bool preserveCurrentSelection = false,
   }) async {
     final snapshot = await _lookupGameContext(gameName.trim());
     if (!mounted) return;
@@ -313,20 +316,40 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
     setState(() {
       _matchCount = snapshot.matchCount;
       _gameInLibrary = snapshot.inLibrary;
-      _libraryPhotoPath = snapshot.libraryPhotoPath;
 
-      final libraryHasPhoto =
-          snapshot.inLibrary && snapshot.libraryPhotoPath != null;
+      // Build carousel: library photo first, then recent match photos.
+      final items = <_PhotoOption>[];
+      if (snapshot.libraryPhotoPath != null) {
+        items.add(_PhotoOption.library(thumbPath: snapshot.libraryPhotoPath));
+      }
+      for (final p in snapshot.recentMatchPhotos) {
+        items.add(
+          _PhotoOption.match(savePath: p.savePath, thumbPath: p.thumbPath),
+        );
+      }
+      _carouselItems = items;
 
-      if (libraryHasPhoto && autoSelectLibraryPhoto) {
-        _photoSource = 'library';
-        if (!isEditing) {
-          _photoPath = null;
+      if (preserveCurrentSelection) {
+        // Edit mode: map the match's existing photo to a carousel index.
+        if (widget.matchToEdit?.useLibraryPhoto == true) {
+          final idx = items.indexWhere((i) => i.isLibrary);
+          _selectedCarouselIndex = idx >= 0 ? idx : null;
+        } else if (_photoPath != null) {
+          final idx = items.indexWhere(
+            (i) => !i.isLibrary && i.photoPath == _photoPath,
+          );
+          _selectedCarouselIndex = idx >= 0 ? idx : null;
+          // If not in carousel, _photoPath stays as a standalone custom upload.
+        } else {
+          _selectedCarouselIndex = null;
         }
-      } else if (!libraryHasPhoto && _photoSource == 'library') {
-        _photoSource = 'custom';
-      } else if (gameName.trim().isEmpty) {
-        _photoSource = 'custom';
+      } else {
+        // New match or game name changed: auto-select the first carousel item.
+        if (items.isNotEmpty) {
+          _selectedCarouselIndex = 0;
+        } else {
+          _selectedCarouselIndex = null;
+        }
       }
     });
   }
@@ -402,7 +425,30 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
       _playedTime.minute,
     );
 
-    final effectivePhotoPath = _photoSource == 'library' ? null : _photoPath;
+    final String? effectivePhotoPath;
+    final bool useLibraryPhoto;
+
+    if (_selectedCarouselIndex != null &&
+        _selectedCarouselIndex! < _carouselItems.length) {
+      final item = _carouselItems[_selectedCarouselIndex!];
+      useLibraryPhoto = item.isLibrary;
+      effectivePhotoPath = item.photoPath;
+    } else {
+      useLibraryPhoto = false;
+      effectivePhotoPath = _photoPath;
+    }
+
+    // Only delete the original file if the user uploaded a fresh custom photo
+    // (not a carousel reference that might be shared by other matches).
+    if (isEditing &&
+        _selectedCarouselIndex == null &&
+        effectivePhotoPath != _originalPhotoPath &&
+        _originalPhotoPath != null) {
+      await ImageUtils.deletePhotoFiles(
+        _originalPhotoPath,
+        _originalThumbnailPath,
+      );
+    }
     final thumbPath = effectivePhotoPath != null
         ? await ImageUtils.generateThumbnail(effectivePhotoPath)
         : null;
@@ -417,7 +463,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
       playerColors: _playerColors,
       photoPath: effectivePhotoPath,
       thumbnailPath: thumbPath,
-      useLibraryPhoto: _photoSource == 'library',
+      useLibraryPhoto: useLibraryPhoto,
       playedAt: playedAt,
       players: _players,
     );
@@ -491,7 +537,10 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                   label: Text(isEditing ? 'Update Match' : 'Register Match'),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -810,7 +859,11 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   Widget _buildWinnerSection() {
     return _buildSectionCard(
       title: 'Winner',
-      leading: const Icon(Icons.emoji_events, size: 18, color: AppColors.winnerGold),
+      leading: const Icon(
+        Icons.emoji_events,
+        size: 18,
+        color: AppColors.winnerGold,
+      ),
       child: DropdownButtonFormField<String?>(
         initialValue: _winner,
         decoration: const InputDecoration(
@@ -836,166 +889,176 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   Widget _buildPhotoSection() {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final libraryHasPhoto = _gameInLibrary && _libraryPhotoPath != null;
+    final hasCarousel = _carouselItems.isNotEmpty;
+    final carouselItemSelected = _selectedCarouselIndex != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionCard(
-          title: 'Photo (optional)',
-          leading: Icon(Icons.image, size: 18, color: colorScheme.primary),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildSourceToggle(
-                      label: 'Library Photo',
-                      icon: Icons.collections,
-                      isSelected: _photoSource == 'library',
-                      isEnabled: libraryHasPhoto,
-                      onTap: libraryHasPhoto
-                          ? () => setState(() => _photoSource = 'library')
-                          : null,
-                    ),
+        if (hasCarousel)
+          _buildSectionCard(
+            title: 'Select a Photo',
+            leading: Icon(
+              Icons.collections,
+              size: 18,
+              color: colorScheme.primary,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 90,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _carouselItems.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) =>
+                        _buildCarouselItem(index, colorScheme, textTheme),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildSourceToggle(
-                      label: 'Custom Photo',
-                      icon: Icons.add_a_photo,
-                      isSelected: _photoSource == 'custom',
-                      isEnabled: true,
-                      onTap: () => setState(() => _photoSource = 'custom'),
+                ),
+                if (carouselItemSelected) ...[
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      _carouselItems[_selectedCarouselIndex!].isLibrary
+                          ? 'Using library photo'
+                          : 'Using photo from a previous match',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
-              ),
-              if (!_gameInLibrary && _gameNameController.text.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Game not in library - use a custom photo',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-              if (_gameInLibrary && _libraryPhotoPath == null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Library game has no photo - use a custom photo',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-              if (_photoSource == 'library' && _libraryPhotoPath != null) ...[
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Image.file(
-                      File(_libraryPhotoPath!),
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.high,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: colorScheme.surfaceContainerHighest,
-                          child: const Icon(Icons.broken_image, size: 48),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Center(
-                  child: Text(
-                    'Using photo from library',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
               ],
-            ],
+            ),
           ),
+        const SizedBox(height: 10),
+        PhotoCaptureSection(
+          // Show the uploaded photo only when no carousel item is selected.
+          photoPath: carouselItemSelected ? null : _photoPath,
+          filePrefix: 'match',
+          onPhotoChanged: (path) => setState(() {
+            _photoPath = path;
+            _selectedCarouselIndex = null;
+          }),
         ),
-        if (_photoSource == 'custom') ...[
-          const SizedBox(height: 16),
-          PhotoCaptureSection(
-            photoPath: _photoPath,
-            filePrefix: 'match',
-            onPhotoChanged: (path) => setState(() => _photoPath = path),
+        if (!hasCarousel &&
+            !_gameInLibrary &&
+            _gameNameController.text.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8, left: 4),
+            child: Text(
+              'Game not in library — no previous photos to reuse',
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ),
-        ],
       ],
     );
   }
 
-  Widget _buildSourceToggle({
-    required String label,
-    required IconData icon,
-    required bool isSelected,
-    required bool isEnabled,
-    VoidCallback? onTap,
-  }) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+  Widget _buildCarouselItem(
+    int index,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    final item = _carouselItems[index];
+    final isSelected = _selectedCarouselIndex == index;
+    final displayPath = item.thumbPath ?? item.photoPath;
 
     return GestureDetector(
-      onTap: isEnabled ? onTap : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primaryContainer
-              : isEnabled
-              ? colorScheme.surfaceContainerHighest
-              : colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : isEnabled
-                ? colorScheme.outline.withValues(alpha: 0.3)
-                : colorScheme.outline.withValues(alpha: 0.15),
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+      onTap: () => setState(() {
+        _selectedCarouselIndex = isSelected ? null : index;
+      }),
+      child: SizedBox(
+        width: 80,
+        height: 90,
+        child: Column(
           children: [
-            Icon(
-              icon,
-              size: 18,
-              color: isSelected
-                  ? colorScheme.primary
-                  : isEnabled
-                  ? colorScheme.onSurfaceVariant
-                  : colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-            ),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                label,
-                style: textTheme.bodySmall?.copyWith(
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                  color: isSelected
-                      ? colorScheme.primary
-                      : isEnabled
-                      ? colorScheme.onSurfaceVariant
-                      : colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+            Stack(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.outline.withValues(alpha: 0.25),
+                      width: isSelected ? 3 : 1,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(isSelected ? 7 : 9),
+                    child: displayPath != null
+                        ? Image.file(
+                            File(displayPath),
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.medium,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.broken_image,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: colorScheme.surfaceContainerHighest,
+                            child: Icon(
+                              Icons.image,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                  ),
                 ),
-                overflow: TextOverflow.ellipsis,
-              ),
+                if (item.isLibrary)
+                  Positioned(
+                    bottom: 4,
+                    left: 4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.brandTeal.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Library',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.surface,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (isSelected)
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        size: 14,
+                        color: colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ],
         ),
@@ -1043,10 +1106,26 @@ class _GameLookupSnapshot {
   final int matchCount;
   final bool inLibrary;
   final String? libraryPhotoPath;
+  final List<({String savePath, String? thumbPath})> recentMatchPhotos;
 
   const _GameLookupSnapshot({
     required this.matchCount,
     required this.inLibrary,
     this.libraryPhotoPath,
+    this.recentMatchPhotos = const [],
   });
+}
+
+class _PhotoOption {
+  final String? thumbPath;
+  final String? photoPath; // null for library references
+  final bool isLibrary;
+
+  const _PhotoOption.library({this.thumbPath})
+    : photoPath = null,
+      isLibrary = true;
+
+  const _PhotoOption.match({required String savePath, this.thumbPath})
+    : photoPath = savePath,
+      isLibrary = false;
 }

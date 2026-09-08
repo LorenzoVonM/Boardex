@@ -123,7 +123,7 @@ Actions:
 - `match_search_refresh_after_detail_change`: Re-run the active search after returning from a changed match.
 
 ### `AddMatchScreen` (`Register Match` / `Edit Match`)
-Description: Form used to create or edit a match record, including game identity, date/time, result, players, winner, and photo source.
+Description: Form used to create or edit a match record, including game identity, date/time, result, players, winner, and photo. When a game is typed, a photo carousel auto-populates with the library photo (first) and up to 10 recent match photos for that game; the best available photo is pre-selected. If no previous photos exist the carousel is hidden.
 
 Actions:
 - `add_match_set_game_name`: Enter or edit the game name.
@@ -135,9 +135,9 @@ Actions:
 - `add_match_open_add_player`: Open the player dialog in add mode.
 - `add_match_open_edit_player`: Open the player dialog in edit mode for one player.
 - `add_match_set_winner`: Choose a winner from the current player list.
-- `add_match_select_library_photo`: Use the linked library photo when available.
-- `add_match_select_custom_photo`: Use a custom match photo.
-- `add_match_change_custom_photo`: Add, replace, or remove the custom match photo through `PhotoCaptureSection`.
+- `add_match_select_carousel_photo`: Tap a thumbnail in the photo carousel to reuse a library or previous match photo.
+- `add_match_deselect_carousel_photo`: Tap the selected carousel thumbnail again to deselect it.
+- `add_match_change_custom_photo`: Add, replace, or remove a new photo through `PhotoCaptureSection`; deselects any active carousel item.
 - `add_match_save`: Save the form as a new match.
 - `add_match_update`: Save changes when editing an existing match.
 - `add_match_cancel`: Leave the form with system back navigation.
@@ -165,7 +165,8 @@ Actions:
 - `match_detail_confirm_delete`: Confirm deletion in the delete dialog.
 - `match_detail_cancel_delete`: Cancel deletion in the delete dialog.
 
-### `MatchStoryExportScreen` (`Story Export`)
+### `
+` (`Story Export`)
 Description: Instagram Story export preview for a single match. Composites the selected gradient background with the match card into a full-screen 1080×1920 background image for Instagram Story sharing.
 
 Actions:
@@ -194,7 +195,7 @@ Actions:
 - `summary_search_execute`: Open `SummaryResultsScreen` with the chosen filters.
 
 ### `SummaryResultsScreen` (date range title)
-Description: Aggregated summary view grouped by game. Features a top section with 6 metric stat cards (Matches, Games, Win Rate, Wins, Draws, Losses) on the left and an activity heatmap (dynamic 4–8 week columns) on the right, followed by per-game summary cards.
+Description: Aggregated summary view grouped by game. Features a top section with 6 metric stat cards (Matches, Games, Win Rate, Wins, Draws, Losses) on the left and an activity heatmap on the right, followed by per-game summary cards. The heatmap shows selected-range days in green (scaled by match count) and out-of-range days in light gray tones (also scaled by match count across all records).
 
 Actions:
 - `summary_results_open_export`: Open `SummaryExportScreen`.
@@ -209,7 +210,7 @@ Actions:
 - `summary_game_matches_open_match_detail`: Tap a listed match to close the sheet and open `MatchDetailScreen`.
 
 ### `SummaryExportScreen` (`Export Summary`)
-Description: Preview screen for exporting a portrait summary graphic to the device photo gallery. Features a top title section, a side-by-side row with 6 metric stat cards (Matches, Games, Win Rate, Wins, Draws, Losses) on the left and an activity heatmap on the right, followed by a 5-column grid of game summary cards.
+Description: Preview screen for exporting a portrait summary graphic to the device photo gallery. Features a top title section, a side-by-side row with 6 metric stat cards (Matches, Games, Win Rate, Wins, Draws, Losses) on the left and an activity heatmap on the right, followed by a 5-column grid of game summary cards. The heatmap shows selected-range days in green and out-of-range days in light gray tones (scaled by all-time match count). Stat card numbers use a large font for legibility in the exported image.
 
 Actions:
 - `summary_export_save_image`: Capture the summary graphic and save it to the device photo gallery.

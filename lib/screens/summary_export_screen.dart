@@ -525,7 +525,7 @@ class _SummaryResultsMetricCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 8 : 10,
-        vertical: compact ? 4 : 6,
+        vertical: compact ? 2 : 6,
       ),
       decoration: BoxDecoration(
         color: accentColor.withValues(alpha: compact ? 0.14 : 0.1),
@@ -558,13 +558,16 @@ class _SummaryResultsMetricCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: (compact ? textTheme.bodyLarge : textTheme.headlineSmall)
-                    ?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: compact
-                          ? const Color(0xFF424242)
-                          : colorScheme.onSurface,
-                    ),
+                style:
+                    (compact
+                            ? textTheme.headlineSmall
+                            : textTheme.headlineSmall)
+                        ?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: compact
+                              ? const Color(0xFF424242)
+                              : colorScheme.onSurface,
+                        ),
               ),
             ),
           ),
@@ -732,6 +735,16 @@ class _SummaryExportHeatmap extends StatelessWidget {
       return AppColors.resultWon;
     }
 
+    Color grayForCount(int count) {
+      if (count == 0)
+        return colorScheme.surfaceContainerHighest.withValues(alpha: 0.18);
+      if (count == 1) return colorScheme.onSurface.withValues(alpha: 0.10);
+      if (count == 2) return colorScheme.onSurface.withValues(alpha: 0.20);
+      if (count == 3) return colorScheme.onSurface.withValues(alpha: 0.30);
+      if (count == 4) return colorScheme.onSurface.withValues(alpha: 0.42);
+      return colorScheme.onSurface.withValues(alpha: 0.55); // 5+
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         const footerSpacing = 6.0;
@@ -802,8 +815,8 @@ class _SummaryExportHeatmap extends StatelessWidget {
                                   !date.isAfter(data.toDate);
                               final key = DateFormat('yyyy-MM-dd').format(date);
                               final count = inRange
-                                  ? data.matchCountByDay[key] ?? 0
-                                  : 0;
+                                  ? (data.matchCountByDay[key] ?? 0)
+                                  : (data.allDaysMatchCountByDay[key] ?? 0);
 
                               return Padding(
                                 padding: EdgeInsets.only(
@@ -815,8 +828,7 @@ class _SummaryExportHeatmap extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: inRange
                                         ? colorForCount(count)
-                                        : colorScheme.surfaceContainerHighest
-                                              .withValues(alpha: 0.18),
+                                        : grayForCount(count),
                                     borderRadius: BorderRadius.circular(2),
                                   ),
                                 ),

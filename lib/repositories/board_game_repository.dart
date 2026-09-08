@@ -176,7 +176,25 @@ class BoardGameRepository {
 
   Future<int> delete(int id) async {
     final db = await _db;
-    return db.delete('board_games', where: 'id = ?', whereArgs: [id]);
+    final rows = await db.query(
+      'board_games',
+      columns: ['photoPath', 'thumbnailPath'],
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    final result = await db.delete(
+      'board_games',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (rows.isNotEmpty) {
+      await ImageUtils.deletePhotoFiles(
+        rows.first['photoPath'] as String?,
+        rows.first['thumbnailPath'] as String?,
+      );
+    }
+    return result;
   }
 
   Future<String?> getPhotoPath(String gameName) async {
@@ -216,14 +234,17 @@ class BoardGameRepository {
 
   Future<BoardGame?> getGameByName(String name) async {
     final db = await _db;
-    final result = await db.rawQuery('''
+    final result = await db.rawQuery(
+      '''
       SELECT bg.*, COUNT(m.id) as timesPlayed
       FROM board_games bg
       LEFT JOIN matches m ON LOWER(bg.name) = LOWER(m.gameName)
       WHERE LOWER(bg.name) = LOWER(?)
       GROUP BY bg.id
       LIMIT 1
-    ''', [name]);
+    ''',
+      [name],
+    );
 
     if (result.isNotEmpty) {
       return BoardGame.fromMap(result.first);

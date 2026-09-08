@@ -123,7 +123,21 @@ class MatchRepository {
 
   Future<int> delete(int id) async {
     final db = await _db;
-    return db.delete('matches', where: 'id = ?', whereArgs: [id]);
+    final rows = await db.query(
+      'matches',
+      columns: ['photoPath', 'thumbnailPath'],
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    final result = await db.delete('matches', where: 'id = ?', whereArgs: [id]);
+    if (rows.isNotEmpty) {
+      await ImageUtils.deletePhotoFiles(
+        rows.first['photoPath'] as String?,
+        rows.first['thumbnailPath'] as String?,
+      );
+    }
+    return result;
   }
 
   Future<List<String>> getDistinctGameNames() async {
@@ -157,6 +171,50 @@ class MatchRepository {
       [gameName],
     );
     return result.first['count'] as int;
+  }
+
+  /// Returns a map of 'yyyy-MM-dd' → match count for every day that has matches,
+  /// across all games and with no filter applied.
+  Future<Map<String, int>> getAllMatchCountsByDay() async {
+    final db = await _db;
+    final rows = await db.query('matches', columns: ['playedAt']);
+    final Map<String, int> counts = {};
+    for (final row in rows) {
+      final dateStr = row['playedAt'] as String?;
+      if (dateStr != null && dateStr.length >= 10) {
+        final key = dateStr.substring(0, 10);
+        counts[key] = (counts[key] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }
+
+  /// Returns up to [limit] deduplicated (savePath, thumbPath) pairs for
+  /// matches of [gameName] that have their own custom photo (not library refs).
+  Future<List<({String savePath, String? thumbPath})>>
+  getRecentMatchPhotosForGame(String gameName, {int limit = 10}) async {
+    final db = await _db;
+    final rows = await db.query(
+      'matches',
+      columns: ['photoPath', 'thumbnailPath'],
+      where:
+          'LOWER(gameName) = LOWER(?) AND photoPath IS NOT NULL AND useLibraryPhoto = 0',
+      whereArgs: [gameName],
+      orderBy: 'playedAt DESC',
+      limit: limit * 2, // overfetch to account for deduplication
+    );
+    final seen = <String>{};
+    final result = <({String savePath, String? thumbPath})>[];
+    for (final row in rows) {
+      final path = row['photoPath'] as String;
+      if (seen.add(path) && result.length < limit) {
+        result.add((
+          savePath: path,
+          thumbPath: row['thumbnailPath'] as String?,
+        ));
+      }
+    }
+    return result;
   }
 
   Future<DateTime?> getLastPlayedDate(String gameName) async {

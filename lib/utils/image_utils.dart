@@ -1,11 +1,10 @@
 import 'dart:io';
-import 'dart:ui' as ui;
+
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class ImageUtils {
-  /// Generates a scaled thumbnail image for the specified [originalPath].
-  ///
-  /// Returns the file path of the thumbnail, or `null` if [originalPath] is null/empty
-  /// or if thumbnail generation fails.
+  /// Generates a JPEG thumbnail (max 300px wide, quality 85) for [originalPath].
+  /// Returns the thumbnail path, or [originalPath] on failure.
   static Future<String?> generateThumbnail(
     String? originalPath, {
     int maxWidth = 300,
@@ -18,31 +17,38 @@ class ImageUtils {
     try {
       final String thumbPath = originalPath.replaceAll(
         RegExp(r'\.[^.]+$'),
-        '_thumb.png',
+        '_thumb.jpg',
       );
       final thumbFile = File(thumbPath);
 
-      // If thumbnail already exists and is not empty, return its path.
       if (await thumbFile.exists() && (await thumbFile.length()) > 0) {
         return thumbPath;
       }
 
-      final bytes = await originalFile.readAsBytes();
-      final codec = await ui.instantiateImageCodec(
-        bytes,
-        targetWidth: maxWidth,
+      final result = await FlutterImageCompress.compressAndGetFile(
+        originalPath,
+        thumbPath,
+        minWidth: maxWidth,
+        minHeight: 0,
+        quality: 85,
+        format: CompressFormat.jpeg,
       );
-      final frame = await codec.getNextFrame();
-      final image = frame.image;
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
-      if (byteData == null) return null;
-
-      await thumbFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
-      return thumbPath;
+      return result != null ? thumbPath : originalPath;
     } catch (_) {
-      // Fallback to original image path if thumbnail creation fails
       return originalPath;
+    }
+  }
+
+  /// Deletes photo and thumbnail files from disk. Safe to call with null paths.
+  static Future<void> deletePhotoFiles(
+    String? photoPath,
+    String? thumbnailPath,
+  ) async {
+    for (final path in [photoPath, thumbnailPath]) {
+      if (path == null) continue;
+      final file = File(path);
+      if (await file.exists()) await file.delete();
     }
   }
 }

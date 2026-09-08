@@ -34,6 +34,7 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
   bool _isLoading = true;
   int _totalMatches = 0;
   Map<String, int> _matchCountByDay = {};
+  Map<String, int> _allDaysMatchCountByDay = {};
 
   @override
   void initState() {
@@ -112,10 +113,14 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
         dailyCounts[key] = (dailyCounts[key] ?? 0) + 1;
       }
 
+      final allDayCounts = await MatchRepository.instance
+          .getAllMatchCountsByDay();
+
       setState(() {
         _summaries = summaries;
         _totalMatches = matches.length;
         _matchCountByDay = dailyCounts;
+        _allDaysMatchCountByDay = allDayCounts;
         _isLoading = false;
       });
     } catch (e) {
@@ -138,7 +143,8 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: '${appBarDateFmt.format(widget.fromDate)} – ${appBarDateFmt.format(widget.toDate)}',
+        title:
+            '${appBarDateFmt.format(widget.fromDate)} – ${appBarDateFmt.format(widget.toDate)}',
         titleColor: const Color(0xFF7C3AED),
         titleIcon: Icons.insights_rounded,
         actions: _isLoading || _summaries.isEmpty
@@ -214,6 +220,7 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
       players: widget.players ?? const [],
       totalMatches: _totalMatches,
       matchCountByDay: _matchCountByDay,
+      allDaysMatchCountByDay: _allDaysMatchCountByDay,
       summaries: _summaries,
     );
 
@@ -322,7 +329,9 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
                         color: colorScheme.surface.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: colorScheme.outlineVariant.withValues(alpha: 0.55),
+                          color: colorScheme.outlineVariant.withValues(
+                            alpha: 0.55,
+                          ),
                         ),
                       ),
                       child: _buildActivityHeatmap(colorScheme, textTheme),
@@ -391,6 +400,16 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
       return Colors.green; // 5+
     }
 
+    Color grayColor(int count) {
+      if (count == 0)
+        return colorScheme.surfaceContainerHighest.withValues(alpha: 0.3);
+      if (count == 1) return colorScheme.onSurface.withValues(alpha: 0.10);
+      if (count == 2) return colorScheme.onSurface.withValues(alpha: 0.20);
+      if (count == 3) return colorScheme.onSurface.withValues(alpha: 0.30);
+      if (count == 4) return colorScheme.onSurface.withValues(alpha: 0.42);
+      return colorScheme.onSurface.withValues(alpha: 0.55); // 5+
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -440,10 +459,12 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
                             Duration(days: weekIndex * 7 + dayIndex),
                           );
                           final dateKey = DateFormat('yyyy-MM-dd').format(date);
-                          final count = _matchCountByDay[dateKey] ?? 0;
                           final isInRange =
                               !date.isBefore(widget.fromDate) &&
                               !date.isAfter(widget.toDate);
+                          final count = isInRange
+                              ? (_matchCountByDay[dateKey] ?? 0)
+                              : (_allDaysMatchCountByDay[dateKey] ?? 0);
 
                           return Padding(
                             padding: EdgeInsets.only(
@@ -459,8 +480,7 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
                                 decoration: BoxDecoration(
                                   color: isInRange
                                       ? cellColor(count)
-                                      : colorScheme.surfaceContainerHighest
-                                            .withValues(alpha: 0.3),
+                                      : grayColor(count),
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
@@ -615,6 +635,7 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
       players: widget.players ?? const [],
       totalMatches: _totalMatches,
       matchCountByDay: _matchCountByDay,
+      allDaysMatchCountByDay: _allDaysMatchCountByDay,
       summaries: _summaries,
     );
   }

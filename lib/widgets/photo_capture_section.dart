@@ -25,6 +25,7 @@ class PhotoCaptureSection extends StatelessWidget {
       final XFile? image = await picker.pickImage(
         source: source,
         preferredCameraDevice: CameraDevice.rear,
+        imageQuality: 85,
       );
 
       if (image == null) return;
