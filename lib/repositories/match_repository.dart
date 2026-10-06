@@ -233,6 +233,21 @@ class MatchRepository {
     return null;
   }
 
+  // Returns true if [matchId] is the earliest recorded match for [gameName].
+  Future<bool> isFirstMatchForGame(int matchId, String gameName) async {
+    final db = await _db;
+    final result = await db.query(
+      'matches',
+      columns: ['id'],
+      where: 'LOWER(gameName) = LOWER(?)',
+      whereArgs: [gameName],
+      orderBy: 'playedAt ASC, id ASC',
+      limit: 1,
+    );
+    if (result.isEmpty) return false;
+    return (result.first['id'] as int?) == matchId;
+  }
+
   Future<List<String>> getDistinctPlayers() async {
     final db = await _db;
     final matches = await db.query('matches', columns: ['players']);
