@@ -61,8 +61,8 @@ class AppColors {
   static const Color metricWinnerShadow = Color.fromARGB(255, 251, 180, 0);
 
   // Story Export Background Gradient Tokens
-  static const Color storyCoralLight = Color(0xFFFFD5C8);
-  static const Color storyCoralDark = Color(0xFFF4A0A8);
+  static const Color storyCoralLight = Color.fromARGB(255, 228, 150, 126);
+  static const Color storyCoralDark = Color.fromARGB(255, 148, 75, 83);
   static const Color storySandLight = Color(0xFFFDF0DC);
   static const Color storySandDark = Color(0xFFE8C99A);
   static const Color storyMossLight = Color(0xFFB8F0CC);

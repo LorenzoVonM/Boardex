@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'screens/main_navigation_shell.dart';
 import 'utils/theme_utils.dart';
 
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
+      textTheme: GoogleFonts.muktaVaaniTextTheme(),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.headerCoral,
         foregroundColor: Colors.white,
