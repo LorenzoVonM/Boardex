@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../l10n/app_localizations.dart';
 
 class TeamSelectionScreen extends StatefulWidget {
   final int teamCount;
@@ -14,6 +15,8 @@ class TeamSelectionScreen extends StatefulWidget {
 
 class _TeamSelectionScreenState extends State<TeamSelectionScreen>
     with TickerProviderStateMixin {
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   final Map<int, _TeamTouchPoint> _touchPoints = {};
   Timer? _selectionTimer;
   Timer? _progressTimer;
@@ -189,7 +192,9 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen>
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        title: Text('${widget.teamCount} Teams'),
+        title: Text(
+          widget.teamCount == 2 ? l10n.twoTeamsLabel : l10n.threeTeamsLabel,
+        ),
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -198,7 +203,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen>
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _reset,
-              tooltip: 'Reset',
+              tooltip: l10n.resetTooltip,
             ),
         ],
       ),
@@ -263,7 +268,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen>
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Everyone place a finger\non the screen',
+                      l10n.touchInstruction,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 24,
@@ -273,7 +278,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Hold for 4 seconds to form ${widget.teamCount} teams',
+                      l10n.holdInstructionTeams(widget.teamCount),
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white.withValues(alpha: 0.3),
@@ -476,6 +481,8 @@ class _TeamWinnerBanner extends StatefulWidget {
 
 class _TeamWinnerBannerState extends State<_TeamWinnerBanner>
     with SingleTickerProviderStateMixin {
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
@@ -537,7 +544,7 @@ class _TeamWinnerBannerState extends State<_TeamWinnerBanner>
                   const Text('🎉', style: TextStyle(fontSize: 28)),
                   const SizedBox(height: 4),
                   Text(
-                    'TEAM ${widget.teamNumber} STARTS!',
+                    l10n.teamStartsBanner(widget.teamNumber),
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,

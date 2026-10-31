@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/board_game.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/empty_state.dart';
@@ -13,11 +14,12 @@ class SearchResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 8;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: 'Results (${games.length})',
+        title: l10n.searchResultsTitle(games.length),
         titleColor: AppColors.headerCoral,
         titleIcon: Icons.grid_view_rounded,
       ),
@@ -30,10 +32,10 @@ class SearchResultsScreen extends StatelessWidget {
                   16,
                   130 + MediaQuery.of(context).viewPadding.bottom,
                 ),
-                child: const EmptyState(
+                child: EmptyState(
                   icon: Icons.search_off,
-                  title: 'No games found',
-                  subtitle: 'Try different search criteria',
+                  title: l10n.noGamesFoundTitle,
+                  subtitle: l10n.noGamesFoundSubtitle,
                 ),
               ),
             )

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'l10n/app_localizations.dart';
 import 'screens/main_navigation_shell.dart';
+import 'utils/locale_notifier.dart';
 import 'utils/theme_utils.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocaleNotifier.instance.load();
   runApp(const MyApp());
 }
 
@@ -51,11 +55,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Boardex',
-      theme: _buildTheme(Brightness.light),
-      themeMode: ThemeMode.light,
-      home: const MainNavigationShell(),
+    return ValueListenableBuilder<Locale>(
+      valueListenable: LocaleNotifier.instance,
+      builder: (context, locale, _) {
+        return MaterialApp(
+          title: 'Boardex',
+          locale: locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: _buildTheme(Brightness.light),
+          themeMode: ThemeMode.light,
+          home: const MainNavigationShell(),
+        );
+      },
     );
   }
 }

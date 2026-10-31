@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../utils/theme_utils.dart';
 
 class FloatingNavItem {
@@ -54,6 +55,14 @@ class FloatingBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    // Labels are localized — order must match navItems.
+    final labels = [
+      l10n.navLibrary,
+      l10n.navMatches,
+      l10n.navSummary,
+      l10n.navTools,
+    ];
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -123,7 +132,7 @@ class FloatingBottomNavBar extends StatelessWidget {
                                 : colorScheme.onSurfaceVariant,
                           ),
                           child: Text(
-                            item.label,
+                            labels[index],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),

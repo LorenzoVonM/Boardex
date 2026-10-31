@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/glass_app_bar.dart';
 import 'for_sell_games_screen.dart';
@@ -10,12 +11,13 @@ class PlayerToolScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const GlassAppBar(
-        title: 'Tools',
+      appBar: GlassAppBar(
+        title: l10n.toolsTitle,
         titleColor: Color(0xFFEAB308),
         titleIcon: Icons.grid_view_rounded,
       ),
@@ -35,7 +37,7 @@ class PlayerToolScreen extends StatelessWidget {
           childAspectRatio: 1.0,
           children: [
             _ToolMenuSquare(
-              title: 'Turn Order',
+              title: l10n.turnOrderTitle,
               icon: Icons.casino_rounded,
               color: AppColors.headerCoral,
               onTap: () {
@@ -48,7 +50,7 @@ class PlayerToolScreen extends StatelessWidget {
               },
             ),
             _ToolMenuSquare(
-              title: 'Marketplace',
+              title: l10n.marketplaceTitle,
               icon: Icons.storefront_rounded,
               color: AppColors.sellGreen,
               onTap: () {
@@ -61,7 +63,7 @@ class PlayerToolScreen extends StatelessWidget {
               },
             ),
             _ToolMenuSquare(
-              title: 'Timer',
+              title: l10n.timerTitle,
               icon: Icons.timer_rounded,
               color: AppColors.brandTeal,
               onTap: () {

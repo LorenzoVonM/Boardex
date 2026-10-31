@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
@@ -139,12 +140,13 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('MMM d, yyyy');
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: GlassAppBar(
-        title: 'Search Matches',
+        title: l10n.searchMatchesTitle,
         titleColor: AppColors.brandTeal,
         titleIcon: Icons.sports_esports_rounded,
         actions: [
@@ -155,7 +157,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
             IconButton(
               onPressed: _clearFilters,
               icon: const Icon(Icons.clear_all, color: Colors.white),
-              tooltip: 'Clear filters',
+              tooltip: l10n.clearFiltersTooltip,
             ),
         ],
       ),
@@ -187,7 +189,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                           controller: controller,
                           focusNode: focusNode,
                           decoration: InputDecoration(
-                            labelText: 'Game Name',
+                            labelText: l10n.gameNameLabel,
                             border: const OutlineInputBorder(),
                             prefixIcon: const Icon(Icons.casino),
                             contentPadding: const EdgeInsets.symmetric(
@@ -236,7 +238,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Date Range',
+                              l10n.dateRangeLabel,
                               style: Theme.of(context).textTheme.titleSmall
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             ),
@@ -249,11 +251,14 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                               child: InkWell(
                                 onTap: () => _selectDate(context, true),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    labelText: 'From Date',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.calendar_today, size: 18),
-                                    contentPadding: EdgeInsets.symmetric(
+                                  decoration: InputDecoration(
+                                    labelText: l10n.fromDateLabel,
+                                    border: const OutlineInputBorder(),
+                                    prefixIcon: const Icon(
+                                      Icons.calendar_today,
+                                      size: 18,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 10,
                                       vertical: 8,
                                     ),
@@ -261,7 +266,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                                   child: Text(
                                     _startDate != null
                                         ? dateFormat.format(_startDate!)
-                                        : 'Any',
+                                        : l10n.anyDatePlaceholder,
                                     style: TextStyle(
                                       color: _startDate != null
                                           ? null
@@ -276,11 +281,14 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                               child: InkWell(
                                 onTap: () => _selectDate(context, false),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    labelText: 'To Date',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.calendar_today, size: 18),
-                                    contentPadding: EdgeInsets.symmetric(
+                                  decoration: InputDecoration(
+                                    labelText: l10n.toDateLabel,
+                                    border: const OutlineInputBorder(),
+                                    prefixIcon: const Icon(
+                                      Icons.calendar_today,
+                                      size: 18,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 10,
                                       vertical: 8,
                                     ),
@@ -288,7 +296,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                                   child: Text(
                                     _endDate != null
                                         ? dateFormat.format(_endDate!)
-                                        : 'Any',
+                                        : l10n.anyDatePlaceholder,
                                     style: TextStyle(
                                       color: _endDate != null
                                           ? null
@@ -326,7 +334,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Result',
+                              l10n.resultLabel,
                               style: Theme.of(context).textTheme.titleSmall
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             ),
@@ -338,32 +346,39 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                           runSpacing: 4,
                           children: [
                             _ResultChip(
-                              label: 'All',
+                              label: l10n.allResultsLabel,
                               icon: Icons.select_all,
                               color: colorScheme.primary,
                               selected: _selectedResult == null,
-                              onTap: () => setState(() => _selectedResult = null),
+                              onTap: () =>
+                                  setState(() => _selectedResult = null),
                             ),
                             _ResultChip(
-                              label: 'Win',
+                              label: l10n.winResultLabel,
                               icon: Icons.emoji_events,
                               color: MatchResult.won.color,
                               selected: _selectedResult == MatchResult.won,
-                              onTap: () => setState(() => _selectedResult = MatchResult.won),
+                              onTap: () => setState(
+                                () => _selectedResult = MatchResult.won,
+                              ),
                             ),
                             _ResultChip(
-                              label: 'Draw',
+                              label: l10n.drawResultLabel,
                               icon: Icons.handshake,
                               color: MatchResult.tie.color,
                               selected: _selectedResult == MatchResult.tie,
-                              onTap: () => setState(() => _selectedResult = MatchResult.tie),
+                              onTap: () => setState(
+                                () => _selectedResult = MatchResult.tie,
+                              ),
                             ),
                             _ResultChip(
-                              label: 'Loss',
+                              label: l10n.lossResultLabel,
                               icon: Icons.sentiment_dissatisfied,
                               color: MatchResult.lost.color,
                               selected: _selectedResult == MatchResult.lost,
-                              onTap: () => setState(() => _selectedResult = MatchResult.lost),
+                              onTap: () => setState(
+                                () => _selectedResult = MatchResult.lost,
+                              ),
                             ),
                           ],
                         ),
@@ -377,7 +392,7 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
                 FilledButton.icon(
                   onPressed: _search,
                   icon: const Icon(Icons.search),
-                  label: const Text('Search Matches'),
+                  label: Text(l10n.searchMatchesTitle),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -391,15 +406,15 @@ class _MatchSearchScreenState extends State<MatchSearchScreen> {
             child: _isSearching
                 ? const Center(child: CircularProgressIndicator())
                 : !_hasSearched
-                ? const EmptyState(
+                ? EmptyState(
                     icon: Icons.search,
-                    title: 'Set filters and tap Search',
+                    title: l10n.searchHintText,
                     iconSize: 64,
                   )
                 : _searchResults.isEmpty
-                ? const EmptyState(
+                ? EmptyState(
                     icon: Icons.search_off,
-                    title: 'No matches found',
+                    title: l10n.noMatchesFoundTitle,
                     iconSize: 64,
                   )
                 : _buildResultsList(),

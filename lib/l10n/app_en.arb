@@ -1,0 +1,228 @@
+{
+  "@@locale": "en",
+  "appTitle": "Boardex",
+  "navLibrary": "Library",
+  "navMatches": "Matches",
+  "navSummary": "Summary",
+  "navTools": "Tools",
+  "settingsTitle": "Settings",
+  "settingsSectionLanguage": "Language",
+  "langEnglish": "English",
+  "langSpanish": "Español",
+  "cancelButton": "Cancel",
+  "deleteButton": "Delete",
+  "saveButton": "Save",
+  "addButton": "Add",
+  "removeButton": "Remove",
+  "addGameTitle": "Add Game",
+  "editGameTitle": "Edit Game",
+  "gameNameLabel": "Game Name",
+  "gameNameRequired": "Please enter a game name",
+  "durationMinutesLabel": "Duration (minutes)",
+  "durationRequired": "Please enter duration",
+  "durationInvalid": "Please enter a valid duration",
+  "numberOfPlayersLabel": "Number of Players",
+  "minLabel": "Min",
+  "maxLabel": "Max",
+  "ratingLabel": "Rating",
+  "weightLabel": "Weight (Difficulty)",
+  "gameAlreadyExists": "A game with this name already exists in your library",
+  "gameUpdated": "Game updated!",
+  "gameAdded": "Game added!",
+  "addMatchTitle": "Add Match",
+  "editPlayerTitle": "Edit Player",
+  "addPlayerTitle": "Add Player",
+  "playerNameLabel": "Name",
+  "playerNameRequired": "Name is required",
+  "playerAlreadyAdded": "Player already added",
+  "playerColorLabel": "Color (optional)",
+  "playerScoreLabel": "Score (optional)",
+  "matchesTitle": "Matches",
+  "searchMatchesTooltip": "Search Matches",
+  "noMatchesRecordedTitle": "No matches recorded",
+  "noMatchesRecordedSubtitle": "Tap + to register your first match",
+  "addGameToLibraryLabel": "Add Game to Library",
+  "registerMatchLabel": "Register Match",
+  "matchDetailsTitle": "Match Details",
+  "exportStoryTooltip": "Export Story",
+  "deleteMatchTitle": "Delete Match",
+  "deleteMatchConfirmation": "Are you sure you want to delete this match of \"{gameName}\"?",
+  "@deleteMatchConfirmation": {
+    "placeholders": {
+      "gameName": {
+        "type": "String"
+      }
+    }
+  },
+  "matchDeleted": "Match deleted",
+  "dateLabel": "Date",
+  "timeLabel": "Time",
+  "durationLabel": "Duration",
+  "playersLabel": "Players",
+  "searchMatchesTitle": "Search Matches",
+  "clearFiltersTooltip": "Clear filters",
+  "dateRangeLabel": "Date Range",
+  "fromDateLabel": "From Date",
+  "toDateLabel": "To Date",
+  "anyDatePlaceholder": "Any",
+  "gameDetailsTitle": "Game Details",
+  "deleteGameTitle": "Delete Game",
+  "deleteGameConfirmation": "Are you sure you want to delete \"{gameName}\"?",
+  "@deleteGameConfirmation": {
+    "placeholders": {
+      "gameName": {
+        "type": "String"
+      }
+    }
+  },
+  "gameDeleted": "Game deleted",
+  "ownedLabel": "Owned",
+  "notOwnedLabel": "Not Owned",
+  "forSaleLabel": "For Sale",
+  "forTradeLabel": "For Trade",
+  "playedLabel": "Played",
+  "marketplaceTitle": "Marketplace",
+  "exportCatalogLabel": "Export Catalog",
+  "selectGameToExport": "Please select at least one game to export.",
+  "noGamesForSaleTitle": "No games marked for sale",
+  "catalogSaved": "Marketplace catalog saved to gallery!",
+  "saveImageButton": "Save Image",
+  "savingButton": "Saving...",
+  "searchGamesTitle": "Search Games",
+  "searchResultsTitle": "Results ({count})",
+  "@searchResultsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noGamesFoundTitle": "No games found",
+  "noGamesFoundSubtitle": "Try different search criteria",
+  "weightLightLabel": "1.0 Light",
+  "weightHeavyLabel": "5.0 Heavy",
+  "mechanicsLabel": "Mechanics",
+  "selectToFilterHint": "Select to filter",
+  "categoryLabel": "Category",
+  "ownershipStatusLabel": "Ownership Status",
+  "iOwnThisGame": "I own this game",
+  "toolsTitle": "Tools",
+  "turnOrderTitle": "Turn Order",
+  "timerTitle": "Timer",
+  "competitiveTitle": "Competitive",
+  "teamsButton": "Teams",
+  "howManyTeamsTitle": "How many teams?",
+  "twoTeamsLabel": "2 Teams",
+  "threeTeamsLabel": "3 Teams",
+  "resetTooltip": "Reset",
+  "touchInstruction": "Everyone place a finger\non the screen",
+  "holdInstruction": "Hold for 4 seconds",
+  "summaryTitle": "Summary",
+  "findMatchesHeading": "Find Matches",
+  "findMatchesSubheading": "Filter and group your matches by game",
+  "fromLabel": "From",
+  "toLabel": "To",
+  "resultLabel": "Result",
+  "allResultsLabel": "All",
+  "winResultLabel": "Win",
+  "drawResultLabel": "Draw",
+  "lossResultLabel": "Loss",
+  "playersHintText": "Leave empty to include all players",
+  "noPlayersFoundText": "No players found in matches",
+  "searchPlayersPlaceholder": "Type to search players...",
+  "viewSummaryButton": "View Summary",
+  "noMatchesFoundTitle": "No matches found",
+  "noMatchesFoundSubtitle": "Try adjusting your filters",
+  "filteredByLabel": "Filtered by: ",
+  "exportSummaryTitle": "Export Summary",
+  "boardGameRecapTitle": "Board Game Recap",
+  "matchesCountLabel": "Matches",
+  "gamesCountLabel": "Games",
+  "winRateLabel": "Win Rate",
+  "exportSummaryImageTooltip": "Export summary image",
+  "exportStoryTitle": "Export Story",
+  "themeLabel": "Theme",
+  "titleColorLabel": "Title color",
+  "whiteLabel": "White",
+  "blackLabel": "Black",
+  "statsLabel": "Stats",
+  "openingInstagramStory": "Opening Instagram Story...",
+  "instagramNotInstalled": "Could not open Instagram Story. Check if Instagram is installed.",
+  "preparingStory": "Preparing Story...",
+  "exportToInstagramStory": "Export to Instagram Story",
+  "searchHintText": "Set filters and tap Search",
+  "collectionStatusLabel": "Collection Status",
+  "marketplaceStatusLabel": "Marketplace Status",
+  "editMatchTooltip": "Edit Match",
+  "sellPriceLabel": "Sell Price",
+  "lastPlayedLabel": "Last Played",
+  "clearButton": "Clear",
+  "winsLabel": "Wins",
+  "drawsLabel": "Draws",
+  "lossesLabel": "Losses",
+  "startButton": "Start",
+  "pauseButton": "Pause",
+  "resumeButton": "Resume",
+  "timeUpLabel": "TIME'S UP",
+  "minutesAbbr": "min",
+  "secondsAbbr": "sec",
+  "weightShortLabel": "Weight",
+  "neverLabel": "Never",
+  "gameSectionTitle": "Game",
+  "dateTimeSectionTitle": "Date & Time",
+  "matchResultSectionTitle": "Match Result",
+  "playersOptionalSectionTitle": "Players (optional)",
+  "winnerSectionTitle": "Winner",
+  "matchDurationRequired": "Please enter match duration",
+  "noPlayersYet": "No players yet.",
+  "editPlayerTooltip": "Edit player",
+  "addPlayerButtonLabel": "Add Player",
+  "selectWinnerHint": "Select winner (optional)",
+  "noWinnerOption": "No winner selected",
+  "selectPhotoSectionTitle": "Select Photo",
+  "usingLibraryPhoto": "Using library photo",
+  "usingPreviousMatchPhoto": "Using photo from a previous match",
+  "noCarouselPhotos": "Game not in library — no previous photos to reuse",
+  "updateMatchButton": "Update Match",
+  "selectAllThatApply": "Select all that apply",
+  "lightLabel": "Light",
+  "mediumLabel": "Medium",
+  "heavyLabel": "Heavy",
+  "updateGameButton": "Update Game",
+  "validPriceRequired": "Please enter a valid price",
+  "markForSellLabel": "Mark for Sell",
+  "markForTradeLabel": "Mark for Trade",
+  "pausedLabel": "PAUSED",
+  "holdInstructionTeams": "Hold for 4 seconds to form {count} teams",
+  "@holdInstructionTeams": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "teamStartsBanner": "TEAM {number} STARTS!",
+  "@teamStartsBanner": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "saveImageError": "Could not save image: {error}",
+  "@saveImageError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotExportStory": "Could not export story: {error}",
+  "@couldNotExportStory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
+}

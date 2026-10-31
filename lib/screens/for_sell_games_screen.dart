@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/board_game.dart';
 import '../repositories/board_game_repository.dart';
 import '../utils/theme_utils.dart';
@@ -15,6 +16,7 @@ class ForSellGamesScreen extends StatefulWidget {
 }
 
 class _ForSellGamesScreenState extends State<ForSellGamesScreen> {
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
   late Future<List<BoardGame>> _forSellGamesFuture;
   final Set<int> _selectedGameIds = {};
   List<BoardGame> _loadedGames = [];
@@ -30,16 +32,16 @@ class _ForSellGamesScreenState extends State<ForSellGamesScreen> {
       _forSellGamesFuture = BoardGameRepository.instance
           .search(markForSell: true)
           .then((games) {
-        _loadedGames = games;
-        // By default all games are selected
-        _selectedGameIds.clear();
-        for (final g in games) {
-          if (g.id != null) {
-            _selectedGameIds.add(g.id!);
-          }
-        }
-        return games;
-      });
+            _loadedGames = games;
+            // By default all games are selected
+            _selectedGameIds.clear();
+            for (final g in games) {
+              if (g.id != null) {
+                _selectedGameIds.add(g.id!);
+              }
+            }
+            return games;
+          });
     });
   }
 
@@ -54,13 +56,14 @@ class _ForSellGamesScreenState extends State<ForSellGamesScreen> {
   }
 
   void _exportCatalog() {
-    final selectedGames =
-        _loadedGames.where((g) => _selectedGameIds.contains(g.id)).toList();
+    final selectedGames = _loadedGames
+        .where((g) => _selectedGameIds.contains(g.id))
+        .toList();
 
     if (selectedGames.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select at least one game to export.'),
+        SnackBar(
+          content: Text(l10n.selectGameToExport),
           backgroundColor: Colors.orange,
         ),
       );
@@ -77,18 +80,19 @@ class _ForSellGamesScreenState extends State<ForSellGamesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: 'Marketplace',
+        title: l10n.marketplaceTitle,
         titleColor: const Color(0xFFEAB308),
         titleIcon: Icons.storefront_rounded,
         actions: [
           IconButton(
-            tooltip: 'Export Catalog',
+            tooltip: l10n.exportCatalogLabel,
             icon: const Icon(Icons.ios_share_rounded, color: Colors.white),
             onPressed: _exportCatalog,
           ),
@@ -114,10 +118,10 @@ class _ForSellGamesScreenState extends State<ForSellGamesScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No games marked for sale',
+                    l10n.noGamesForSaleTitle,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -262,7 +266,9 @@ class _MarketplaceGameCard extends StatelessWidget {
                                 color: AppColors.tradeBlueBg,
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(
-                                  color: AppColors.tradeBlue.withValues(alpha: 0.6),
+                                  color: AppColors.tradeBlue.withValues(
+                                    alpha: 0.6,
+                                  ),
                                   width: 0.8,
                                 ),
                               ),
@@ -284,7 +290,9 @@ class _MarketplaceGameCard extends StatelessWidget {
                                 color: AppColors.sellGreenBg,
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(
-                                  color: AppColors.sellGreen.withValues(alpha: 0.6),
+                                  color: AppColors.sellGreen.withValues(
+                                    alpha: 0.6,
+                                  ),
                                   width: 0.8,
                                 ),
                               ),

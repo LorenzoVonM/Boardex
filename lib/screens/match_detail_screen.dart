@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
@@ -46,22 +47,21 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
   }
 
   Future<void> _deleteMatch(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Match'),
-        content: Text(
-          'Are you sure you want to delete this match of "${match.gameName}"?',
-        ),
+        title: Text(l10n.deleteMatchTitle),
+        content: Text(l10n.deleteMatchConfirmation(match.gameName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancelButton),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.deleteButton),
           ),
         ],
       ),
@@ -72,7 +72,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Match deleted'),
+            content: Text(l10n.matchDeleted),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -85,6 +85,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM d, yyyy');
     final timeFormat = DateFormat('h:mm a');
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -93,12 +94,12 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: 'Match Details',
+        title: l10n.matchDetailsTitle,
         titleColor: AppColors.brandTeal,
         titleIcon: Icons.sports_esports_rounded,
         actions: [
           IconButton(
-            tooltip: 'Export Story',
+            tooltip: l10n.exportStoryTooltip,
             onPressed: () {
               Navigator.push(
                 context,
@@ -211,7 +212,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                       Icons.calendar_today,
                       iconColor: AppColors.matchDate,
                       dateFormat.format(match.playedAt),
-                      'Date',
+                      l10n.dateLabel,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -221,7 +222,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                       Icons.access_time,
                       iconColor: AppColors.matchTime,
                       timeFormat.format(match.playedAt),
-                      'Time',
+                      l10n.timeLabel,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -231,7 +232,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                       Icons.timer,
                       iconColor: AppColors.matchDuration,
                       '${match.duration}m',
-                      'Duration',
+                      l10n.durationLabel,
                     ),
                   ),
                 ],
@@ -261,7 +262,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Players',
+                                  l10n.playersLabel,
                                   style: textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -379,7 +380,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip: 'Edit Match',
+                    tooltip: l10n.editMatchTooltip,
                     onPressed: () async {
                       final result = await Navigator.push<bool>(
                         context,
@@ -407,7 +408,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                   ),
                   const SizedBox(width: 12),
                   IconButton(
-                    tooltip: 'Delete Match',
+                    tooltip: l10n.deleteMatchTitle,
                     onPressed: () => _deleteMatch(context),
                     icon: Icon(
                       Icons.delete_outline_rounded,

@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import '../l10n/app_localizations.dart';
 import 'package:flutter_image_gallery_saver/flutter_image_gallery_saver.dart';
 
 import '../models/board_game.dart';
@@ -24,6 +25,7 @@ class _MarketplaceExportScreenState extends State<MarketplaceExportScreen> {
   bool _isSaving = false;
 
   Future<void> _saveImage() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_isSaving) return;
 
     setState(() => _isSaving = true);
@@ -51,8 +53,8 @@ class _MarketplaceExportScreenState extends State<MarketplaceExportScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Marketplace catalog saved to gallery!'),
+        SnackBar(
+          content: Text(l10n.catalogSaved),
           backgroundColor: Colors.green,
         ),
       );
@@ -60,7 +62,7 @@ class _MarketplaceExportScreenState extends State<MarketplaceExportScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Could not save image: $e'),
+          content: Text(l10n.saveImageError(e.toString())),
           backgroundColor: Colors.red,
         ),
       );
@@ -73,6 +75,7 @@ class _MarketplaceExportScreenState extends State<MarketplaceExportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
 
     final containerWidth = MediaQuery.of(context).size.width - 28;
@@ -80,8 +83,8 @@ class _MarketplaceExportScreenState extends State<MarketplaceExportScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const GlassAppBar(
-        title: 'Export Catalog',
+      appBar: GlassAppBar(
+        title: l10n.exportCatalogLabel,
         titleColor: Color(0xFFEAB308),
         titleIcon: Icons.ios_share_rounded,
       ),
@@ -100,11 +103,11 @@ class _MarketplaceExportScreenState extends State<MarketplaceExportScreen> {
               child: Container(
                 width: containerWidth,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF0ED), // Solid 100% Opaque Light Coral
+                  color: const Color(
+                    0xFFFFF0ED,
+                  ), // Solid 100% Opaque Light Coral
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFFF8BDB7),
-                  ),
+                  border: Border.all(color: const Color(0xFFF8BDB7)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.06),
@@ -144,7 +147,9 @@ class _MarketplaceExportScreenState extends State<MarketplaceExportScreen> {
                         ),
                       )
                     : const Icon(Icons.download_rounded),
-                label: Text(_isSaving ? 'Saving...' : 'Save Image'),
+                label: Text(
+                  _isSaving ? l10n.savingButton : l10n.saveImageButton,
+                ),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.headerCoral,
                   foregroundColor: Colors.white,
@@ -176,9 +181,7 @@ class _ExportGameCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFFFDAD4), // Solid Opaque Coral Theme Container
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: const Color(0xFFF6ACA3),
-        ),
+        border: Border.all(color: const Color(0xFFF6ACA3)),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -216,7 +219,9 @@ class _ExportGameCard extends StatelessWidget {
                               color: AppColors.tradeBlueBg,
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
-                                color: AppColors.tradeBlue.withValues(alpha: 0.6),
+                                color: AppColors.tradeBlue.withValues(
+                                  alpha: 0.6,
+                                ),
                                 width: 0.5,
                               ),
                             ),
@@ -238,7 +243,9 @@ class _ExportGameCard extends StatelessWidget {
                               color: AppColors.sellGreenBg,
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
-                                color: AppColors.sellGreen.withValues(alpha: 0.6),
+                                color: AppColors.sellGreen.withValues(
+                                  alpha: 0.6,
+                                ),
                                 width: 0.5,
                               ),
                             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/board_game.dart';
 import '../constants/game_constants.dart';
 import '../repositories/board_game_repository.dart';
@@ -80,6 +81,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
   }
 
   Future<void> _saveGame() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       final double? parsedPrice = _sellPriceController.text.trim().isNotEmpty
           ? double.tryParse(_sellPriceController.text.trim())
@@ -122,10 +124,8 @@ class _AddGameScreenState extends State<AddGameScreen> {
           if (exists) {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'A game with this name already exists in your library',
-                  ),
+                SnackBar(
+                  content: Text(l10n.gameAlreadyExists),
                   backgroundColor: Colors.orange,
                 ),
               );
@@ -138,7 +138,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(isEditing ? 'Game updated!' : 'Game added!'),
+              content: Text(isEditing ? l10n.gameUpdated : l10n.gameAdded),
               backgroundColor: Colors.green,
             ),
           );
@@ -159,13 +159,14 @@ class _AddGameScreenState extends State<AddGameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: isEditing ? 'Edit Game' : 'Add Game',
+        title: isEditing ? l10n.editGameTitle : l10n.addGameTitle,
         titleColor: AppColors.headerCoral,
         titleIcon: Icons.grid_view_rounded,
       ),
@@ -211,7 +212,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a game name';
+                            return l10n.gameNameRequired;
                           }
                           return null;
                         },
@@ -234,11 +235,11 @@ class _AddGameScreenState extends State<AddGameScreen> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter duration';
+                    return l10n.durationRequired;
                   }
                   final num = int.tryParse(value);
                   if (num == null || num < 1) {
-                    return 'Please enter a valid duration';
+                    return l10n.durationInvalid;
                   }
                   return null;
                 },
@@ -426,7 +427,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
               _buildSectionCard(
                 title: 'Mechanics',
                 icon: Icons.build,
-                subtitle: 'Select all that apply',
+                subtitle: l10n.selectAllThatApply,
                 child: Wrap(
                   spacing: 6,
                   runSpacing: 2,
@@ -539,7 +540,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                         if (value != null && value.trim().isNotEmpty) {
                           final price = double.tryParse(value.trim());
                           if (price == null || price < 0) {
-                            return 'Please enter a valid price';
+                            return l10n.validPriceRequired;
                           }
                         }
                         return null;
@@ -554,7 +555,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                           color: AppColors.sellGreen,
                         ),
                         const SizedBox(width: 10),
-                        const Expanded(child: Text('Mark for Sell')),
+                        Expanded(child: Text(l10n.markForSellLabel)),
                         Switch(
                           value: _markForSell,
                           onChanged: (value) =>
@@ -571,7 +572,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                           color: AppColors.tradeBlue,
                         ),
                         const SizedBox(width: 10),
-                        const Expanded(child: Text('Mark for Trade')),
+                        Expanded(child: Text(l10n.markForTradeLabel)),
                         Switch(
                           value: _markForTrade,
                           onChanged: (value) =>
@@ -600,7 +601,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                 child: FilledButton.icon(
                   onPressed: _saveGame,
                   icon: Icon(isEditing ? Icons.save : Icons.add),
-                  label: Text(isEditing ? 'Update Game' : 'Add Game'),
+                  label: Text(isEditing ? l10n.updateGameButton : l10n.addGameTitle),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.headerCoral,
                     foregroundColor: Colors.white,

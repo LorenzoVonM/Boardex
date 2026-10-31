@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../utils/theme_utils.dart';
 import '../widgets/glass_app_bar.dart';
 import 'single_player_selection_screen.dart';
@@ -8,18 +9,19 @@ class TurnOrderToolScreen extends StatelessWidget {
   const TurnOrderToolScreen({super.key});
 
   void _showTeamDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
         return AlertDialog(
-          title: const Text('How many teams?'),
+          title: Text(l10n.howManyTeamsTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: Icon(Icons.groups, color: colorScheme.primary),
-                title: const Text('2 Teams'),
+                title: Text(l10n.twoTeamsLabel),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -37,7 +39,7 @@ class TurnOrderToolScreen extends StatelessWidget {
               const SizedBox(height: 4),
               ListTile(
                 leading: Icon(Icons.groups_3, color: colorScheme.primary),
-                title: const Text('3 Teams'),
+                title: Text(l10n.threeTeamsLabel),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -61,11 +63,12 @@ class TurnOrderToolScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16;
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const GlassAppBar(
-        title: 'Turn Order',
+      appBar: GlassAppBar(
+        title: l10n.turnOrderTitle,
         titleColor: Color(0xFFEAB308),
         titleIcon: Icons.casino_rounded,
       ),
@@ -84,7 +87,7 @@ class TurnOrderToolScreen extends StatelessWidget {
               _buildMenuButton(
                 context,
                 icon: Icons.person,
-                label: 'Competitive',
+                label: l10n.competitiveTitle,
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -99,7 +102,7 @@ class TurnOrderToolScreen extends StatelessWidget {
               _buildMenuButton(
                 context,
                 icon: Icons.groups,
-                label: 'Teams',
+                label: l10n.teamsButton,
                 onPressed: () => _showTeamDialog(context),
               ),
             ],

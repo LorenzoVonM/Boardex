@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../l10n/app_localizations.dart';
 
 class SinglePlayerSelectionScreen extends StatefulWidget {
   const SinglePlayerSelectionScreen({super.key});
@@ -14,6 +15,7 @@ class SinglePlayerSelectionScreen extends StatefulWidget {
 class _SinglePlayerSelectionScreenState
     extends State<SinglePlayerSelectionScreen>
     with TickerProviderStateMixin {
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
   final Map<int, _TouchPoint> _touchPoints = {};
   Timer? _selectionTimer;
   bool _isSelecting = false;
@@ -209,10 +211,11 @@ class _SinglePlayerSelectionScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        title: const Text('Competitive'),
+        title: Text(l10n.competitiveTitle),
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -221,7 +224,7 @@ class _SinglePlayerSelectionScreenState
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _reset,
-              tooltip: 'Reset',
+              tooltip: l10n.resetTooltip,
             ),
         ],
       ),
@@ -286,7 +289,7 @@ class _SinglePlayerSelectionScreenState
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Everyone place a finger\non the screen',
+                      l10n.touchInstruction,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 24,
@@ -296,7 +299,7 @@ class _SinglePlayerSelectionScreenState
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Hold for 4 seconds',
+                      l10n.holdInstruction,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white.withValues(alpha: 0.3),

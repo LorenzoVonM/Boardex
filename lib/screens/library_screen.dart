@@ -6,10 +6,12 @@ import '../widgets/expandable_fab_menu.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/game_card.dart';
 import '../widgets/glass_app_bar.dart';
+import '../l10n/app_localizations.dart';
 import 'add_game_screen.dart';
 import 'add_match_screen.dart';
 import 'search_screen.dart';
 import 'game_detail_screen.dart';
+import 'settings_screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -50,7 +52,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
   bool _onScrollNotification(ScrollNotification notification) {
     if (notification.metrics.maxScrollExtent > 0) {
       final isAtBottom =
-          notification.metrics.pixels >= notification.metrics.maxScrollExtent - 40;
+          notification.metrics.pixels >=
+          notification.metrics.maxScrollExtent - 40;
       if (isAtBottom != _isFabHidden) {
         setState(() {
           _isFabHidden = isAtBottom;
@@ -76,7 +79,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: 'Library',
+        title: AppLocalizations.of(context)!.navLibrary,
         titleColor: AppColors.headerCoral,
         titleIcon: Icons.grid_view_rounded,
         actions: [
@@ -87,6 +90,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const SearchScreen()),
+              );
+            },
+          ),
+          IconButton(
+            tooltip: 'Settings',
+            icon: const Icon(Icons.settings_rounded, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
             },
           ),

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/board_game.dart';
 import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
@@ -91,6 +92,7 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
   final GlobalKey _stickerKey = GlobalKey();
   bool _isSharing = false;
   StoryBackgroundStyle _selectedBackground = StoryBackgroundStyle.coral;
+  bool _isTitleLight = true;
 
   BoardGame? _game;
   bool _isFirstPlay = false;
@@ -193,6 +195,7 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
   }
 
   Future<void> _shareStory() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_isSharing) return;
 
     setState(() => _isSharing = true);
@@ -206,14 +209,14 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
       );
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Opening Instagram Story...')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.openingInstagramStory)));
     } catch (e) {
       if (!mounted) return;
       final message = e.toString().toLowerCase().contains('instagram')
-          ? 'Could not open Instagram Story. Check if Instagram is installed.'
-          : 'Could not export story: $e';
+          ? l10n.instagramNotInstalled
+          : l10n.couldNotExportStory(e.toString());
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
@@ -226,6 +229,7 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hasPlayers = widget.match.players.isNotEmpty;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 12;
     // 16px padding on each side; height derived from 9:16 aspect ratio
@@ -233,8 +237,8 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
     final stickerHeight = stickerWidth * (16.0 / 9.0);
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const GlassAppBar(
-        title: 'Export Story',
+      appBar: GlassAppBar(
+        title: l10n.exportStoryTitle,
         titleColor: Color(0xFF7C3AED),
         titleIcon: Icons.auto_awesome_rounded,
       ),
@@ -263,6 +267,7 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
                       showTimesPlayed: _showTimesPlayed,
                       showPlayers: _showPlayers,
                       isFirstPlay: _isFirstPlay,
+                      titleIsLight: _isTitleLight,
                       width: stickerWidth,
                       height: stickerHeight,
                     ),
@@ -289,11 +294,52 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Title color selector
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        l10n.titleColorLabel,
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ChoiceChip(
+                            label: Text(l10n.whiteLabel),
+                            avatar: const Icon(
+                              Icons.format_color_text,
+                              size: 16,
+                            ),
+                            selected: _isTitleLight,
+                            onSelected: (_) =>
+                                setState(() => _isTitleLight = true),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ChoiceChip(
+                            label: Text(l10n.blackLabel),
+                            avatar: const Icon(
+                              Icons.format_color_text,
+                              size: 16,
+                            ),
+                            selected: !_isTitleLight,
+                            onSelected: (_) =>
+                                setState(() => _isTitleLight = false),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
                     // Background Color Swatches Row
                     Row(
                       children: [
                         Text(
-                          'Theme',
+                          l10n.themeLabel,
                           style: Theme.of(context).textTheme.labelMedium
                               ?.copyWith(fontWeight: FontWeight.w800),
                         ),
@@ -324,95 +370,84 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
                       ],
                     ),
 
-                    // Optional Stats Chips Row
+                    // Optional Stats Chips Grid (wraps into full rows)
                     if (_game != null || hasPlayers) ...[
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          l10n.statsLabel,
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(fontWeight: FontWeight.w800),
+                        ),
+                      ),
                       const SizedBox(height: 6),
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
                         children: [
-                          Text(
-                            'Stats',
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  if (_game != null) ...[
-                                    Tooltip(
-                                      message:
-                                          'Rating (${_game!.rating.toStringAsFixed(1)})',
-                                      child: FilterChip(
-                                        visualDensity: VisualDensity.compact,
-                                        label: Icon(
-                                          Icons.star_rounded,
-                                          size: 16,
-                                          color: getRatingColor(_game!.rating),
-                                        ),
-                                        selected: _showRating,
-                                        onSelected: (val) =>
-                                            setState(() => _showRating = val),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Tooltip(
-                                      message:
-                                          'Weight (${_game!.weight.toStringAsFixed(1)})',
-                                      child: FilterChip(
-                                        visualDensity: VisualDensity.compact,
-                                        label: Icon(
-                                          Icons.fitness_center,
-                                          size: 16,
-                                          color: getWeightColor(_game!.weight),
-                                        ),
-                                        selected: _showWeight,
-                                        onSelected: (val) =>
-                                            setState(() => _showWeight = val),
-                                      ),
-                                    ),
-                                    if (_game!.timesPlayed > 0) ...[
-                                      const SizedBox(width: 6),
-                                      Tooltip(
-                                        message:
-                                            'Played (${_game!.timesPlayed}x)',
-                                        child: FilterChip(
-                                          visualDensity: VisualDensity.compact,
-                                          label: const Icon(
-                                            Icons.casino,
-                                            size: 16,
-                                            color: AppColors.metricPlayed,
-                                          ),
-                                          selected: _showTimesPlayed,
-                                          onSelected: (val) => setState(
-                                            () => _showTimesPlayed = val,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                  if (hasPlayers) ...[
-                                    const SizedBox(width: 6),
-                                    Tooltip(
-                                      message: 'Players',
-                                      child: FilterChip(
-                                        visualDensity: VisualDensity.compact,
-                                        label: const Icon(
-                                          Icons.group,
-                                          size: 16,
-                                          color: AppColors.metricPlayers,
-                                        ),
-                                        selected: _showPlayers,
-                                        onSelected: (val) =>
-                                            setState(() => _showPlayers = val),
-                                      ),
-                                    ),
-                                  ],
-                                ],
+                          if (_game != null) ...[
+                            Tooltip(
+                              message:
+                                  'Rating (${_game!.rating.toStringAsFixed(1)})',
+                              child: FilterChip(
+                                visualDensity: VisualDensity.compact,
+                                label: Icon(
+                                  Icons.star_rounded,
+                                  size: 16,
+                                  color: getRatingColor(_game!.rating),
+                                ),
+                                selected: _showRating,
+                                onSelected: (val) =>
+                                    setState(() => _showRating = val),
                               ),
                             ),
-                          ),
+                            Tooltip(
+                              message:
+                                  'Weight (${_game!.weight.toStringAsFixed(1)})',
+                              child: FilterChip(
+                                visualDensity: VisualDensity.compact,
+                                label: Icon(
+                                  Icons.fitness_center,
+                                  size: 16,
+                                  color: getWeightColor(_game!.weight),
+                                ),
+                                selected: _showWeight,
+                                onSelected: (val) =>
+                                    setState(() => _showWeight = val),
+                              ),
+                            ),
+                            if (_game!.timesPlayed > 0)
+                              Tooltip(
+                                message: 'Played (${_game!.timesPlayed}x)',
+                                child: FilterChip(
+                                  visualDensity: VisualDensity.compact,
+                                  label: const Icon(
+                                    Icons.casino,
+                                    size: 16,
+                                    color: AppColors.metricPlayed,
+                                  ),
+                                  selected: _showTimesPlayed,
+                                  onSelected: (val) =>
+                                      setState(() => _showTimesPlayed = val),
+                                ),
+                              ),
+                          ],
+                          if (hasPlayers)
+                            Tooltip(
+                              message: 'Players',
+                              child: FilterChip(
+                                visualDensity: VisualDensity.compact,
+                                label: const Icon(
+                                  Icons.group,
+                                  size: 16,
+                                  color: AppColors.metricPlayers,
+                                ),
+                                selected: _showPlayers,
+                                onSelected: (val) =>
+                                    setState(() => _showPlayers = val),
+                              ),
+                            ),
                         ],
                       ),
                     ],
@@ -433,8 +468,8 @@ class _MatchStoryExportScreenState extends State<MatchStoryExportScreen> {
                     : const Icon(Icons.auto_awesome),
                 label: Text(
                   _isSharing
-                      ? 'Preparing Story...'
-                      : 'Export to Instagram Story',
+                      ? l10n.preparingStory
+                      : l10n.exportToInstagramStory,
                 ),
               ),
             ],
@@ -546,6 +581,7 @@ class _MatchStorySticker extends StatelessWidget {
   final bool showTimesPlayed;
   final bool showPlayers;
   final bool isFirstPlay;
+  final bool titleIsLight;
   final double width;
   final double height;
 
@@ -559,6 +595,7 @@ class _MatchStorySticker extends StatelessWidget {
     this.showTimesPlayed = false,
     this.showPlayers = false,
     this.isFirstPlay = false,
+    this.titleIsLight = true,
     required this.width,
     required this.height,
   });
@@ -634,7 +671,9 @@ class _MatchStorySticker extends StatelessWidget {
                     style: TextStyle(
                       // ── Game title text style ────────────────────────────────
                       // Near-white. Replace with a themed color if the background clashes.
-                      color: const ui.Color.fromARGB(255, 243, 243, 243),
+                      color: titleIsLight
+                          ? const ui.Color.fromARGB(255, 243, 243, 243)
+                          : const ui.Color.fromARGB(255, 28, 28, 28),
                       shadows: <Shadow>[
                         Shadow(
                           // Drop shadow improves readability over bright photo backgrounds.
@@ -675,8 +714,7 @@ class _MatchStorySticker extends StatelessWidget {
                 top: photoTop + 14,
                 child: _overlayMetrics(),
               ),
-              // ── Result tag, first-play badge, and player list — right side ──────
-              // Stacked in a Column so new badges push players down automatically.
+              // ── Result tag and player list — right side ──────────────────
               Positioned(
                 right: horizontalInset + 14,
                 top: photoTop + 14,
@@ -685,15 +723,21 @@ class _MatchStorySticker extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _classicResultTag(),
-                    if (isFirstPlay) ...[
-                      const SizedBox(height: 4),
-                      _firstPlayTag(),
-                    ],
-                    const SizedBox(height: 4),
+                    const SizedBox(
+                      height: 14,
+                    ), // matches the 14px gap from photo border to result tag
                     _playersOverlay(),
                   ],
                 ),
               ),
+              // ── First Play badge — centered at the top of the photo ──────────
+              if (isFirstPlay)
+                Positioned(
+                  left: horizontalInset,
+                  right: horizontalInset,
+                  top: photoTop + 10,
+                  child: Center(child: _firstPlayTag()),
+                ),
               // ── Bottom info cards row (date / time / duration) ─────────────
               // Each card is equally wide (Expanded). To add a 4th card, append
               // another SizedBox(width: 8) + Expanded(_classicInfoCard(...)).
@@ -759,6 +803,13 @@ class _MatchStorySticker extends StatelessWidget {
             winnerName.isNotEmpty &&
             player.trim().toLowerCase() == winnerName;
 
+        // Use the player's chosen color; fall back to white if none was set.
+        final rawColor = match.playerColors[player];
+        final nameColor = rawColor != null ? Color(rawColor) : Colors.white;
+
+        final score = match.playerScores[player];
+        final label = score != null ? '$player - $score' : player;
+
         return Container(
           margin: const EdgeInsets.only(bottom: 4),
           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
@@ -785,9 +836,9 @@ class _MatchStorySticker extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                player,
+                label,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: nameColor,
                   fontSize: 10.0, // increase to make player names larger
                   fontWeight: isWinner ? FontWeight.w900 : FontWeight.w700,
                 ),
@@ -978,18 +1029,18 @@ class _MatchStorySticker extends StatelessWidget {
   // Shown only when game.timesPlayed == 1 (this is the only recorded match).
   Widget _firstPlayTag() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
         color: AppColors.brandTeal.withValues(alpha: 0.88),
-        borderRadius: BorderRadius.circular(9),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.45),
-          width: 1.0,
+          color: Colors.white.withValues(alpha: 0.55),
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brandTeal.withValues(alpha: 0.45),
-            blurRadius: 6,
+            color: AppColors.brandTeal.withValues(alpha: 0.5),
+            blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -997,15 +1048,15 @@ class _MatchStorySticker extends StatelessWidget {
       child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.flag_rounded, size: 11, color: Colors.white),
-          SizedBox(width: 4),
+          Icon(Icons.flag_rounded, size: 13, color: Colors.white),
+          SizedBox(width: 5),
           Text(
             'First Play!',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 10.0,
+              fontSize: 11.5,
               fontWeight: FontWeight.w900,
-              letterSpacing: 0.1,
+              letterSpacing: 0.3,
             ),
           ),
         ],

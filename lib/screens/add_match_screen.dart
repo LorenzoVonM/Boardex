@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
@@ -58,6 +59,8 @@ class _PlayerDialog extends StatefulWidget {
 }
 
 class _PlayerDialogState extends State<_PlayerDialog> {
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   late final TextEditingController _nameCtrl;
   late final TextEditingController _scoreCtrl;
   int? _selectedColor;
@@ -90,12 +93,12 @@ class _PlayerDialogState extends State<_PlayerDialog> {
   void _submit() {
     final trimmed = _nameCtrl.text.trim();
     if (trimmed.isEmpty) {
-      setState(() => _nameError = 'Name is required');
+      setState(() => _nameError = l10n.playerNameRequired);
       return;
     }
     if (trimmed != widget.editingName &&
         widget.existingPlayers.contains(trimmed)) {
-      setState(() => _nameError = 'Player already added');
+      setState(() => _nameError = l10n.playerAlreadyAdded);
       return;
     }
 
@@ -110,8 +113,11 @@ class _PlayerDialogState extends State<_PlayerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: Text(widget.editingName != null ? 'Edit Player' : 'Add Player'),
+      title: Text(
+        widget.editingName != null ? l10n.editPlayerTitle : l10n.addPlayerTitle,
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -121,7 +127,7 @@ class _PlayerDialogState extends State<_PlayerDialog> {
               controller: _nameCtrl,
               autofocus: widget.editingName == null,
               decoration: InputDecoration(
-                labelText: 'Name',
+                labelText: l10n.playerNameLabel,
                 border: const OutlineInputBorder(),
                 errorText: _nameError,
               ),
@@ -134,7 +140,7 @@ class _PlayerDialogState extends State<_PlayerDialog> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Color (optional)',
+              l10n.playerColorLabel,
               style: Theme.of(context).textTheme.labelMedium,
             ),
             const SizedBox(height: 8),
@@ -175,8 +181,8 @@ class _PlayerDialogState extends State<_PlayerDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _scoreCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Score (optional)',
+              decoration: InputDecoration(
+                labelText: l10n.playerScoreLabel,
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
@@ -194,17 +200,19 @@ class _PlayerDialogState extends State<_PlayerDialog> {
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Remove'),
+            child: Text(l10n.removeButton),
           ),
         TextButton(
           onPressed: () {
             _dismiss();
           },
-          child: const Text('Cancel'),
+          child: Text(l10n.cancelButton),
         ),
         FilledButton(
           onPressed: _submit,
-          child: Text(widget.editingName != null ? 'Save' : 'Add'),
+          child: Text(
+            widget.editingName != null ? l10n.saveButton : l10n.addButton,
+          ),
         ),
       ],
     );
@@ -212,6 +220,8 @@ class _PlayerDialogState extends State<_PlayerDialog> {
 }
 
 class _AddMatchScreenState extends State<AddMatchScreen> {
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   final _formKey = GlobalKey<FormState>();
   final _gameNameController = TextEditingController();
   final _durationController = TextEditingController();
@@ -534,7 +544,11 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                 child: FilledButton.icon(
                   onPressed: _saveMatch,
                   icon: Icon(isEditing ? Icons.save : Icons.check),
-                  label: Text(isEditing ? 'Update Match' : 'Register Match'),
+                  label: Text(
+                    isEditing
+                        ? l10n.updateMatchButton
+                        : l10n.registerMatchLabel,
+                  ),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     textStyle: const TextStyle(
@@ -554,7 +568,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   Widget _buildGameSection() {
     final colorScheme = Theme.of(context).colorScheme;
     return _buildSectionCard(
-      title: 'Game',
+      title: l10n.gameSectionTitle,
       leading: Icon(Icons.casino, size: 18, color: colorScheme.primary),
       child: Column(
         children: [
@@ -583,7 +597,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                     controller: controller,
                     focusNode: focusNode,
                     decoration: InputDecoration(
-                      labelText: 'Game Name',
+                      labelText: l10n.gameNameLabel,
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.casino),
                       suffixIcon: _matchCount > 0
@@ -613,7 +627,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a game name';
+                        return l10n.gameNameRequired;
                       }
                       return null;
                     },
@@ -627,19 +641,19 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
           const SizedBox(height: 10),
           TextFormField(
             controller: _durationController,
-            decoration: const InputDecoration(
-              labelText: 'Duration (minutes)',
+            decoration: InputDecoration(
+              labelText: l10n.durationMinutesLabel,
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.timer),
             ),
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter match duration';
+                return l10n.matchDurationRequired;
               }
               final duration = int.tryParse(value);
               if (duration == null || duration < 1) {
-                return 'Please enter a valid duration';
+                return l10n.durationInvalid;
               }
               return null;
             },
@@ -652,7 +666,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   Widget _buildDateTimeSection() {
     final colorScheme = Theme.of(context).colorScheme;
     return _buildSectionCard(
-      title: 'Date & Time',
+      title: l10n.dateTimeSectionTitle,
       leading: Icon(Icons.date_range, size: 18, color: colorScheme.primary),
       child: Row(
         children: [
@@ -671,8 +685,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
               },
               borderRadius: BorderRadius.circular(12),
               child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Date',
+                decoration: InputDecoration(
+                  labelText: l10n.dateLabel,
                   prefixIcon: Icon(Icons.calendar_today, size: 18),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
@@ -700,8 +714,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
               },
               borderRadius: BorderRadius.circular(12),
               child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Time',
+                decoration: InputDecoration(
+                  labelText: l10n.timeLabel,
                   prefixIcon: Icon(Icons.access_time, size: 18),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
@@ -721,24 +735,24 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   Widget _buildResultSection() {
     final colorScheme = Theme.of(context).colorScheme;
     return _buildSectionCard(
-      title: 'Match Result',
+      title: l10n.matchResultSectionTitle,
       leading: Icon(Icons.emoji_events, size: 18, color: colorScheme.primary),
       child: Center(
         child: SegmentedButton<MatchResult>(
-          segments: const [
+          segments: [
             ButtonSegment<MatchResult>(
               value: MatchResult.won,
-              label: Text('Win'),
+              label: Text(l10n.winResultLabel),
               icon: Icon(Icons.emoji_events),
             ),
             ButtonSegment<MatchResult>(
               value: MatchResult.tie,
-              label: Text('Draw'),
+              label: Text(l10n.drawResultLabel),
               icon: Icon(Icons.handshake),
             ),
             ButtonSegment<MatchResult>(
               value: MatchResult.lost,
-              label: Text('Loss'),
+              label: Text(l10n.lossResultLabel),
               icon: Icon(Icons.sentiment_dissatisfied),
             ),
           ],
@@ -765,7 +779,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   Widget _buildPlayersSection() {
     final colorScheme = Theme.of(context).colorScheme;
     return _buildSectionCard(
-      title: 'Players (optional)',
+      title: l10n.playersOptionalSectionTitle,
       leading: Icon(Icons.people, size: 18, color: colorScheme.primary),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -774,7 +788,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Text(
-                'No players yet.',
+                l10n.noPlayersYet,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -839,7 +853,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                     icon: const Icon(Icons.edit_outlined, size: 18),
                     onPressed: () => _showPlayerDialog(editingName: name),
                     visualDensity: VisualDensity.compact,
-                    tooltip: 'Edit player',
+                    tooltip: l10n.editPlayerTooltip,
                   ),
                 ],
               ),
@@ -849,7 +863,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
           TextButton.icon(
             onPressed: _showPlayerDialog,
             icon: const Icon(Icons.person_add_outlined),
-            label: const Text('Add Player'),
+            label: Text(l10n.addPlayerButtonLabel),
           ),
         ],
       ),
@@ -858,7 +872,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
 
   Widget _buildWinnerSection() {
     return _buildSectionCard(
-      title: 'Winner',
+      title: l10n.winnerSectionTitle,
       leading: const Icon(
         Icons.emoji_events,
         size: 18,
@@ -866,14 +880,14 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
       ),
       child: DropdownButtonFormField<String?>(
         initialValue: _winner,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           border: OutlineInputBorder(),
-          hintText: 'Select winner (optional)',
+          hintText: l10n.selectWinnerHint,
         ),
         items: [
-          const DropdownMenuItem<String?>(
+          DropdownMenuItem<String?>(
             value: null,
-            child: Text('No winner selected'),
+            child: Text(l10n.noWinnerOption),
           ),
           ..._players.map((player) {
             return DropdownMenuItem<String>(value: player, child: Text(player));
@@ -897,7 +911,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
       children: [
         if (hasCarousel)
           _buildSectionCard(
-            title: 'Select a Photo',
+            title: l10n.selectPhotoSectionTitle,
             leading: Icon(
               Icons.collections,
               size: 18,
@@ -921,8 +935,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                   Center(
                     child: Text(
                       _carouselItems[_selectedCarouselIndex!].isLibrary
-                          ? 'Using library photo'
-                          : 'Using photo from a previous match',
+                          ? l10n.usingLibraryPhoto
+                          : l10n.usingPreviousMatchPhoto,
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.primary,
                         fontWeight: FontWeight.w500,
@@ -949,7 +963,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8, left: 4),
             child: Text(
-              'Game not in library — no previous photos to reuse',
+              l10n.noCarouselPhotos,
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
@@ -1031,7 +1045,7 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'Library',
+                        l10n.navLibrary,
                         style: textTheme.labelSmall?.copyWith(
                           color: colorScheme.surface,
                           fontSize: 9,

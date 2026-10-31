@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../models/board_game.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
@@ -14,20 +15,21 @@ class GameDetailScreen extends StatelessWidget {
   const GameDetailScreen({super.key, required this.game});
 
   Future<void> _deleteGame(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Game'),
-        content: Text('Are you sure you want to delete "${game.name}"?'),
+        title: Text(l10n.deleteGameTitle),
+        content: Text(l10n.deleteGameConfirmation(game.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancelButton),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.deleteButton),
           ),
         ],
       ),
@@ -37,8 +39,8 @@ class GameDetailScreen extends StatelessWidget {
       await BoardGameRepository.instance.delete(game.id!);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Game deleted'),
+          SnackBar(
+            content: Text(l10n.gameDeleted),
             backgroundColor: Colors.orange,
           ),
         );
@@ -49,6 +51,7 @@ class GameDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final weightColor = getWeightColor(game.weight);
 
@@ -57,7 +60,7 @@ class GameDetailScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: 'Game Details',
+        title: l10n.gameDetailsTitle,
         titleColor: AppColors.headerCoral,
         titleIcon: Icons.grid_view_rounded,
       ),
@@ -133,7 +136,7 @@ class GameDetailScreen extends StatelessWidget {
                       context,
                       Icons.people,
                       '${game.minPlayers}-${game.maxPlayers}',
-                      'Players',
+                      l10n.playersLabel,
                       iconColor: AppColors.metricPlayers,
                     ),
                   ),
@@ -143,7 +146,7 @@ class GameDetailScreen extends StatelessWidget {
                       context,
                       Icons.timer,
                       '${game.duration}m',
-                      'Duration',
+                      l10n.durationLabel,
                       iconColor: AppColors.metricDuration,
                     ),
                   ),
@@ -153,7 +156,7 @@ class GameDetailScreen extends StatelessWidget {
                       context,
                       Icons.star_rounded,
                       game.rating.toStringAsFixed(1),
-                      'Rating',
+                      l10n.ratingLabel,
                       iconColor: getRatingColor(game.rating),
                     ),
                   ),
@@ -163,7 +166,7 @@ class GameDetailScreen extends StatelessWidget {
                       context,
                       Icons.fitness_center,
                       game.weight.toStringAsFixed(1),
-                      'Weight',
+                      l10n.weightShortLabel,
                       iconColor: weightColor,
                     ),
                   ),
@@ -173,7 +176,7 @@ class GameDetailScreen extends StatelessWidget {
                       context,
                       Icons.casino,
                       game.timesPlayed.toString(),
-                      'Played',
+                      l10n.playedLabel,
                       iconColor: AppColors.metricPlayed,
                     ),
                   ),
@@ -215,7 +218,7 @@ class GameDetailScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            game.isOwned ? 'Owned' : 'Not Owned',
+                            game.isOwned ? l10n.ownedLabel : l10n.notOwnedLabel,
                             style: TextStyle(
                               color: game.isOwned
                                   ? AppColors.ownedTeal
@@ -238,22 +241,20 @@ class GameDetailScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.sellGreenBg,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.sellGreenBorder,
-                          ),
+                          border: Border.all(color: AppColors.sellGreenBorder),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.sell,
                               size: 18,
                               color: AppColors.sellGreen,
                             ),
-                            SizedBox(width: 6),
+                            const SizedBox(width: 6),
                             Text(
-                              'For Sale',
-                              style: TextStyle(
+                              l10n.forSaleLabel,
+                              style: const TextStyle(
                                 color: AppColors.sellGreen,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
@@ -274,22 +275,20 @@ class GameDetailScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.tradeBlueBg,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.tradeBlueBorder,
-                          ),
+                          border: Border.all(color: AppColors.tradeBlueBorder),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.swap_horiz,
                               size: 18,
                               color: AppColors.tradeBlue,
                             ),
-                            SizedBox(width: 6),
+                            const SizedBox(width: 6),
                             Text(
-                              'For Trade',
-                              style: TextStyle(
+                              l10n.forTradeLabel,
+                              style: const TextStyle(
                                 color: AppColors.tradeBlue,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
@@ -312,7 +311,7 @@ class GameDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Sell Price',
+                      l10n.sellPriceLabel,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -325,14 +324,17 @@ class GameDetailScreen extends StatelessWidget {
                       runSpacing: 4,
                       children: [
                         Chip(
-                          label: Text('\$${game.sellPrice!.toStringAsFixed(2)}'),
+                          label: Text(
+                            '\$${game.sellPrice!.toStringAsFixed(2)}',
+                          ),
                           labelStyle: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: AppColors.sellGreen,
                           ),
                           backgroundColor: AppColors.sellGreenBg,
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                           visualDensity: VisualDensity.compact,
                           padding: EdgeInsets.zero,
                         ),
@@ -349,7 +351,7 @@ class GameDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Last Played',
+                    l10n.lastPlayedLabel,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -358,7 +360,9 @@ class GameDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   FutureBuilder<DateTime?>(
-                    future: MatchRepository.instance.getLastPlayedDate(game.name),
+                    future: MatchRepository.instance.getLastPlayedDate(
+                      game.name,
+                    ),
                     builder: (context, snapshot) {
                       final date = snapshot.data;
                       final String labelText;
@@ -367,7 +371,7 @@ class GameDetailScreen extends StatelessWidget {
                       } else if (date != null) {
                         labelText = DateFormat('MMM d, yyyy').format(date);
                       } else {
-                        labelText = 'Never';
+                        labelText = l10n.neverLabel;
                       }
 
                       final bool hasDate = date != null;
@@ -388,7 +392,8 @@ class GameDetailScreen extends StatelessWidget {
                             backgroundColor: hasDate
                                 ? AppColors.tradeBlueBg
                                 : colorScheme.surfaceContainerHighest,
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
                             visualDensity: VisualDensity.compact,
                             padding: EdgeInsets.zero,
                           ),
@@ -408,7 +413,7 @@ class GameDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Mechanics',
+                      l10n.mechanicsLabel,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -446,7 +451,7 @@ class GameDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Category',
+                      l10n.categoryLabel,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -498,7 +503,7 @@ class GameDetailScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip: 'Edit Game',
+                    tooltip: l10n.editGameTitle,
                     onPressed: () async {
                       final result = await Navigator.push<bool>(
                         context,
@@ -525,7 +530,7 @@ class GameDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   IconButton(
-                    tooltip: 'Delete Game',
+                    tooltip: l10n.deleteGameTitle,
                     onPressed: () => _deleteGame(context),
                     icon: Icon(
                       Icons.delete_outline_rounded,

@@ -1,0 +1,228 @@
+{
+  "@@locale": "es",
+  "appTitle": "Boardex",
+  "navLibrary": "Biblioteca",
+  "navMatches": "Partidas",
+  "navSummary": "Resumen",
+  "navTools": "Herramientas",
+  "settingsTitle": "Ajustes",
+  "settingsSectionLanguage": "Idioma",
+  "langEnglish": "English",
+  "langSpanish": "Español",
+  "cancelButton": "Cancelar",
+  "deleteButton": "Eliminar",
+  "saveButton": "Guardar",
+  "addButton": "Añadir",
+  "removeButton": "Eliminar",
+  "addGameTitle": "Añadir Juego",
+  "editGameTitle": "Editar Juego",
+  "gameNameLabel": "Nombre del Juego",
+  "gameNameRequired": "Por favor, ingresa el nombre del juego",
+  "durationMinutesLabel": "Duración (minutos)",
+  "durationRequired": "Por favor, ingresa la duración",
+  "durationInvalid": "Por favor, ingresa una duración válida",
+  "numberOfPlayersLabel": "Número de Jugadores",
+  "minLabel": "Mín",
+  "maxLabel": "Máx",
+  "ratingLabel": "Calificación",
+  "weightLabel": "Dificultad",
+  "gameAlreadyExists": "Ya existe un juego con este nombre en tu biblioteca",
+  "gameUpdated": "¡Juego actualizado!",
+  "gameAdded": "¡Juego añadido!",
+  "addMatchTitle": "Añadir Partida",
+  "editPlayerTitle": "Editar Jugador",
+  "addPlayerTitle": "Añadir Jugador",
+  "playerNameLabel": "Nombre",
+  "playerNameRequired": "El nombre es obligatorio",
+  "playerAlreadyAdded": "Jugador ya añadido",
+  "playerColorLabel": "Color (opcional)",
+  "playerScoreLabel": "Puntuación (opcional)",
+  "matchesTitle": "Partidas",
+  "searchMatchesTooltip": "Buscar Partidas",
+  "noMatchesRecordedTitle": "Sin partidas registradas",
+  "noMatchesRecordedSubtitle": "Toca + para registrar tu primera partida",
+  "addGameToLibraryLabel": "Añadir Juego a la Biblioteca",
+  "registerMatchLabel": "Registrar Partida",
+  "matchDetailsTitle": "Detalles de la Partida",
+  "exportStoryTooltip": "Exportar Historia",
+  "deleteMatchTitle": "Eliminar Partida",
+  "deleteMatchConfirmation": "¿Seguro que quieres eliminar esta partida de \"{gameName}\"?",
+  "@deleteMatchConfirmation": {
+    "placeholders": {
+      "gameName": {
+        "type": "String"
+      }
+    }
+  },
+  "matchDeleted": "Partida eliminada",
+  "dateLabel": "Fecha",
+  "timeLabel": "Hora",
+  "durationLabel": "Duración",
+  "playersLabel": "Jugadores",
+  "searchMatchesTitle": "Buscar Partidas",
+  "clearFiltersTooltip": "Limpiar filtros",
+  "dateRangeLabel": "Rango de Fechas",
+  "fromDateLabel": "Desde",
+  "toDateLabel": "Hasta",
+  "anyDatePlaceholder": "Cualquiera",
+  "gameDetailsTitle": "Detalles del Juego",
+  "deleteGameTitle": "Eliminar Juego",
+  "deleteGameConfirmation": "¿Seguro que quieres eliminar \"{gameName}\"?",
+  "@deleteGameConfirmation": {
+    "placeholders": {
+      "gameName": {
+        "type": "String"
+      }
+    }
+  },
+  "gameDeleted": "Juego eliminado",
+  "ownedLabel": "Poseído",
+  "notOwnedLabel": "No Poseído",
+  "forSaleLabel": "En Venta",
+  "forTradeLabel": "Para Intercambiar",
+  "playedLabel": "Jugado",
+  "marketplaceTitle": "Mercado",
+  "exportCatalogLabel": "Exportar Catálogo",
+  "selectGameToExport": "Por favor, selecciona al menos un juego para exportar.",
+  "noGamesForSaleTitle": "Sin juegos marcados para vender",
+  "catalogSaved": "¡Catálogo del mercado guardado en la galería!",
+  "saveImageButton": "Guardar Imagen",
+  "savingButton": "Guardando...",
+  "searchGamesTitle": "Buscar Juegos",
+  "searchResultsTitle": "Resultados ({count})",
+  "@searchResultsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noGamesFoundTitle": "Sin juegos encontrados",
+  "noGamesFoundSubtitle": "Intenta con diferentes criterios de búsqueda",
+  "weightLightLabel": "1.0 Ligero",
+  "weightHeavyLabel": "5.0 Pesado",
+  "mechanicsLabel": "Mecánicas",
+  "selectToFilterHint": "Selecciona para filtrar",
+  "categoryLabel": "Categoría",
+  "ownershipStatusLabel": "Estado de Propiedad",
+  "iOwnThisGame": "Poseo este juego",
+  "toolsTitle": "Herramientas",
+  "turnOrderTitle": "Orden de Turnos",
+  "timerTitle": "Temporizador",
+  "competitiveTitle": "Competitivo",
+  "teamsButton": "Equipos",
+  "howManyTeamsTitle": "¿Cuántos equipos?",
+  "twoTeamsLabel": "2 Equipos",
+  "threeTeamsLabel": "3 Equipos",
+  "resetTooltip": "Reiniciar",
+  "touchInstruction": "Todos coloquen un dedo\nen la pantalla",
+  "holdInstruction": "Mantén durante 4 segundos",
+  "summaryTitle": "Resumen",
+  "findMatchesHeading": "Buscar Partidas",
+  "findMatchesSubheading": "Filtra y agrupa tus partidas por juego",
+  "fromLabel": "Desde",
+  "toLabel": "Hasta",
+  "resultLabel": "Resultado",
+  "allResultsLabel": "Todos",
+  "winResultLabel": "Victoria",
+  "drawResultLabel": "Empate",
+  "lossResultLabel": "Derrota",
+  "playersHintText": "Deja vacío para incluir todos los jugadores",
+  "noPlayersFoundText": "Sin jugadores encontrados en partidas",
+  "searchPlayersPlaceholder": "Escribe para buscar jugadores...",
+  "viewSummaryButton": "Ver Resumen",
+  "noMatchesFoundTitle": "Sin partidas encontradas",
+  "noMatchesFoundSubtitle": "Intenta ajustar tus filtros",
+  "filteredByLabel": "Filtrado por: ",
+  "exportSummaryTitle": "Exportar Resumen",
+  "boardGameRecapTitle": "Resumen de Juegos de Mesa",
+  "matchesCountLabel": "Partidas",
+  "gamesCountLabel": "Juegos",
+  "winRateLabel": "Tasa de Victoria",
+  "exportSummaryImageTooltip": "Exportar imagen de resumen",
+  "exportStoryTitle": "Exportar Historia",
+  "themeLabel": "Tema",
+  "titleColorLabel": "Color del título",
+  "whiteLabel": "Blanco",
+  "blackLabel": "Negro",
+  "statsLabel": "Estadísticas",
+  "openingInstagramStory": "Abriendo Historia de Instagram...",
+  "instagramNotInstalled": "No se pudo abrir la Historia de Instagram. Verifica si Instagram está instalado.",
+  "preparingStory": "Preparando Historia...",
+  "exportToInstagramStory": "Exportar a Historia de Instagram",
+  "searchHintText": "Aplica filtros y pulsa Buscar",
+  "collectionStatusLabel": "Estado de Colección",
+  "marketplaceStatusLabel": "Estado de Mercado",
+  "editMatchTooltip": "Editar Partida",
+  "sellPriceLabel": "Precio de Venta",
+  "lastPlayedLabel": "Última Partida",
+  "clearButton": "Limpiar",
+  "winsLabel": "Victorias",
+  "drawsLabel": "Empates",
+  "lossesLabel": "Derrotas",
+  "startButton": "Iniciar",
+  "pauseButton": "Pausar",
+  "resumeButton": "Continuar",
+  "timeUpLabel": "¡TIEMPO!",
+  "minutesAbbr": "min",
+  "secondsAbbr": "seg",
+  "weightShortLabel": "Peso",
+  "neverLabel": "Nunca",
+  "gameSectionTitle": "Juego",
+  "dateTimeSectionTitle": "Fecha y Hora",
+  "matchResultSectionTitle": "Resultado de la Partida",
+  "playersOptionalSectionTitle": "Jugadores (opcional)",
+  "winnerSectionTitle": "Ganador",
+  "matchDurationRequired": "Por favor, ingresa la duración de la partida",
+  "noPlayersYet": "Sin jugadores aún.",
+  "editPlayerTooltip": "Editar jugador",
+  "addPlayerButtonLabel": "Añadir Jugador",
+  "selectWinnerHint": "Selecciona el ganador (opcional)",
+  "noWinnerOption": "Sin ganador",
+  "selectPhotoSectionTitle": "Seleccionar Foto",
+  "usingLibraryPhoto": "Usando foto de la biblioteca",
+  "usingPreviousMatchPhoto": "Usando foto de una partida anterior",
+  "noCarouselPhotos": "Juego no está en la biblioteca — sin fotos anteriores reutilizables",
+  "updateMatchButton": "Actualizar Partida",
+  "selectAllThatApply": "Selecciona todos los que apliquen",
+  "lightLabel": "Ligero",
+  "mediumLabel": "Medio",
+  "heavyLabel": "Pesado",
+  "updateGameButton": "Actualizar Juego",
+  "validPriceRequired": "Por favor, ingresa un precio válido",
+  "markForSellLabel": "Marcar para Vender",
+  "markForTradeLabel": "Marcar para Intercambiar",
+  "pausedLabel": "PAUSADO",
+  "holdInstructionTeams": "Mantén 4 segundos para formar {count} equipos",
+  "@holdInstructionTeams": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "teamStartsBanner": "¡EQUIPO {number} COMIENZA!",
+  "@teamStartsBanner": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "saveImageError": "No se pudo guardar la imagen: {error}",
+  "@saveImageError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotExportStory": "No se pudo exportar la historia: {error}",
+  "@couldNotExportStory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
+}

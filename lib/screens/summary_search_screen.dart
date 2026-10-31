@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../models/match.dart';
 import '../repositories/match_repository.dart';
 import '../utils/theme_utils.dart';
@@ -83,14 +84,15 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 10;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const GlassAppBar(
-        title: 'Summary',
+      appBar: GlassAppBar(
+        title: l10n.summaryTitle,
         titleColor: Color(0xFF7C3AED),
         titleIcon: Icons.insights_rounded,
       ),
@@ -106,14 +108,14 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
           children: [
             // Header
             Text(
-              'Find Matches',
+              l10n.findMatchesHeading,
               style: textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 2),
             Text(
-              'Filter and group your matches by game',
+              l10n.findMatchesSubheading,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -140,7 +142,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Date Range',
+                          l10n.dateRangeLabel,
                           style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -152,7 +154,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                       children: [
                         Expanded(
                           child: _DatePickerField(
-                            label: 'From',
+                            label: l10n.fromLabel,
                             date: _fromDate,
                             dateFormat: _dateFormat,
                             onTap: () => _pickDate(context, true),
@@ -168,7 +170,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                         ),
                         Expanded(
                           child: _DatePickerField(
-                            label: 'To',
+                            label: l10n.toLabel,
                             date: _toDate,
                             dateFormat: _dateFormat,
                             onTap: () => _pickDate(context, false),
@@ -202,7 +204,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Result',
+                          l10n.resultLabel,
                           style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -215,32 +217,35 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                       runSpacing: 4,
                       children: [
                         _ResultChip(
-                          label: 'All',
+                          label: l10n.allResultsLabel,
                           icon: Icons.select_all,
                           color: colorScheme.primary,
                           selected: _resultFilter == null,
                           onTap: () => setState(() => _resultFilter = null),
                         ),
                         _ResultChip(
-                          label: 'Win',
+                          label: l10n.winResultLabel,
                           icon: Icons.emoji_events,
                           color: MatchResult.won.color,
                           selected: _resultFilter == MatchResult.won,
-                          onTap: () => setState(() => _resultFilter = MatchResult.won),
+                          onTap: () =>
+                              setState(() => _resultFilter = MatchResult.won),
                         ),
                         _ResultChip(
-                          label: 'Draw',
+                          label: l10n.drawResultLabel,
                           icon: Icons.handshake,
                           color: MatchResult.tie.color,
                           selected: _resultFilter == MatchResult.tie,
-                          onTap: () => setState(() => _resultFilter = MatchResult.tie),
+                          onTap: () =>
+                              setState(() => _resultFilter = MatchResult.tie),
                         ),
                         _ResultChip(
-                          label: 'Loss',
+                          label: l10n.lossResultLabel,
                           icon: Icons.sentiment_dissatisfied,
                           color: MatchResult.lost.color,
                           selected: _resultFilter == MatchResult.lost,
-                          onTap: () => setState(() => _resultFilter = MatchResult.lost),
+                          onTap: () =>
+                              setState(() => _resultFilter = MatchResult.lost),
                         ),
                       ],
                     ),
@@ -270,7 +275,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Players',
+                          l10n.playersLabel,
                           style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -279,7 +284,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Leave empty to include all players',
+                      l10n.playersHintText,
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         fontSize: 11,
@@ -305,7 +310,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'No players found in matches',
+                                  l10n.noPlayersFoundText,
                                   style: textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
@@ -323,7 +328,10 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
                         runSpacing: 4,
                         children: _selectedPlayers.map((player) {
                           return InputChip(
-                            label: Text(player, style: const TextStyle(fontSize: 12)),
+                            label: Text(
+                              player,
+                              style: const TextStyle(fontSize: 12),
+                            ),
                             avatar: CircleAvatar(
                               backgroundColor: colorScheme.primaryContainer,
                               child: Text(
@@ -353,7 +361,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
             FilledButton.icon(
               onPressed: _search,
               icon: const Icon(Icons.bar_chart),
-              label: const Text('View Summary'),
+              label: Text(l10n.viewSummaryButton),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
@@ -365,6 +373,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
   }
 
   Widget _buildPlayerAutocomplete() {
+    final l10n = AppLocalizations.of(context)!;
     // Filter out already selected players
     final availablePlayers = _allPlayers
         .where((p) => !_selectedPlayers.contains(p))
@@ -393,7 +402,7 @@ class _SummarySearchScreenState extends State<SummarySearchScreen> {
           controller: controller,
           focusNode: focusNode,
           decoration: InputDecoration(
-            hintText: 'Type to search players...',
+            hintText: l10n.searchPlayersPlaceholder,
             prefixIcon: const Icon(Icons.person_search),
             suffixIcon: controller.text.isNotEmpty
                 ? IconButton(

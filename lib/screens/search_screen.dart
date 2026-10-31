@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../constants/game_constants.dart';
 import '../repositories/board_game_repository.dart';
 import '../utils/theme_utils.dart';
@@ -93,11 +94,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 10;
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const GlassAppBar(
-        title: 'Search Games',
+      appBar: GlassAppBar(
+        title: l10n.searchGamesTitle,
         titleColor: AppColors.headerCoral,
         titleIcon: Icons.grid_view_rounded,
       ),
@@ -114,6 +116,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildFilterPanel() {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
@@ -396,7 +399,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   color: AppColors.ownedTeal,
                 ),
                 const SizedBox(width: 10),
-                const Expanded(child: Text('I own this game')),
+                Expanded(child: Text(l10n.iOwnThisGame)),
                 Switch(
                   value: _filterIsOwned,
                   onChanged: (value) => setState(() => _filterIsOwned = value),
@@ -460,7 +463,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: FilledButton.icon(
                   onPressed: _searchGames,
                   icon: const Icon(Icons.search),
-                  label: const Text('Search Games'),
+                  label: Text(l10n.searchGamesTitle),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),

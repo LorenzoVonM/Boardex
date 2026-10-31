@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../models/match.dart';
 import '../models/summary_export.dart';
 import '../repositories/board_game_repository.dart';
@@ -135,6 +136,7 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final dateFormat = DateFormat('MMM d');
@@ -151,7 +153,7 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
             ? null
             : [
                 IconButton(
-                  tooltip: 'Export summary image',
+                  tooltip: l10n.exportSummaryImageTooltip,
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -177,6 +179,7 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
   }
 
   Widget _buildEmpty(ColorScheme colorScheme, TextTheme textTheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -190,14 +193,14 @@ class _SummaryResultsScreenState extends State<SummaryResultsScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No matches found',
+              l10n.noMatchesFoundTitle,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Try adjusting your filters',
+              l10n.noMatchesFoundSubtitle,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),

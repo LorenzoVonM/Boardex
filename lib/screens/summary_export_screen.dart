@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_image_gallery_saver/flutter_image_gallery_saver.dart';
 import 'package:intl/intl.dart';
@@ -85,13 +86,14 @@ class _SummaryExportScreenState extends State<SummaryExportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const GlassAppBar(
-        title: 'Export Summary',
+      appBar: GlassAppBar(
+        title: l10n.exportSummaryTitle,
         titleColor: Color(0xFF7C3AED),
         titleIcon: Icons.insights_rounded,
       ),
@@ -155,7 +157,7 @@ class _SummaryExportScreenState extends State<SummaryExportScreen> {
                         )
                       : const Icon(Icons.download_rounded),
                   label: Text(
-                    _isSaving ? 'Saving...' : 'Save Image',
+                    _isSaving ? l10n.savingButton : l10n.saveImageButton,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -207,6 +209,7 @@ class _SummaryResultsPortraitExport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final dateRange =
@@ -301,7 +304,7 @@ class _SummaryResultsPortraitExport extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Board Game Recap',
+                              l10n.boardGameRecapTitle,
                               style: textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w900,
                                 color: colorScheme.onSurface,
@@ -368,6 +371,7 @@ class SummaryResultsExportStatGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final winRate = '${(data.winRate * 100).round()}%';
 
     return Column(
@@ -377,7 +381,7 @@ class SummaryResultsExportStatGrid extends StatelessWidget {
             children: [
               Expanded(
                 child: _SummaryResultsMetricCard(
-                  label: 'Matches',
+                  label: l10n.matchesCountLabel,
                   value: '${data.totalMatches}',
                   accentColor: AppColors.headerCoral,
                   compact: true,
@@ -386,7 +390,7 @@ class SummaryResultsExportStatGrid extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: _SummaryResultsMetricCard(
-                  label: 'Games',
+                  label: l10n.gamesCountLabel,
                   value: '${data.totalGames}',
                   accentColor: AppColors.brandBlue,
                   compact: true,
@@ -395,7 +399,7 @@ class SummaryResultsExportStatGrid extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: _SummaryResultsMetricCard(
-                  label: 'Win Rate',
+                  label: l10n.winRateLabel,
                   value: winRate,
                   accentColor: AppColors.brandTeal,
                   compact: true,
@@ -410,7 +414,7 @@ class SummaryResultsExportStatGrid extends StatelessWidget {
             children: [
               Expanded(
                 child: _SummaryResultsMetricCard(
-                  label: 'Wins',
+                  label: l10n.winsLabel,
                   value: '${data.totalWins}',
                   accentColor: AppColors.resultWon,
                   compact: true,
@@ -419,7 +423,7 @@ class SummaryResultsExportStatGrid extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: _SummaryResultsMetricCard(
-                  label: 'Draws',
+                  label: l10n.drawsLabel,
                   value: '${data.totalTies}',
                   accentColor: AppColors.resultTie,
                   compact: true,
@@ -428,7 +432,7 @@ class SummaryResultsExportStatGrid extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: _SummaryResultsMetricCard(
-                  label: 'Losses',
+                  label: l10n.lossesLabel,
                   value: '${data.totalLosses}',
                   accentColor: AppColors.resultLost,
                   compact: true,

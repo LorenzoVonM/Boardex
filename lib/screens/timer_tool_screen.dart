@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -140,14 +141,15 @@ class _TimerToolScreenState extends State<TimerToolScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final isIdle = _state == _TimerState.idle;
     final isFinished = _state == _TimerState.finished;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const GlassAppBar(
-        title: 'Timer',
+      appBar: GlassAppBar(
+        title: l10n.timerTitle,
         titleColor: AppColors.brandTeal,
         titleIcon: Icons.timer_rounded,
       ),
@@ -205,7 +207,7 @@ class _TimerToolScreenState extends State<TimerToolScreen>
                               duration: const Duration(milliseconds: 200),
                               child: switch (_state) {
                                 _TimerState.paused => Text(
-                                  'PAUSED',
+                                  l10n.pausedLabel,
                                   key: const ValueKey('paused'),
                                   style: TextStyle(
                                     fontSize: 11,
@@ -215,7 +217,7 @@ class _TimerToolScreenState extends State<TimerToolScreen>
                                   ),
                                 ),
                                 _TimerState.finished => Text(
-                                  "TIME'S UP",
+                                  l10n.timeUpLabel,
                                   key: const ValueKey('done'),
                                   style: const TextStyle(
                                     fontSize: 12,
@@ -345,6 +347,7 @@ class _TimerToolScreenState extends State<TimerToolScreen>
   }
 
   Widget _buildButtons() {
+    final l10n = AppLocalizations.of(context)!;
     final buttonShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(18),
     );
@@ -354,7 +357,7 @@ class _TimerToolScreenState extends State<TimerToolScreen>
       _TimerState.idle => FilledButton.icon(
         onPressed: (_selectedMinutes + _selectedSeconds) > 0 ? _start : null,
         icon: const Icon(Icons.play_arrow_rounded, size: 26),
-        label: const Text('Start', style: TextStyle(fontSize: 17)),
+        label: Text(l10n.startButton, style: const TextStyle(fontSize: 17)),
         style: FilledButton.styleFrom(
           minimumSize: fullWidth,
           backgroundColor: AppColors.brandTeal,
@@ -368,7 +371,7 @@ class _TimerToolScreenState extends State<TimerToolScreen>
             child: FilledButton.icon(
               onPressed: _pause,
               icon: const Icon(Icons.pause_rounded, size: 26),
-              label: const Text('Pause', style: TextStyle(fontSize: 17)),
+              label: Text(l10n.pauseButton, style: const TextStyle(fontSize: 17)),
               style: FilledButton.styleFrom(
                 minimumSize: const Size(0, 56),
                 shape: buttonShape,
@@ -396,7 +399,7 @@ class _TimerToolScreenState extends State<TimerToolScreen>
             child: FilledButton.icon(
               onPressed: _resume,
               icon: const Icon(Icons.play_arrow_rounded, size: 26),
-              label: const Text('Resume', style: TextStyle(fontSize: 17)),
+              label: Text(l10n.resumeButton, style: const TextStyle(fontSize: 17)),
               style: FilledButton.styleFrom(
                 minimumSize: const Size(0, 56),
                 backgroundColor: AppColors.brandTeal,
@@ -423,7 +426,7 @@ class _TimerToolScreenState extends State<TimerToolScreen>
       _TimerState.finished => FilledButton.icon(
         onPressed: _reset,
         icon: const Icon(Icons.replay_rounded, size: 26),
-        label: const Text('Reset', style: TextStyle(fontSize: 17)),
+        label: Text(l10n.resetTooltip, style: const TextStyle(fontSize: 17)),
         style: FilledButton.styleFrom(
           minimumSize: fullWidth,
           backgroundColor: AppColors.resultLost,

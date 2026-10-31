@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../models/match.dart';
 import '../repositories/board_game_repository.dart';
 import '../repositories/match_repository.dart';
@@ -75,7 +76,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
   bool _onScrollNotification(ScrollNotification notification) {
     if (notification.metrics.maxScrollExtent > 0) {
       final isAtBottom =
-          notification.metrics.pixels >= notification.metrics.maxScrollExtent - 40;
+          notification.metrics.pixels >=
+          notification.metrics.maxScrollExtent - 40;
       if (isAtBottom != _isFabHidden) {
         setState(() {
           _isFabHidden = isAtBottom;
@@ -87,15 +89,16 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: 'Matches',
+        title: l10n.matchesTitle,
         titleColor: AppColors.brandTeal,
         titleIcon: Icons.sports_esports_rounded,
         actions: [
           IconButton(
-            tooltip: 'Search Matches',
+            tooltip: l10n.searchMatchesTooltip,
             icon: const Icon(Icons.search, color: Colors.white),
             onPressed: () async {
               final result = await Navigator.push<bool>(
@@ -125,7 +128,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
         isVisible: !_isFabHidden,
         menuItems: [
           FabMenuItem(
-            label: 'Add Game to Library',
+            label: l10n.addGameToLibraryLabel,
             icon: Icons.library_add,
             heroTag: 'addGame',
             onTap: () async {
@@ -136,7 +139,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
             },
           ),
           FabMenuItem(
-            label: 'Register Match',
+            label: l10n.registerMatchLabel,
             icon: Icons.sports_esports,
             heroTag: 'register_match',
             onTap: () async {
@@ -153,6 +156,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16;
     return Center(
       child: SingleChildScrollView(
@@ -162,10 +166,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
           16,
           140 + MediaQuery.of(context).viewPadding.bottom,
         ),
-        child: const EmptyState(
+        child: EmptyState(
           icon: Icons.history,
-          title: 'No matches recorded',
-          subtitle: 'Tap + to register your first match',
+          title: l10n.noMatchesRecordedTitle,
+          subtitle: l10n.noMatchesRecordedSubtitle,
         ),
       ),
     );
